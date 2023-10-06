@@ -1,6 +1,8 @@
 import React, {useState} from "react";
 import { ShadowDom } from "./ShadowDom";
 import './rohlik.css'
+import ReactDOM from "react-dom";
+import Recipes from "./Recipes.tsx";
 
 const items = [
     {
@@ -53,7 +55,7 @@ const items = [
     }
 ];
 
-export function Rohlik(): React.ReactElement | null {
+export function Houska(): React.ReactElement | null {
     const [parentElement] = useState(() =>
         document.querySelector('.sectionsItem')
     );
@@ -72,51 +74,8 @@ export function Rohlik(): React.ReactElement | null {
             bannerSpace.style.height = "auto";
             bannerSpace.innerHTML = "";
 
-            const gridContainer = document.createElement("div");
-            gridContainer.classList.add('gridContainer');
+            ReactDOM.render(<Recipes items={items}/>, bannerSpace);
 
-            items.forEach(item => {
-                const gridItem = document.createElement("div");
-                gridItem.style.display = "flex";
-                gridItem.style.flexDirection = "column";
-                gridItem.style.alignItems = "center";
-
-                const imageElement = document.createElement("img");
-                imageElement.src = item.imageUrl;
-                imageElement.style.width = "100%";
-
-                const textContainer = document.createElement("div");
-                textContainer.classList.add('textContainer');
-
-                const textElement = document.createElement("span");
-                textElement.textContent = item.text;
-
-
-                const priceElement = document.createElement("span")
-                priceElement.textContent = "100 Kč";
-                priceElement.style.fontSize = "24px"
-                priceElement.style.fontWeight = "bold"
-                priceElement.style.lineHeight = "1.4"
-
-                const portionPriceElement = document.createElement("span")
-                portionPriceElement.textContent = "20,00 Kč/porce";
-                portionPriceElement.style.fontSize = "12px"
-                portionPriceElement.style.lineHeight = "1.4"
-
-                const buttonElement = document.createElement("button");
-                buttonElement.textContent = "Do košíku";
-                buttonElement.classList.add('buttonElement');
-
-                gridItem.appendChild(imageElement);
-                gridItem.appendChild(textContainer)
-                textContainer.appendChild(textElement);
-                gridItem.appendChild(priceElement)
-                gridItem.appendChild(portionPriceElement)
-                gridItem.appendChild(buttonElement);
-                gridContainer.appendChild(gridItem);
-            });
-
-            bannerSpace.appendChild(gridContainer);
         }
     }
 
@@ -125,8 +84,8 @@ export function Rohlik(): React.ReactElement | null {
         <ShadowDom parentElement={parentElement}>
             <div style={{display: "flex", flexDirection: "row", paddingInline: "8px"}}>
                 <button onClick={handleClick} style={{background: "none" ,border: "none", paddingInline: "10px", height: "35px", display: "flex", flexDirection: "row", alignItems: "center", flexWrap: "wrap"}}>
-                <img alt={"icon"} src="https://www.svgrepo.com/show/303501/red-star-1-logo.svg" style={{width: "20px", marginRight: "5px"}}/>
-                <span style={{fontSize:"13px"}}>Vytvořit recept</span>
+                    <img alt={"icon"} src="https://www.svgrepo.com/show/303501/red-star-1-logo.svg" style={{width: "20px", marginRight: "5px"}}/>
+                    <span style={{fontSize:"13px"}}>Vytvořit recept</span>
                 </button>
             </div>
         </ShadowDom>
