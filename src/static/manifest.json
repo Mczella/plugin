@@ -3,6 +3,9 @@
   "name": "Rohlik extension",
   "version": "1.0.0",
   "action": { "default_popup": "index.html" },
+  "permissions": [
+    "storage"
+  ],
   "content_scripts": [
     {
       "matches": ["https://www.rohlik.cz/*"],
