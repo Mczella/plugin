@@ -1,17 +1,7 @@
 import {Button, Grid, GridItem, Image, Text} from "@chakra-ui/react";
-import {FC} from "react";
 import {items} from "./Rohlik.tsx";
 
-type RecipeItem = {
-    imageUrl: string;
-    text: string;
-};
-
-type RecipesProps = {
-    items: RecipeItem[];
-};
-
-const Recipes: FC<RecipesProps> = () => {
+const Recipes = () => {
 
     return (
         <Grid templateColumns="repeat(7, 1fr)" gap="10px" m="20px">
