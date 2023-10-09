@@ -1,5 +1,7 @@
 import {FC, useEffect, useState} from "react";
 import {ShadowDom} from "./ShadowDom.tsx";
+import CreateRecipe from "./CreateRecipe.tsx";
+import Recipes from "./Recipes.tsx";
 
 type MainProps = {
     hash: string
@@ -9,9 +11,10 @@ const MainArea: FC<MainProps> = ({hash}) => {
         document.querySelector('[data-gtm-section="hp-topBanner"]')
     );
 
+    const currentHash = window.location.hash
 
     useEffect(() => {
-        if (window.location.hash === hash) {
+        if (currentHash === hash) {
 
             const bannerSpace = document.querySelector(
                 '[data-gtm-section="hp-topBanner"]'
@@ -25,12 +28,16 @@ const MainArea: FC<MainProps> = ({hash}) => {
                 banner3?.remove();
             }
         }
-    }, [hash]);
+    }, [currentHash, hash]);
 
 
     return parentElement ? (
         <ShadowDom parentElement={parentElement}>
-            <h1>ahoj</h1>
+            {currentHash === "#/pridat-recept" ? (
+                <CreateRecipe/>
+            ) : currentHash === "#/recepty" ? (
+                <Recipes/>
+            ) : null}
         </ShadowDom>
     ) : null;
 }
