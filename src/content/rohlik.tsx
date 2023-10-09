@@ -1,4 +1,5 @@
 import { Rohlik } from "../components/Rohlik";
 import { render } from "./render";
+import {HashRouter as Router} from "react-router-dom";
 
-render(<Rohlik />);
+render(<Router><Rohlik /></Router>);
