@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {ShadowDom} from "./ShadowDom.tsx";
-import {Link} from "@chakra-ui/react";
+import {Flex, Link} from "@chakra-ui/react";
 import {ButtonComponent} from "./ButtonComponent.tsx";
 
 const NavigationArea = () => {
@@ -16,7 +16,7 @@ const NavigationArea = () => {
 
     return parentElement ? (
         <ShadowDom parentElement={parentElement}>
-            <div>
+            <Flex flexDir={"row"}>
                 <Link style={{all: "unset"}} href={"https://www.rohlik.cz/#/pridat-recept"}>
                     <ButtonComponent
                         label={"Vytvořit recept"}
@@ -29,7 +29,7 @@ const NavigationArea = () => {
                         icon={"https://www.svgrepo.com/show/303501/red-star-1-logo.svg"}
                     />
                 </Link>
-            </div>
+            </Flex>
         </ShadowDom>
     ) : null;
 }
