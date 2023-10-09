@@ -1,4 +1,7 @@
 import { ChakraProvider } from "@chakra-ui/react";
+import { CacheProvider } from "@emotion/react";
+import createCache from "@emotion/cache";
+
 import React from "react";
 import ReactDOM from "react-dom";
 
@@ -19,6 +22,11 @@ export function ShadowDom({
     shadowHost.attachShadow({ mode: "closed" })
   );
 
+  const cache = createCache({
+    key: "css",
+    container: shadowRoot,
+  });
+
   React.useLayoutEffect(() => {
     if (parentElement) {
       parentElement.insertAdjacentElement(position, shadowHost);
@@ -30,7 +38,9 @@ export function ShadowDom({
   }, [parentElement, shadowHost, position]);
 
   return ReactDOM.createPortal(
-    <ChakraProvider>{children}</ChakraProvider>,
+    <CacheProvider value={cache}>
+      <ChakraProvider>{children}</ChakraProvider>
+    </CacheProvider>,
     shadowRoot
   );
 }
