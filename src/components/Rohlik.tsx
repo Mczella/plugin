@@ -4,7 +4,7 @@ import {Route, Routes} from "react-router-dom";
 import NavigationArea from "./NavigationArea.tsx";
 import MainArea from "./MainArea.tsx";
 
-/*const items = [
+export const items = [
     {
         imageUrl:
             "https://static.vecteezy.com/system/resources/previews/009/262/531/original/cute-panda-welcomes-with-a-paw-the-panda-is-waving-its-paw-illustration-isolated-on-white-background-vector.jpg",
@@ -65,7 +65,7 @@ import MainArea from "./MainArea.tsx";
             "https://static.vecteezy.com/system/resources/previews/009/262/531/original/cute-panda-welcomes-with-a-paw-the-panda-is-waving-its-paw-illustration-isolated-on-white-background-vector.jpg",
         text: "Zelňačka",
     },
-];*/
+];
 
 export const Rohlik = (): React.ReactNode => (
     <>
