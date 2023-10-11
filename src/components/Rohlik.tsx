@@ -1,5 +1,4 @@
 import React from "react";
-import "./rohlik.css";
 import NavigationArea from "./NavigationArea.tsx";
 import MainArea from "./MainArea.tsx";
 
