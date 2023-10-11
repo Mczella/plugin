@@ -1,6 +1,5 @@
-import {Button, Image, Text} from "@chakra-ui/react";
+import {Button, Image, Link, Text} from "@chakra-ui/react";
 import { FC } from "react";
-import {Link} from "react-router-dom";
 
 type Props = {
   label: string;
@@ -10,7 +9,7 @@ type Props = {
 
 export const ButtonComponent: FC<Props> = ({ label, icon, navigate }) => {
   return (
-      <Link style={{all: "unset"}} to={`https://www.rohlik.cz${navigate}`}>
+      <Link style={{all: "unset"}} href={`https://www.rohlik.cz/${navigate}`}>
       <Button bg={"none"} border={"none"} paddingInline={"10px"} height={"35px"} display={"flex"} flexDir={"row"} alignItems={"center"} mx={"8px"}>
           <Image
               alt={"icon"}
