@@ -1,5 +1,5 @@
 export const fetchData = async (searchQuery: string) => {
-    const url = `https://www.rohlik.cz/services/frontend-service/autocomplete?search=${searchQuery}&referer=whisperer&companyId=1&limit=8`;
+    const url = `https://www.rohlik.cz/services/frontend-service/autocomplete?search=${searchQuery}&referer=whisperer&companyId=1&limit=20`;
 
     const response = await fetch(url, {
         method: 'GET',
@@ -70,3 +70,6 @@ export const fetchPrices = async (productIds: string[]) => {
     return response.json()
 
 };
+
+// Nutricni hodnoty
+// https://www.rohlik.cz/api/v1/products/1317317/composition
