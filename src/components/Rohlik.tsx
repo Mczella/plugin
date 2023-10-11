@@ -1,6 +1,5 @@
 import React from "react";
 import "./rohlik.css";
-import {Route, Routes} from "react-router-dom";
 import NavigationArea from "./NavigationArea.tsx";
 import MainArea from "./MainArea.tsx";
 
@@ -70,11 +69,6 @@ export const items = [
 export const Rohlik = (): React.ReactNode => (
     <>
         <NavigationArea/>
-        <Routes>
-            <Route path="/pridat-recept" element={<MainArea hash={"#/pridat-recept"}/>}/>
-        </Routes>
-        <Routes>
-            <Route path="/recepty" element={<MainArea hash={"#/recepty"}/>}/>
-        </Routes>
+      <MainArea />
     </>
 );
