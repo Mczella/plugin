@@ -53,7 +53,18 @@ const CreateRecipe = () => {
                    value={searchQuery}
                    onChange={(e) => setSearchQuery(e.target.value)}/>
             {data && Object.keys(data).length > 0 ?
-                <Box width={"600px"} border={"1px solid rgb(218, 222, 224)"} rounded={"lg"} boxShadow={"md"}>
+                //close on outside click
+                <Box width={"600px"}
+                     maxHeight={"480px"}
+                     overflow="scroll"
+                     sx={{
+                         "::-webkit-scrollbar": {
+                             color: "#007 #bada55",
+                         },
+                     }}
+                     border={"1px solid rgb(218, 222, 224)"}
+                     rounded={"lg"}
+                     boxShadow={"md"}>
                     {Object.entries(data).map(([id, product]) => (
                             <Box key={id} width={"600px"}
                                  borderBottom={
