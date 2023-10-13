@@ -1,43 +1,38 @@
-import {FC, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {ShadowDom} from "./ShadowDom.tsx";
 import CreateRecipe from "./CreateRecipe.tsx";
 import Recipes from "./Recipes.tsx";
+import {Route, Routes} from "react-router-dom";
 
-type MainProps = {
-    hash: string
-}
-const MainArea: FC<MainProps> = ({hash}) => {
+const MainArea = () => {
     const [parentElement] = useState(() =>
         document.querySelector('[data-gtm-section="hp-topBanner"]')
     );
 
-    const currentHash = window.location.hash
 
     useEffect(() => {
-        if (currentHash === hash) {
-
             const bannerSpace = document.querySelector(
                 '[data-gtm-section="hp-topBanner"]'
-            );
-            const banner3 = document.querySelector('[data-gtm-section="hp-banners"]');
+            )
+            const banner3 = document.querySelector('[data-gtm-section="hp-banners"]')
             if (bannerSpace) {
-                bannerSpace.innerHTML = "";
+                bannerSpace.remove()
             }
 
             if (banner3) {
                 banner3?.remove();
             }
-        }
-    }, [currentHash, hash]);
+    }, []);
 
 
     return parentElement ? (
         <ShadowDom parentElement={parentElement}>
-            {currentHash === "#/pridat-recept" ? (
-                <CreateRecipe/>
-            ) : currentHash === "#/recepty" ? (
-                <Recipes/>
-            ) : null}
+            <Routes>
+                <Route path="/pridat-recept" element={<CreateRecipe/>}/>
+            </Routes>
+            <Routes>
+                <Route path="/recepty" element={<Recipes/>}/>
+            </Routes>
         </ShadowDom>
     ) : null;
 }
