@@ -3,6 +3,7 @@ import {fetchAll} from "./Fetch.ts";
 import {Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, Flex, Heading, IconButton} from "@chakra-ui/react";
 import {ChevronRightIcon, HamburgerIcon} from "@chakra-ui/icons";
 import {useState} from "react";
+import CreateRecipeInput from "./CreateRecipeInput.tsx";
 
 const CreateRecipe = () => {
     const [searchQuery, setSearchQuery] = useState("")
@@ -18,15 +19,15 @@ const CreateRecipe = () => {
                 <Breadcrumb padding={"2px 21px 16px 0px"} spacing='8px' color={"rgb(57,57,59)"}
                             separator={<ChevronRightIcon color='gray.500'/>}>
                     <BreadcrumbItem>
-                        <BreadcrumbLink fontSize={"12px"} href='www.rohlik.cz'>Rohlik.cz</BreadcrumbLink>
+                        <BreadcrumbLink fontSize={"12px"} href='/'>Rohlik.cz</BreadcrumbLink>
                     </BreadcrumbItem>
 
                     <BreadcrumbItem>
-                        <BreadcrumbLink fontSize={"12px"} href='www.rohlik.cz/#/recepty'>Recepty</BreadcrumbLink>
+                        <BreadcrumbLink fontSize={"12px"} href='/#/recepty'>Recepty</BreadcrumbLink>
                     </BreadcrumbItem>
 
                     <BreadcrumbItem isCurrentPage>
-                        <BreadcrumbLink fontSize={"12px"} href='www.rohlik.cz/#/pridat-recept'>Nový
+                        <BreadcrumbLink fontSize={"12px"} href='/#/pridat-recept'>Nový
                             recept</BreadcrumbLink>
                     </BreadcrumbItem>
                 </Breadcrumb>
@@ -46,7 +47,7 @@ const CreateRecipe = () => {
                     </Flex>
                 </Flex>
             </Box>
-            <CreateRecipe searchQuery={searchQuery} setSearchQuery={setSearchQuery} data={data}/>
+            <CreateRecipeInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} data={data}/>
         </>
     )
 }
