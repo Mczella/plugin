@@ -68,6 +68,6 @@ export const items = [
 export const Rohlik = (): React.ReactNode => (
     <>
         <NavigationArea/>
-      <MainArea />
+        <MainArea/>
     </>
 );
