@@ -18,7 +18,6 @@ import {
 import { ChevronRightIcon, HamburgerIcon } from "@chakra-ui/icons";
 import React, { useState } from "react";
 import CreateRecipeInput from "./CreateRecipeInput.tsx";
-import EditableName from "./EditableName.tsx";
 
 interface Product {
   id: string;
@@ -43,7 +42,7 @@ interface Product {
 const CreateRecipe = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { data, isError } = useQuery(["data", searchQuery], () =>
-    fetchAll(searchQuery),
+    fetchAll(searchQuery)
   );
   const [selectedProducts, setSelectedProducts] = useState<{
     [key: string]: Product[];
@@ -52,7 +51,7 @@ const CreateRecipe = () => {
 
   const { productsByIds, productIds } = data ?? {
     productIds: [],
-    productByIds: {},
+    productsByIds: {},
   };
 
   if (isError) {
@@ -139,7 +138,6 @@ const CreateRecipe = () => {
           border={"1px solid rgb(132, 140, 145)"}
         />
         <Heading>Ingredience</Heading>
-        <EditableName />
         {/*<Box onClick={isOpen}>Přidat ingredienci</Box>*/}
         <CreateRecipeInput
           searchQuery={searchQuery}

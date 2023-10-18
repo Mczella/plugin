@@ -1,6 +1,13 @@
 import { Box, Flex, IconButton, Image, Input, Text } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
-import { Dispatch, FC, SetStateAction, useRef, useState } from "react";
+import {
+  Dispatch,
+  FC,
+  SetStateAction,
+  useRef,
+  useState,
+  useEffect,
+} from "react";
 
 interface Product {
   id: string;
@@ -26,10 +33,36 @@ interface Props {
   searchQuery: string;
   setSearchQuery: Dispatch<SetStateAction<string>>;
   productIds: string[];
-  productsByIds: { [p: string]: Product } | undefined;
+  productsByIds: { [p: string]: Product };
   setSelectedProducts: Dispatch<SetStateAction<{ [key: string]: Product[] }>>;
   selectedProducts: { [key: string]: Product[] };
 }
+
+// TODO: move to utils and write test
+export const useOutsideClick = (callback: () => void) => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const clickedTargetWithinShadowRoot = event.composedPath()[0];
+
+      if (
+        ref.current &&
+        !ref.current.contains(clickedTargetWithinShadowRoot as Node)
+      ) {
+        callback();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [callback]);
+
+  return ref;
+};
 
 const CreateRecipeInput: FC<Props> = ({
   searchQuery,
@@ -40,20 +73,14 @@ const CreateRecipeInput: FC<Props> = ({
   selectedProducts,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
-  const inputRef = useRef(null);
-  console.log({ isDropdownOpen });
 
   const handleFocus = (): void => {
     setIsDropdownOpen(true);
   };
 
-  /*   useOutsideClick({
-        ref: dropdownRef,
-        handler: () => {
-            setIsDropdownOpen(false);
-        },
-    });*/
+  const dropdownRef = useOutsideClick(() => {
+    setIsDropdownOpen(false);
+  });
 
   const handleAddToRecipe = (product: Product) => {
     setSelectedProducts((prevState) => ({
@@ -79,7 +106,6 @@ const CreateRecipeInput: FC<Props> = ({
             <Input
               width={"600px"}
               onFocus={handleFocus}
-              ref={inputRef}
               height={"40px"}
               rounded={"xl"}
               fontSize={"14px"}
@@ -113,6 +139,7 @@ const CreateRecipeInput: FC<Props> = ({
                 bg={"white"}
               >
                 {productIds.map((productId) => {
+                  console.log(productsByIds, productId);
                   const product = productsByIds[productId];
                   return (
                     <Box
