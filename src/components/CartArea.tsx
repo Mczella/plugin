@@ -78,6 +78,7 @@ const CartArea = () => {
                   justifyContent={"center"}
                   alignItems={"center"}
                   _hover={{ border: "1px solid rgb(156, 164, 169)" }}
+                  boxShadow={"rgba(0, 0, 0, 0.2) 0px 2px 4px -2px"}
                 >
                   <MinusIcon boxSize={"4"} />
                 </Box>
@@ -93,6 +94,7 @@ const CartArea = () => {
                   justifyContent={"center"}
                   alignItems={"center"}
                   _hover={{ border: "1px solid rgb(156, 164, 169)" }}
+                  boxShadow={"rgba(0, 0, 0, 0.2) 0px 2px 4px -2px"}
                 >
                   <AddIcon boxSize={"5"} />
                 </Box>
@@ -109,14 +111,22 @@ const CartArea = () => {
             color={"rgb(218, 222, 224)"}
             _hover={{ color: "rgb(87, 130, 4)" }}
           />
-          <Text
-            textAlign={"right"}
-            fontSize={"12px"}
-            fontWeight={"700"}
-            mb={"10px"}
-          >
-            120 Kč
-          </Text>
+          <Flex flexDir={"column"} mb={"10px"}>
+            {/*if sale*/}
+            <Text
+              textAlign={"right"}
+              fontSize={"12px"}
+              fontWeight={"normal"}
+              color={"rgb(28, 37, 41)"}
+              as={"s"}
+            >
+              120 Kč
+            </Text>
+            <Text textAlign={"right"} fontSize={"12px"} fontWeight={"700"}>
+              {/*if sale color={"rgb(209, 17, 0)"}*/}
+              120 Kč
+            </Text>
+          </Flex>
         </Flex>
       </Flex>
       <CartButton />
