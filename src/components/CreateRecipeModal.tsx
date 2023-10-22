@@ -91,7 +91,8 @@ const CreateRecipeModal: FC<Props> = ({ isOpen, onClose, ref }) => {
             </>
           ) : (
             <FormControl isRequired>
-              <Input ref={ref} placeholder="First name" />
+              {/*add autocomplete to suggest ingredients I already created*/}
+              <Input ref={ref} placeholder="Název ingredience" />
             </FormControl>
           )}
         </ModalBody>
