@@ -1,13 +1,7 @@
 import { Box, Flex, IconButton, Image, Input, Text } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
-import {
-  Dispatch,
-  FC,
-  SetStateAction,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { Dispatch, FC, SetStateAction, useState } from "react";
+import { useOutsideClick } from "./useOutsideClick.ts";
 
 interface Product {
   id: string;
@@ -38,32 +32,6 @@ interface Props {
   selectedProducts: { [key: string]: Product[] };
 }
 
-// TODO: move to utils and write test
-export const useOutsideClick = (callback: () => void) => {
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const clickedTargetWithinShadowRoot = event.composedPath()[0];
-
-      if (
-        ref.current &&
-        !ref.current.contains(clickedTargetWithinShadowRoot as Node)
-      ) {
-        callback();
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [callback]);
-
-  return ref;
-};
-
 const CreateRecipeInput: FC<Props> = ({
   searchQuery,
   setSearchQuery,
@@ -83,6 +51,7 @@ const CreateRecipeInput: FC<Props> = ({
   });
 
   const handleAddToRecipe = (product: Product) => {
+    // remove from suggestions
     setSelectedProducts((prevState) => ({
       [searchQuery]: [...(prevState[searchQuery] || []), product],
     }));
