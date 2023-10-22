@@ -9,13 +9,14 @@ const CartButton = () => {
 
   useEffect(() => {
     const submitButton = document.querySelector(".sc-d51222c7-0.hlPRUh");
-
+    // if (submitButton && recipesInCart.length > 0)
     if (submitButton) {
       submitButton.remove();
     }
   }, []);
 
   return parentElement ? (
+    // parentElement && recipesInCart.length > 0 ?
     <ShadowDom parentElement={parentElement}>
       <Link
         style={{ all: "unset" }}

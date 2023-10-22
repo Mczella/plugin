@@ -19,7 +19,7 @@ export const fetchData = async (searchQuery: string) => {
 
 export const fetchProducts = async (productIds: string[]) => {
   const url = `https://www.rohlik.cz/api/v1/products?products=${productIds.join(
-    "&products="
+    "&products=",
   )}`;
 
   const response = await fetch(url, {
@@ -36,9 +36,10 @@ export const fetchProducts = async (productIds: string[]) => {
   return response.json();
 };
 
+// DO NOT FETCH, only needed when getting ingredients for a specific recipe before checkout
 export const fetchStock = async (productIds: string[]) => {
   const url = `https://www.rohlik.cz/api/v1/products/stock?products=${productIds.join(
-    "&products="
+    "&products=",
   )}`;
 
   const response = await fetch(url, {
@@ -57,7 +58,7 @@ export const fetchStock = async (productIds: string[]) => {
 
 export const fetchPrices = async (productIds: string[]) => {
   const url = `https://www.rohlik.cz/api/v1/products/prices?products=${productIds.join(
-    "&products="
+    "&products=",
   )}`;
 
   const response = await fetch(url, {
@@ -98,7 +99,7 @@ export const fetchAll = async (query: string) => {
         packageInfo: stock[index].packageInfo,
         inStock: stock[index].inStock,
       },
-    ])
+    ]),
   );
 
   return { productsByIds, productIds };

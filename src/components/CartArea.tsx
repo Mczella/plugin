@@ -10,6 +10,7 @@ const CartArea = () => {
   );
 
   return parentElement ? (
+    // parentElement && recipesInCart.length > 0 ?
     <ShadowDom parentElement={parentElement}>
       <Text
         color={"rgb(93, 103, 108)"}
