@@ -90,8 +90,8 @@ const CreateRecipeModal: FC<Props> = ({ isOpen, onClose, ref }) => {
               })}
             </>
           ) : (
-            <FormControl>
-              <Input isRequired ref={ref} placeholder="First name" />
+            <FormControl isRequired>
+              <Input ref={ref} placeholder="First name" />
             </FormControl>
           )}
         </ModalBody>
