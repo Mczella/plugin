@@ -11,7 +11,7 @@ const Recipes = () => {
         </GridItem>
       </Grid>
       <Grid templateColumns="repeat(7, 1fr)" gap="10px" m="3%">
-        {items.map((item, index) => (
+        {/* {items.map((item, index) => (
           <GridItem
             key={index}
             display="flex"
@@ -41,7 +41,7 @@ const Recipes = () => {
               Do košíku
             </Button>
           </GridItem>
-        ))}
+        ))} */}
       </Grid>
     </Flex>
   );
