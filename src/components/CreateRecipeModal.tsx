@@ -9,7 +9,7 @@ import {
   ModalHeader,
   ModalOverlay,
 } from "@chakra-ui/react";
-import { FC, Fragment, RefObject, useState } from "react";
+import { FC, Fragment, RefObject, useRef, useState } from "react";
 import CreateRecipeInput from "./CreateRecipeInput.tsx";
 import Suggestions from "./Suggestions.tsx";
 import { useQuery } from "@tanstack/react-query";
@@ -42,10 +42,11 @@ interface Product {
 }
 
 const CreateRecipeModal: FC<Props> = ({ isOpen, onClose, focusRef }) => {
+  const modalContainer = useRef(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [showInput, setShowInput] = useState<boolean>(false);
   const { data, isError } = useQuery(["data", searchQuery], () =>
-    fetchAll(searchQuery),
+    fetchAll(searchQuery)
   );
   const [selectedProducts, setSelectedProducts] = useState<{
     [key: string]: Product[];
@@ -59,50 +60,63 @@ const CreateRecipeModal: FC<Props> = ({ isOpen, onClose, focusRef }) => {
   if (isError) {
     return <div>Error</div>;
   }
+
   return (
-    <Modal initialFocusRef={focusRef} isOpen={isOpen} onClose={onClose}>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>
-          {showInput ? "Vyberte vhodné produkty" : "Zadejte název ingredience"}
-        </ModalHeader>
-        <ModalCloseButton />
-        <ModalBody pb={6}>
-          {showInput ? (
-            <>
-              <CreateRecipeInput
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-                productsByIds={productsByIds}
-                productIds={productIds}
-                selectedProducts={selectedProducts}
-                setSelectedProducts={setSelectedProducts}
-              />
-              {Object.keys(selectedProducts).map((searchQuery) => {
-                const products = selectedProducts[searchQuery];
+    <>
+      <div ref={modalContainer}></div>
+      <Modal
+        portalProps={{
+          containerRef: modalContainer,
+        }}
+        initialFocusRef={focusRef}
+        isOpen={isOpen}
+        onClose={onClose}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
+            {showInput
+              ? "Vyberte vhodné produkty"
+              : "Zadejte název ingredience"}
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            {showInput ? (
+              <>
+                <CreateRecipeInput
+                  searchQuery={searchQuery}
+                  setSearchQuery={setSearchQuery}
+                  productsByIds={productsByIds}
+                  productIds={productIds}
+                  selectedProducts={selectedProducts}
+                  setSelectedProducts={setSelectedProducts}
+                />
+                {Object.keys(selectedProducts).map((searchQuery) => {
+                  const products = selectedProducts[searchQuery];
 
-                return (
-                  <Fragment key={searchQuery}>
-                    <Suggestions products={products} />;
-                  </Fragment>
-                );
-              })}
-            </>
-          ) : (
-            <FormControl isRequired>
-              {/*<Input ref={ref} placeholder="Název ingredience" />*/}
-            </FormControl>
-          )}
-        </ModalBody>
+                  return (
+                    <Fragment key={searchQuery}>
+                      <Suggestions products={products} />;
+                    </Fragment>
+                  );
+                })}
+              </>
+            ) : (
+              <FormControl isRequired>
+                {/*<Input ref={ref} placeholder="Název ingredience" />*/}
+              </FormControl>
+            )}
+          </ModalBody>
 
-        <ModalFooter>
-          <Button onClick={() => setShowInput(true)} mr={3}>
-            Save
-          </Button>
-          <Button onClick={onClose}>Cancel</Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+          <ModalFooter>
+            <Button onClick={() => setShowInput(true)} mr={3}>
+              Save
+            </Button>
+            <Button onClick={onClose}>Cancel</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 
