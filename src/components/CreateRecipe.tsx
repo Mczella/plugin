@@ -20,6 +20,7 @@ import {
 } from "@choc-ui/chakra-autocomplete";
 import Ingredient from "./Ingredient.tsx";
 import { useState } from "react";
+import { useStore } from "./store.ts";
 
 const initialIngredients = [
   "cibule",
@@ -31,22 +32,29 @@ const initialIngredients = [
 ];
 
 const CreateRecipe = () => {
+  const { recepty, products, addProducts } = useStore();
+
   const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
   const [ingredients, setIngredients] = useState<string[]>(initialIngredients);
 
   const handleIngredientClick = (ingredient: string) => {
     setSelectedIngredients([...selectedIngredients, ingredient]);
     const updatedIngredients = ingredients.filter(
-      (item) => item !== ingredient,
+      (item) => item !== ingredient
     );
     setIngredients(updatedIngredients);
   };
 
   console.log({ selectedIngredients });
 
+  console.log(recepty);
   return (
     <>
       <Box pt={"16px"} pb={"12px"} mx={"calc(3% + 16px)"} w={"1000px"}>
+        {products.map((product) => (
+          <div key={product}>{product}</div>
+        ))}
+        <Button onClick={() => addProducts(5)}>Add product</Button>
         <BreadcrumbNav />
         <Flex
           flexDir={"row"}

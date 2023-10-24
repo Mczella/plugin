@@ -1,5 +1,5 @@
 import { Button, Flex, Grid, GridItem, Image, Text } from "@chakra-ui/react";
-import { items } from "./Rohlik.tsx";
+// import { items } from "./Rohlik.tsx";
 import Add from "./Add.tsx";
 
 const Recipes = () => {
