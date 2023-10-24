@@ -1,7 +1,6 @@
 import {
   Button,
   FormControl,
-  Input,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -19,7 +18,7 @@ import { fetchAll } from "./Fetch.ts";
 type Props = {
   isOpen: boolean;
   onClose: () => void;
-  ref: RefObject<HTMLInputElement>;
+  focusRef: RefObject<HTMLInputElement>;
 };
 
 interface Product {
@@ -42,7 +41,7 @@ interface Product {
   inStock: string;
 }
 
-const CreateRecipeModal: FC<Props> = ({ isOpen, onClose, ref }) => {
+const CreateRecipeModal: FC<Props> = ({ isOpen, onClose, focusRef }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showInput, setShowInput] = useState<boolean>(false);
   const { data, isError } = useQuery(["data", searchQuery], () =>
@@ -61,7 +60,7 @@ const CreateRecipeModal: FC<Props> = ({ isOpen, onClose, ref }) => {
     return <div>Error</div>;
   }
   return (
-    <Modal initialFocusRef={ref} isOpen={isOpen} onClose={onClose}>
+    <Modal initialFocusRef={focusRef} isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
@@ -91,8 +90,7 @@ const CreateRecipeModal: FC<Props> = ({ isOpen, onClose, ref }) => {
             </>
           ) : (
             <FormControl isRequired>
-              {/*add autocomplete to suggest ingredients I already created*/}
-              <Input ref={ref} placeholder="Název ingredience" />
+              {/*<Input ref={ref} placeholder="Název ingredience" />*/}
             </FormControl>
           )}
         </ModalBody>

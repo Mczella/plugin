@@ -67,7 +67,11 @@ const Add: FC<Props> = ({ text, type }) => {
           {text}
         </Text>
       </Box>
-      <CreateRecipeModal ref={cancelRef} onClose={onClose} isOpen={isOpen} />
+      <CreateRecipeModal
+        focusRef={cancelRef}
+        onClose={onClose}
+        isOpen={isOpen}
+      />
     </Flex>
   );
 };
