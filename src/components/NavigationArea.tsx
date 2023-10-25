@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ShadowDom } from "./ShadowDom.tsx";
 import { ButtonComponent } from "./ButtonComponent.tsx";
 
@@ -6,12 +6,6 @@ const NavigationArea = () => {
   const [parentElement] = useState(() =>
     document.querySelector(".sectionsItem"),
   );
-
-  const location = window.location.hash;
-
-  useEffect(() => {
-    console.log(location);
-  }, [location]);
 
   return parentElement ? (
     <ShadowDom parentElement={parentElement}>
