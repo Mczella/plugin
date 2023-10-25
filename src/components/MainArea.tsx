@@ -2,27 +2,25 @@ import { useEffect, useState } from "react";
 import { ShadowDom } from "./ShadowDom.tsx";
 import CreateRecipe from "./CreateRecipe.tsx";
 import Recipes from "./Recipes.tsx";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import CheckRecipes from "./CheckRecipes.tsx";
 
 const MainArea = () => {
   const [parentElement] = useState(() =>
-    document.querySelector('[data-gtm-section="hp-topBanner"]'),
+    document.getElementById("pageFullWidth"),
   );
+  const location = useLocation();
+  console.log(location);
 
   useEffect(() => {
-    const bannerSpace = document.querySelector(
-      '[data-gtm-section="hp-topBanner"]',
-    );
-    const banner3 = document.querySelector('[data-gtm-section="hp-banners"]');
-    if (bannerSpace) {
-      bannerSpace.remove();
-    }
+    if (location.pathname !== "/") {
+      const page = document.getElementById("pageFullWidth");
 
-    if (banner3) {
-      banner3?.remove();
+      if (page) {
+        page.innerHTML = "";
+      }
     }
-  }, []);
+  }, [location]);
 
   return parentElement ? (
     <ShadowDom parentElement={parentElement}>
