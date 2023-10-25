@@ -7,20 +7,20 @@ import CheckRecipes from "./CheckRecipes.tsx";
 
 const MainArea = () => {
   const [parentElement] = useState(() =>
-    document.getElementById("pageFullWidth"),
+    document.querySelector(".sc-e03dc118-1.kvCJfT"),
   );
+
   const location = useLocation();
-  console.log(location);
 
   useEffect(() => {
     if (location.pathname !== "/") {
-      const page = document.getElementById("pageFullWidth");
+      const page = document.querySelector(".sc-e03dc118-1.kvCJfT");
 
       if (page) {
         page.innerHTML = "";
       }
     }
-  }, [location]);
+  }, [location.pathname]);
 
   return parentElement ? (
     <ShadowDom parentElement={parentElement}>
