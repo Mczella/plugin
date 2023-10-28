@@ -2,37 +2,18 @@ import { Box, Flex, IconButton, Image, Input, Text } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import { Dispatch, FC, SetStateAction, useState } from "react";
 import { useOutsideClick } from "./useOutsideClick.ts";
-
-interface Product {
-  id: string;
-  name: string;
-  price: {
-    amount: number;
-    currency: string;
-  };
-  unit: string;
-  textualAmount: string;
-  badges: string;
-  image: string;
-  pricePerUnit: {
-    amount: number;
-    currency: string;
-  };
-  sales: string;
-  packageInfo: string;
-  inStock: string;
-}
+import { Product } from "./types.ts";
 
 interface Props {
   searchQuery: string;
   setSearchQuery: Dispatch<SetStateAction<string>>;
   productIds: string[];
   productsByIds: { [p: string]: Product };
-  setSelectedProducts: Dispatch<SetStateAction<{ [key: string]: Product[] }>>;
-  selectedProducts: { [key: string]: Product[] };
+  setSelectedProducts: Dispatch<SetStateAction<Product[]>>;
+  selectedProducts: Product[];
 }
 
-const CreateRecipeInput: FC<Props> = ({
+const CreateIngredientInput: FC<Props> = ({
   searchQuery,
   setSearchQuery,
   productsByIds,
@@ -51,12 +32,11 @@ const CreateRecipeInput: FC<Props> = ({
   });
 
   const handleAddToRecipe = (product: Product) => {
-    // remove from suggestions
-    setSelectedProducts((prevState) => ({
-      [searchQuery]: [...(prevState[searchQuery] || []), product],
-    }));
+    const productWithPreferred = { ...product, preferred: false };
+    setSelectedProducts((prevState) => [...prevState, productWithPreferred]);
     console.log(selectedProducts);
   };
+
   console.log(isDropdownOpen);
 
   return (
@@ -191,4 +171,4 @@ const CreateRecipeInput: FC<Props> = ({
   );
 };
 
-export default CreateRecipeInput;
+export default CreateIngredientInput;
