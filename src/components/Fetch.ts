@@ -88,6 +88,7 @@ export const fetchAll = async (query: string) => {
     productIds.map((id: number, index: number) => [
       id,
       {
+        id: products[index].id,
         name: products[index].name,
         unit: products[index].unit,
         textualAmount: products[index].textualAmount,
