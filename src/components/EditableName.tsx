@@ -9,8 +9,13 @@ import {
   useEditableControls,
 } from "@chakra-ui/react";
 import { CheckIcon, CloseIcon, EditIcon } from "@chakra-ui/icons";
+import { FC } from "react";
+import { ControllerRenderProps, FieldValues } from "react-hook-form";
 
-const EditableName = () => {
+type Props = {
+  field: ControllerRenderProps<FieldValues, "name">;
+};
+const EditableName: FC<Props> = ({ field }) => {
   const EditableControls = () => {
     const {
       isEditing,
@@ -26,9 +31,12 @@ const EditableName = () => {
           icon={<CheckIcon />}
           {...getSubmitButtonProps()}
         />
+
+        {/*fix resetting old value on cancel*/}
         <IconButton
           aria-label={"Cancel"}
           icon={<CloseIcon />}
+          // onClick={() => setNewValue(recipeName)}
           {...getCancelButtonProps()}
         />
       </ButtonGroup>
@@ -47,9 +55,8 @@ const EditableName = () => {
 
   return (
     <Editable
-      placeholder="Název receptu"
-      startWithEditView={true}
-      submitOnBlur={true}
+      value={field.value}
+      submitOnBlur={false}
       mr={"12px"}
       fontSize={"36px"}
       fontWeight={"900"}
@@ -71,6 +78,7 @@ const EditableName = () => {
           outline={"none"}
           border={"1px solid rgb(132, 140, 145)"}
           mr={"8px"}
+          {...field}
         />
         <EditableControls />
       </Flex>
