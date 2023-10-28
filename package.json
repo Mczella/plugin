@@ -19,10 +19,13 @@
     "framer-motion": "^10.16.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "v6"
+    "react-hook-form": "^7.47.0",
+    "react-router-dom": "v6",
+    "zustand": "^4.4.4"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^1.0.14",
+    "@types/chrome": "^0.0.248",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
