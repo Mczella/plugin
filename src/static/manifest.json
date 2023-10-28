@@ -3,13 +3,12 @@
   "name": "Rohlik extension",
   "version": "1.0.0",
   "action": { "default_popup": "index.html" },
-  "permissions": [
-    "storage"
-  ],
+  "permissions": ["storage"],
   "content_scripts": [
     {
       "matches": ["https://www.rohlik.cz/*"],
-      "js": ["src/content/rohlik.tsx"]
+      "js": ["src/content/rohlik.tsx"],
+      "run_at": "document_idle"
     }
   ]
 }
