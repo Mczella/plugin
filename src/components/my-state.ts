@@ -3,7 +3,7 @@ import { NewIngredient, NewRecipe } from "./types.ts";
 
 export interface MyIngredientsState {
   ingredients: NewIngredient[];
-  addIngredient: (newIngredient: NewIngredient) => void;
+  addIngredient: (ingredient: NewIngredient) => void;
 }
 
 export interface MyRecipesState {
@@ -18,9 +18,9 @@ export const createIngredientsSlice: StateCreator<
   MyIngredientsState
 > = (set) => ({
   ingredients: [],
-  addIngredient: (newIngredient: NewIngredient) => {
+  addIngredient: (ingredient: NewIngredient) => {
     set((state) => ({
-      ingredients: [...state.ingredients, newIngredient],
+      ingredients: [...state.ingredients, ingredient],
     }));
   },
 });
