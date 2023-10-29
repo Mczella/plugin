@@ -23,7 +23,7 @@ import {
 import CreateIngredientInput from "./CreateIngredientInput.tsx";
 import ChosenProducts from "./ChosenProducts.tsx";
 import { useQuery } from "@tanstack/react-query";
-import { fetchAll } from "./Fetch.ts";
+import { fetchAll } from "./Api.ts";
 import {
   AutoComplete,
   AutoCompleteCreatable,
@@ -32,7 +32,7 @@ import {
   AutoCompleteList,
 } from "@choc-ui/chakra-autocomplete";
 import { useBytesInUse, useMyStore, usePurgeStorage } from "./store.tsx";
-import { NewIngredient, Product } from "./types.ts";
+import { SimpleIngredient, NewIngredient, Product } from "./types.ts";
 
 type Props = {
   isOpen: boolean;
@@ -91,14 +91,22 @@ const CreateIngredientModal: FC<Props> = ({
 
   const handleSave = () => {
     if (name != null && selectedProducts.length > 0) {
+      const updatedSelectedProducts: SimpleIngredient[] = selectedProducts.map(
+        (product) => {
+          const { id, preferred } = product;
+          return { id, preferred };
+        },
+      );
       const newIngredient: NewIngredient = {
         name: name,
-        selectedProducts: selectedProducts,
+        selectedProducts: updatedSelectedProducts,
+        id: Date.now().toString(36),
       };
       addIngredient(newIngredient);
       handleIngredientClick(newIngredient);
       setShowInput(false);
       setSelectedProducts([]);
+      setSearchQuery("");
       setName(null);
       onClose();
     } else if (name != null && selectedProducts.length === 0) {
@@ -154,10 +162,10 @@ const CreateIngredientModal: FC<Props> = ({
                   boxShadow={"md"}
                   bg={"white"}
                 >
-                  {currentIngredients.map((ingredient, id) => (
+                  {currentIngredients.map((ingredient) => (
                     <AutoCompleteItem
                       _hover={{ bg: "gray.100" }}
-                      key={`option-${id}`}
+                      key={ingredient.id}
                       value={ingredient.name}
                       textTransform="capitalize"
                       onClick={() => {
