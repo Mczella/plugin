@@ -11,15 +11,34 @@ import {
 import { FC } from "react";
 import { NewIngredient } from "./types.ts";
 import { SmallCloseIcon } from "@chakra-ui/icons";
+import { useQuery } from "@tanstack/react-query";
+import { fetchProducts } from "./Api.ts";
 
 type Props = {
   ingredient: NewIngredient;
 };
 
+type SimpleProduct = {
+  id: number;
+  name: string;
+  images: string[];
+  unit: string;
+  textualAmount: string;
+  mainCategoryId: number;
+};
+
 const Ingredient: FC<Props> = ({ ingredient }) => {
   const threeProducts = ingredient.selectedProducts.slice(0, 3);
   const restOfProducts = ingredient.selectedProducts.length - 3;
-  console.log({ ingredient });
+  const ArrayOfProductIds = threeProducts.map((product) => product.id);
+  const { data, isError } = useQuery(["data", ArrayOfProductIds], () =>
+    fetchProducts(ArrayOfProductIds),
+  );
+
+  if (isError) {
+    return <div>Error.</div>;
+  }
+
   return (
     <Flex flexDir={"column"}>
       <Flex
@@ -48,17 +67,23 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
           columns={ingredient.selectedProducts.length > 1 ? 2 : 1}
           spacing={"4px"}
         >
-          {threeProducts.map((product) => (
-            <Box
-              w={"60px"}
-              h={"60px"}
-              display={"flex"}
-              justifyContent={"center"}
-              alignItems={"center"}
-            >
-              <Image src={product.image} objectFit={"contain"} h={"55px"} />
-            </Box>
-          ))}
+          {data &&
+            data.map((product: SimpleProduct) => (
+              <Box
+                w={"60px"}
+                h={"60px"}
+                display={"flex"}
+                justifyContent={"center"}
+                alignItems={"center"}
+                key={product.id}
+              >
+                <Image
+                  src={product.images[0]}
+                  objectFit={"contain"}
+                  h={"55px"}
+                />
+              </Box>
+            ))}
           {restOfProducts > 0 && (
             <Box
               w={"60px"}
