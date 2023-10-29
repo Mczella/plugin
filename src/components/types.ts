@@ -19,9 +19,15 @@ export interface Product {
   inStock: string;
 }
 
+export type SimpleIngredient = {
+  id: string;
+  preferred?: boolean;
+};
+
 export type NewIngredient = {
   name: string;
-  selectedProducts: Product[];
+  selectedProducts: SimpleIngredient[];
+  id: string;
 };
 
 export type NewRecipe = {
@@ -29,5 +35,6 @@ export type NewRecipe = {
   portion: number;
   description?: string;
   image?: string;
-  ingredients: NewIngredient[];
+  ingredients: string[];
+  id: string;
 };
