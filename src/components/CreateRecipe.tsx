@@ -61,9 +61,14 @@ const CreateRecipe = () => {
 
   const onSubmit = (data: any) => {
     if (selectedIngredients.length > 0) {
+      const updatedSelectedIngredients: string[] = selectedIngredients.map(
+        (ingredient) => ingredient.id,
+      );
+
       const updatedData = {
         ...data,
-        ingredients: selectedIngredients,
+        ingredients: updatedSelectedIngredients,
+        id: Date.now().toString(36),
       };
       addRecipe(updatedData);
       navigate("/recepty");
