@@ -83,6 +83,7 @@ const CreateRecipe = () => {
     }
   }, [selectedIngredients]);
 
+  console.log("Selected", selectedIngredients);
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Box pt={"16px"} pb={"12px"} mx={"calc(3% + 16px)"} w={"1000px"}>
@@ -174,7 +175,7 @@ const CreateRecipe = () => {
               />
             </FormControl>
 
-            <FormControl isInvalid={errors.portion}>
+            <FormControl isInvalid={!!errors.portion}>
               <NumberInput min={1} max={16} width={"600px"} height={"40px"}>
                 <NumberInputField
                   {...register("portion", {
