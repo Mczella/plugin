@@ -10,8 +10,10 @@ import { StateStorage, persist, createJSONStorage } from "zustand/middleware";
 import {
   // MyState,
   createIngredientsSlice,
+  createRecipesInCartSlice,
   createRecipesSlice,
   MyIngredientsState,
+  MyRecipesInCartState,
   MyRecipesState,
 } from "./my-state";
 
@@ -34,11 +36,14 @@ const storage: StateStorage = {
 
 // type State = MyState;
 
-export const store = createStore<MyIngredientsState & MyRecipesState>()(
+export const store = createStore<
+  MyIngredientsState & MyRecipesState & MyRecipesInCartState
+>()(
   persist(
     (...a) => ({
       ...createIngredientsSlice(...a),
       ...createRecipesSlice(...a),
+      ...createRecipesInCartSlice(...a),
     }),
     {
       name: "rohlik-storage",
@@ -84,7 +89,7 @@ export function useBytesInUse() {
 export function usePurgeStorage() {
   return useCallback(() => {
     store.persist.clearStorage();
-    store.setState({ ingredients: [] });
+    store.setState({ ingredients: [], recipes: [], recipesInCart: [] });
   }, []);
 }
 
