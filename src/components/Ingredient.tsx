@@ -64,6 +64,8 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
           _hover={{ color: "rgb(87, 130, 4)" }}
         />
         <SimpleGrid
+          height={"100%"}
+          alignItems={"center"}
           columns={ingredient.selectedProducts.length > 1 ? 2 : 1}
           spacing={"4px"}
         >
