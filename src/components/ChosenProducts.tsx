@@ -35,7 +35,7 @@ const ChosenProducts: FC<Props> = ({
           />
           <Text>{product.name}</Text>
           <Text>
-            {product.price.amount} {product.price.currency}
+            {product.price?.amount} {product.price?.currency}
           </Text>
           <Button
             mt="10px"
