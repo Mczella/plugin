@@ -108,5 +108,37 @@ export const fetchAll = async (query: string) => {
   return { productsByIds, productIds };
 };
 
+export const fetchPriceAndStock = async (ingredientIds: {
+  [key: string]: string[];
+}) => {
+  const promises = Object.entries(ingredientIds).map(
+    async ([storeId, productIds]) => {
+      const [prices, stock] = await Promise.all([
+        fetchPrices(productIds),
+        fetchStock(productIds),
+      ]);
+
+      const productsForStoreId = productIds.map((productId, index) => ({
+        id: productId,
+        price: prices[index].price,
+        pricePerUnit: prices[index].pricePerUnit,
+        sales: prices[index].sales,
+        packageInfo: stock[index].packageInfo,
+        inStock: stock[index].inStock,
+      }));
+
+      return {
+        [storeId]: productsForStoreId,
+      };
+    },
+  );
+
+  const productsByStoreId = await Promise.all(promises);
+
+  const mergedProducts = Object.assign({}, ...productsByStoreId);
+
+  return { productsByStoreId: mergedProducts, ingredientIds };
+};
+
 // Nutricni hodnoty
 // https://www.rohlik.cz/api/v1/products/1317317/composition
