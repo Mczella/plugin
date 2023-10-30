@@ -88,14 +88,14 @@ const RecipeComponent: React.FC<Props> = ({ recipe }) => {
         alt="panda"
         width="100%"
       />
-      <Text height="3em" isTruncated>
+      <Text height="3em" isTruncated casing={"capitalize"}>
         {recipe.name}
       </Text>
       <Text fontSize="24px" fontWeight="bold" lineHeight="1.4">
-        {totalPrice === 0 ? "Vyprodáno" : `${totalPrice} Kč`}
+        {totalPrice === 0 ? "Vyprodáno" : `${Math.ceil(totalPrice)} Kč`}
       </Text>
       <Text fontSize="12px" lineHeight={1.4}>
-        {`${pricePerPortion} Kč/porce`}
+        {`${Math.ceil(pricePerPortion)} Kč/porce`}
       </Text>
       {recipesInCart.includes(recipe.id) ? (
         <AddIcon />
