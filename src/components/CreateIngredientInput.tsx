@@ -141,7 +141,7 @@ const CreateIngredientInput: FC<Props> = ({
                             fontWeight={600}
                             lineHeight={"22px"}
                           >
-                            {product.price.amount} {product.price.currency}
+                            {product.price?.amount} {product.price?.currency}
                           </Text>
                         </Flex>
                       </Flex>
