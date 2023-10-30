@@ -11,6 +11,11 @@ export interface MyRecipesState {
   addRecipe: (newRecipe: NewRecipe) => void;
 }
 
+export interface MyRecipesInCartState {
+  recipesInCart: string[];
+  addRecipeToCart: (recipe: string) => void;
+}
+
 export const createIngredientsSlice: StateCreator<
   MyIngredientsState,
   [],
@@ -35,6 +40,20 @@ export const createRecipesSlice: StateCreator<
   addRecipe: (newRecipe: NewRecipe) => {
     set((state) => ({
       recipes: [...state.recipes, newRecipe],
+    }));
+  },
+});
+
+export const createRecipesInCartSlice: StateCreator<
+  MyRecipesInCartState,
+  [],
+  [],
+  MyRecipesInCartState
+> = (set) => ({
+  recipesInCart: [],
+  addRecipeToCart: (recipe: string) => {
+    set((state) => ({
+      recipesInCart: [...state.recipesInCart, recipe],
     }));
   },
 });
