@@ -1,22 +1,22 @@
 export interface Product {
-  id: string;
-  name: string;
-  price: {
+  id: string | number;
+  name?: string;
+  price?: {
     amount: number;
     currency: string;
   };
-  unit: string;
-  textualAmount: string;
-  badges: string;
-  image: string;
+  unit?: string;
+  textualAmount?: string;
+  badges?: string;
+  image?: string;
   preferred?: boolean;
-  pricePerUnit: {
+  pricePerUnit?: {
     amount: number;
     currency: string;
   };
-  sales: string;
-  packageInfo: string;
-  inStock: string;
+  sales?: string;
+  packageInfo?: string;
+  inStock?: string;
 }
 
 export type SimpleIngredient = {
