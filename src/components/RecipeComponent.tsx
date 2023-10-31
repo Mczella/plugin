@@ -1,79 +1,22 @@
-import React, { useEffect, useState } from "react";
 import { Button, GridItem, Image, Text } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import { useMyStore } from "./store";
 import { NewRecipe } from "./types";
-import { useGetIngredientIds } from "./UseGetIngredientsIds.tsx";
+import { useGetIngredientIds } from "./useGetIngredientsIds.tsx";
 import { useGetRecipePrice } from "./useGetRecipePrice.tsx";
 
 type Props = {
   recipe: NewRecipe;
 };
 
-type Product = {
-  id: number;
-  preferred?: boolean | undefined;
-  price: {
-    amount: number;
-  };
-  inStock: boolean;
-};
-
-type IngredientData = null | {
-  productsByStoreId: {
-    [storeId: string]: Product[];
-  };
-  ingredientIds: {
-    [storeId: string]: string[];
-  };
-};
-
 const RecipeComponent: React.FC<Props> = ({ recipe }) => {
-  const { recipesInCart, ingredients, addRecipeToCart } = useMyStore();
-  const [ingredientData, setIngredientData] = useState<IngredientData | null>(
-    null,
-  );
-  const data = useGetIngredientIds(recipe);
+  const { recipesInCart, addRecipeToCart } = useMyStore();
+  const ingredientData = useGetIngredientIds(recipe);
   const { totalPrice, productIds } = useGetRecipePrice(ingredientData, recipe);
   const pricePerPortion = totalPrice / recipe.portion;
 
   console.log(recipe.name, totalPrice, productIds);
   console.log(recipe.name);
-
-  useEffect(() => {
-    if (data !== undefined) {
-      const updatedIngredientData = { ...data };
-      console.log(updatedIngredientData);
-
-      let selectedProductPreferences: {
-        [key: string]: { [key: string]: boolean | undefined };
-      } = {};
-
-      ingredients.forEach((ingredientItem) => {
-        let productPreferences: { [key: string]: boolean | undefined } = {};
-
-        ingredientItem.selectedProducts.forEach((product) => {
-          productPreferences[product.id] = product.preferred;
-        });
-
-        selectedProductPreferences[ingredientItem.id] = productPreferences;
-
-        Object.keys(data.productsByStoreId).forEach((storeId) => {
-          if (storeId === ingredientItem.id) {
-            data.productsByStoreId[storeId] = data.productsByStoreId[
-              storeId
-            ].map((product: { id: string }) => ({
-              ...product,
-              preferred:
-                selectedProductPreferences[storeId][product.id] || false,
-            }));
-          }
-        });
-      });
-
-      setIngredientData(updatedIngredientData);
-    }
-  }, [data]);
 
   return (
     <GridItem
