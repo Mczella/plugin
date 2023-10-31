@@ -6,7 +6,7 @@ import { AddIcon, MinusIcon, SmallCloseIcon } from "@chakra-ui/icons";
 
 const CartArea = () => {
   const [parentElement] = useState(() =>
-    document.querySelector("#cartContent"),
+    document.querySelector("#cartContent")
   );
 
   return parentElement ? (

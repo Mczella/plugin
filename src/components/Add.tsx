@@ -1,16 +1,14 @@
-import { Box, Flex, Image, Text, useDisclosure } from "@chakra-ui/react";
-import { FC, useRef } from "react";
-import CreateRecipeModal from "./CreateRecipeModal.tsx";
+import { Box, Flex, Image, Text } from "@chakra-ui/react";
+import { FC } from "react";
 import { useNavigate } from "react-router-dom";
 
 type Props = {
   text: string;
   type: string;
+  onOpen?: () => void;
 };
 
-const Add: FC<Props> = ({ text, type }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const cancelRef = useRef<HTMLInputElement>(null);
+const Add: FC<Props> = ({ text, type, onOpen }) => {
   const navigate = useNavigate();
 
   return (
@@ -67,11 +65,6 @@ const Add: FC<Props> = ({ text, type }) => {
           {text}
         </Text>
       </Box>
-      <CreateRecipeModal
-        focusRef={cancelRef}
-        onClose={onClose}
-        isOpen={isOpen}
-      />
     </Flex>
   );
 };

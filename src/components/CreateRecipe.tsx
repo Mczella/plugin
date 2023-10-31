@@ -2,50 +2,90 @@ import {
   Box,
   Button,
   Flex,
-  FormControl,
   Grid,
   Heading,
   IconButton,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  Input,
+  Text,
   Textarea,
+  useDisclosure,
+  Image,
+  FormControl,
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import EditableName from "./EditableName.tsx";
 import BreadcrumbNav from "./BreadcrumbNav.tsx";
 import Add from "./Add.tsx";
-import {
-  AutoComplete,
-  AutoCompleteInput,
-  AutoCompleteItem,
-  AutoCompleteList,
-} from "@choc-ui/chakra-autocomplete";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
+import CreateIngredientModal from "./CreateIngredientModal.tsx";
 import Ingredient from "./Ingredient.tsx";
-import { useState } from "react";
-
-const initialIngredients = [
-  "cibule",
-  "kuřecí stehna",
-  "mleté hovězí",
-  "mleté vepřové",
-  "rýže",
-  "jasmínová rýže",
-];
+import { NewIngredient } from "./types.ts";
+import { useMyStore } from "./store.tsx";
+import { Controller, useForm } from "react-hook-form";
+import AddRecipeModal from "./AddRecipeModal.tsx";
+import { useNavigate } from "react-router-dom";
 
 const CreateRecipe = () => {
-  const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
-  const [ingredients, setIngredients] = useState<string[]>(initialIngredients);
+  const navigate = useNavigate();
+  const {
+    control,
+    handleSubmit,
+    register,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm();
 
-  const handleIngredientClick = (ingredient: string) => {
-    setSelectedIngredients([...selectedIngredients, ingredient]);
-    const updatedIngredients = ingredients.filter(
-      (item) => item !== ingredient,
-    );
-    setIngredients(updatedIngredients);
+  const [image, setImage] = useState("");
+  const [error, setError] = useState(false);
+  const [selectedIngredients, setSelectedIngredients] = useState<
+    NewIngredient[]
+  >([]);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const cancelRef = useRef<HTMLInputElement>(null);
+  const {
+    isOpen: isPopupOpen,
+    onOpen: onPopupOpen,
+    onClose: onPopupClose,
+  } = useDisclosure();
+  const focusRef = useRef<HTMLInputElement>(null);
+  const { addRecipe } = useMyStore();
+
+  useEffect(() => {
+    onPopupOpen();
+  }, []);
+
+  const onSubmit = (data: any) => {
+    if (selectedIngredients.length > 0) {
+      const updatedSelectedIngredients: string[] = selectedIngredients.map(
+        (ingredient) => ingredient.id,
+      );
+
+      const updatedData = {
+        ...data,
+        ingredients: updatedSelectedIngredients,
+        id: Date.now().toString(36),
+      };
+      addRecipe(updatedData);
+      navigate("/recepty");
+    } else if (selectedIngredients.length === 0) {
+      setError(true);
+    }
   };
 
-  console.log({ selectedIngredients });
+  useEffect(() => {
+    if (selectedIngredients.length > 0) {
+      setError(false);
+    }
+  }, [selectedIngredients]);
 
+  console.log("Selected", selectedIngredients);
   return (
-    <>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <Box pt={"16px"} pb={"12px"} mx={"calc(3% + 16px)"} w={"1000px"}>
         <BreadcrumbNav />
         <Flex
@@ -54,89 +94,156 @@ const CreateRecipe = () => {
           alignItems={"center"}
           mb={"32px"}
         >
-          <EditableName />
-          <Flex flexDir={"row"}>
-            <Button
-              mr={"8px"}
-              height={"40px"}
-              bg={"rgb(109, 163, 5)"}
-              fontSize={"14px"}
-              fontWeight={"600"}
-              rounded={"lg"}
-              boxShadow={"md"}
-              color={"white"}
-              _hover={{ bg: "rgb(87, 130, 4)" }}
-            >
-              Uložit recept
-            </Button>
-            <IconButton
-              aria-label="Select"
-              boxSize={"40px"}
-              _hover={{ border: "1px solid rgb(156, 164, 169)" }}
-              border={"1px solid rgb(218, 222, 224)"}
-              bg={"white"}
-              rounded={"2xl"}
-              icon={<HamburgerIcon boxSize={"18px"} />}
-            />
+          <Controller
+            name={"name"}
+            control={control}
+            rules={{
+              required: "Toto pole je povinné.",
+            }}
+            render={({ field }) => <EditableName field={field} />}
+          />
+          <Flex flexDir={"column"} gap={"10px"} alignItems={"end"}>
+            <Flex flexDir={"row"}>
+              <Button
+                mr={"8px"}
+                height={"40px"}
+                bg={"rgb(109, 163, 5)"}
+                fontSize={"14px"}
+                fontWeight={"600"}
+                rounded={"lg"}
+                boxShadow={"md"}
+                color={"white"}
+                _hover={{ bg: "rgb(87, 130, 4)" }}
+                type="submit"
+                isLoading={isSubmitting}
+              >
+                Uložit recept
+              </Button>
+              <IconButton
+                aria-label="Select"
+                boxSize={"40px"}
+                _hover={{ border: "1px solid rgb(156, 164, 169)" }}
+                border={"1px solid rgb(218, 222, 224)"}
+                bg={"white"}
+                rounded={"2xl"}
+                icon={<HamburgerIcon boxSize={"18px"} />}
+              />
+            </Flex>
+            {error && (
+              <Text fontSize="12px" color="red">
+                Vyberte alespoň jednu ingredienci.
+              </Text>
+            )}
           </Flex>
         </Flex>
       </Box>
       <Flex flexDir={"column"} mx={"calc(3% + 16px)"} gap={"32px"} w={"1000px"}>
-        <Textarea
-          placeholder={"Přidejte více informací k receptu a postup."}
-          width="-webkit-fill-available"
-          height={"80px"}
-          rounded={"xl"}
-          fontSize={"14px"}
-          bg={"white"}
-          color={"rgb(132, 140, 145)"}
-          outline={"none"}
-          border={"1px solid rgb(132, 140, 145)"}
-        />
-        <Heading>Ingredience</Heading>
-        {/*separate inputs for existing ingredients and creating new one or the option to create a new ingredient when searching for existing?*/}
-        <FormControl isRequired>
-          <AutoComplete openOnFocus multiple closeOnSelect>
-            <AutoCompleteInput
-              rounded={"xl"}
-              fontSize={"14px"}
-              bg={"white"}
-              color={"rgb(132, 140, 145)"}
-              outline={"none"}
-              // border={"1px solid rgb(132, 140, 145)"}
-              // py={"10px"}
-              placeholder="Vyberte z vašich ingrediencí..."
+        <Flex flexDir={"row"} justifyContent={"space-between"}>
+          <Flex flexDir={"column"} gap={"32px"}>
+            <FormControl>
+              <Input
+                id={"image"}
+                {...register("image")}
+                onBlur={(e: ChangeEvent<HTMLInputElement>) =>
+                  setImage(e.target.value)
+                }
+                width={"600px"}
+                height={"40px"}
+                rounded={"xl"}
+                fontSize={"14px"}
+                bg={"white"}
+                color={"rgb(132, 140, 145)"}
+                outline={"none"}
+                border={"1px solid rgb(132, 140, 145)"}
+                placeholder={"Vložte odkaz na obrázek"}
+              />
+            </FormControl>
+
+            <FormControl>
+              <Textarea
+                id={"description"}
+                {...register("description")}
+                placeholder={"Přidejte více informací k receptu a postup."}
+                width={"600px"}
+                height={"80px"}
+                rounded={"xl"}
+                fontSize={"14px"}
+                bg={"white"}
+                color={"rgb(132, 140, 145)"}
+                outline={"none"}
+                border={"1px solid rgb(132, 140, 145)"}
+              />
+            </FormControl>
+
+            <FormControl isInvalid={!!errors.portion}>
+              <NumberInput min={1} max={16} width={"600px"} height={"40px"}>
+                <NumberInputField
+                  {...register("portion", {
+                    required: "Zadejte porci",
+                  })}
+                  id={"portion"}
+                  placeholder={"Zadejte počet porcí"}
+                  type={"number"}
+                  height={"40px"}
+                  rounded={"xl"}
+                  fontSize={"14px"}
+                  bg={"white"}
+                  color={"rgb(132, 140, 145)"}
+                  outline={"none"}
+                  border={"1px solid rgb(132, 140, 145)"}
+                />
+                <NumberInputStepper>
+                  <NumberIncrementStepper />
+                  <NumberDecrementStepper />
+                </NumberInputStepper>
+              </NumberInput>
+              {errors.portion && (
+                <Text fontSize="12px" color="red" mt={"10px"}>
+                  {errors.portion.message as string}
+                </Text>
+              )}
+            </FormControl>
+          </Flex>
+          <Box pl={"30px"}>
+            <Image
+              h={"220px"}
+              borderRadius={"xl"}
+              src={image}
+              fallbackSrc={
+                "https://icon-library.com/images/placeholder-image-icon/placeholder-image-icon-7.jpg"
+              }
             />
-            <AutoCompleteList
-              border={"1px solid rgb(218, 222, 224)"}
-              rounded={"lg"}
-              boxShadow={"md"}
-              bg={"white"}
-            >
-              {ingredients.map((ingredient, id) => (
-                <AutoCompleteItem
-                  _hover={{ bg: "gray.100" }}
-                  key={`option-${id}`}
-                  value={ingredient}
-                  textTransform="capitalize"
-                  onClick={() => handleIngredientClick(ingredient)}
-                >
-                  {ingredient}
-                </AutoCompleteItem>
-              ))}
-            </AutoCompleteList>
-          </AutoComplete>
-        </FormControl>
-        <Grid templateColumns="repeat(5, 1fr)" gap={4}>
-          <Add text={"Vytvořit novou ingredienci"} type={"ingredience"} />
+          </Box>
+        </Flex>
+
+        <Heading>Ingredience</Heading>
+        <Grid templateColumns="repeat(6, 1fr)" gap={"19px"}>
+          <Add
+            text={"Přidat ingredienci"}
+            type={"ingredience"}
+            onOpen={onOpen}
+          />
           {selectedIngredients.map((selectedIngredient) => (
-            <Box key={selectedIngredient}>
-              <Ingredient />
+            <Box key={selectedIngredient.name}>
+              <Ingredient ingredient={selectedIngredient} />
             </Box>
           ))}
         </Grid>
       </Flex>
-    </>
+      <CreateIngredientModal
+        focusRef={cancelRef}
+        onClose={onClose}
+        isOpen={isOpen}
+        selectedIngredients={selectedIngredients}
+        setSelectedIngredients={setSelectedIngredients}
+      />
+      <AddRecipeModal
+        isOpen={isPopupOpen}
+        onClose={onPopupClose}
+        focusRef={focusRef}
+        reset={reset}
+      />
+    </form>
   );
 };
 

@@ -78,6 +78,8 @@ export const fetchPrices = async (productIds: string[]) => {
 export const fetchAll = async (query: string) => {
   const productIds = await fetchData(query);
 
+  console.log(productIds);
+
   const [products, prices, stock] = await Promise.all([
     fetchProducts(productIds),
     fetchPrices(productIds),
@@ -88,6 +90,7 @@ export const fetchAll = async (query: string) => {
     productIds.map((id: number, index: number) => [
       id,
       {
+        id: products[index].id,
         name: products[index].name,
         unit: products[index].unit,
         textualAmount: products[index].textualAmount,
@@ -103,6 +106,38 @@ export const fetchAll = async (query: string) => {
   );
 
   return { productsByIds, productIds };
+};
+
+export const fetchPriceAndStock = async (ingredientIds: {
+  [key: string]: string[];
+}) => {
+  const promises = Object.entries(ingredientIds).map(
+    async ([storeId, productIds]) => {
+      const [prices, stock] = await Promise.all([
+        fetchPrices(productIds),
+        fetchStock(productIds),
+      ]);
+
+      const productsForStoreId = productIds.map((productId, index) => ({
+        id: productId,
+        price: prices[index].price,
+        pricePerUnit: prices[index].pricePerUnit,
+        sales: prices[index].sales,
+        packageInfo: stock[index].packageInfo,
+        inStock: stock[index].inStock,
+      }));
+
+      return {
+        [storeId]: productsForStoreId,
+      };
+    },
+  );
+
+  const productsByStoreId = await Promise.all(promises);
+
+  const mergedProducts = Object.assign({}, ...productsByStoreId);
+
+  return { productsByStoreId: mergedProducts, ingredientIds };
 };
 
 // Nutricni hodnoty
