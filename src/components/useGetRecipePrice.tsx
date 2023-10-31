@@ -18,9 +18,13 @@ type IngredientData = null | {
   };
 };
 
+export function testMe(number: number) {
+  return number + 1;
+}
+
 export const useGetRecipePrice = (
   ingredientData: IngredientData,
-  recipe: NewRecipe,
+  recipe: NewRecipe
 ) => {
   let totalPrice = 0;
   const productIds: number[] = [];
@@ -32,10 +36,10 @@ export const useGetRecipePrice = (
 
         if (ingredientProducts && ingredientProducts.length > 0) {
           const preferredProducts = ingredientProducts.filter(
-            (product) => product.preferred,
+            (product) => product.preferred
           );
           const inStockProducts = ingredientProducts.filter(
-            (product) => product.inStock,
+            (product) => product.inStock
           );
 
           let selectedProduct: Product | undefined;
@@ -45,14 +49,14 @@ export const useGetRecipePrice = (
             preferredProducts.some((product) => product.inStock)
           ) {
             selectedProduct = preferredProducts.find(
-              (product) => product.inStock,
+              (product) => product.inStock
             );
           } else if (inStockProducts.length > 0) {
             selectedProduct = inStockProducts.reduce(
               (minPriceProduct, product) =>
                 product.price.amount < minPriceProduct.price.amount
                   ? product
-                  : minPriceProduct,
+                  : minPriceProduct
             );
           }
 
