@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { ShadowDom } from "./ShadowDom.tsx";
-import CreateRecipe from "./CreateRecipe.tsx";
-import Recipes from "./Recipes.tsx";
+import CreateRecipe from "./recipes/CreateRecipe.tsx";
+import Recipes from "./recipes/Recipes.tsx";
 import { Route, Routes } from "react-router-dom";
-import CheckRecipes from "./CheckRecipes.tsx";
+import CheckRecipes from "./cart/CheckRecipes.tsx";
 
 const MainArea = () => {
   const [parentElement] = useState(() =>
@@ -13,7 +13,7 @@ const MainArea = () => {
   return parentElement ? (
     <ShadowDom parentElement={parentElement}>
       <Routes>
-        <Route path="/pridat-recept" element={<CreateRecipe />} />
+        <Route path="/pridat-recept/:id" element={<CreateRecipe />} />
         <Route path="/recepty" element={<Recipes />} />
         <Route path="/prehled-receptu" element={<CheckRecipes />} />
       </Routes>
