@@ -8,18 +8,20 @@ import {
   SimpleGrid,
   Text,
 } from "@chakra-ui/react";
-import { FC } from "react";
-import { NewIngredient } from "./types.ts";
+import { Dispatch, FC, SetStateAction } from "react";
+import { NewIngredient } from "../types.ts";
 import { SmallCloseIcon } from "@chakra-ui/icons";
 import { useQuery } from "@tanstack/react-query";
-import { fetchProducts } from "./Api.ts";
+import { fetchProducts } from "../api/api.ts";
 
 type Props = {
   ingredient: NewIngredient;
+  setSelectedIngredients: Dispatch<SetStateAction<NewIngredient[]>>;
+  selectedIngredients: NewIngredient[];
 };
 
 type SimpleProduct = {
-  id: number;
+  id: string;
   name: string;
   images: string[];
   unit: string;
@@ -27,7 +29,11 @@ type SimpleProduct = {
   mainCategoryId: number;
 };
 
-const Ingredient: FC<Props> = ({ ingredient }) => {
+const Ingredient: FC<Props> = ({
+  ingredient,
+  setSelectedIngredients,
+  selectedIngredients,
+}) => {
   const threeProducts = ingredient.selectedProducts.slice(0, 3);
   const restOfProducts = ingredient.selectedProducts.length - 3;
   const ArrayOfProductIds = threeProducts.map((product) => product.id);
@@ -38,6 +44,13 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
   if (isError) {
     return <div>Error.</div>;
   }
+
+  const handleDelete = (ingredientId: string) => {
+    const updatedIngredients = selectedIngredients.filter(
+      (ingredient) => ingredient.id !== ingredientId,
+    );
+    setSelectedIngredients(updatedIngredients);
+  };
 
   return (
     <Flex flexDir={"column"}>
@@ -62,6 +75,7 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
           top={"5px"}
           color={"rgb(218, 222, 224)"}
           _hover={{ color: "rgb(87, 130, 4)" }}
+          onClick={() => handleDelete(ingredient.id)}
         />
         <SimpleGrid
           height={"100%"}
