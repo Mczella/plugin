@@ -1,16 +1,14 @@
 import { Box, Flex, Image, Text } from "@chakra-ui/react";
 import { FC } from "react";
-import { useNavigate } from "react-router-dom";
 
 type Props = {
   text: string;
   type: string;
   onOpen?: () => void;
+  onPopupOpen?: () => void;
 };
 
-const Add: FC<Props> = ({ text, type, onOpen }) => {
-  const navigate = useNavigate();
-
+const Add: FC<Props> = ({ text, type, onOpen, onPopupOpen }) => {
   return (
     <Flex
       flexDir={"column"}
@@ -24,9 +22,7 @@ const Add: FC<Props> = ({ text, type, onOpen }) => {
       h={"144px"}
       justifyContent={"center"}
       mb={"8px"}
-      onClick={
-        type === "ingredience" ? onOpen : () => navigate("/pridat-recept")
-      }
+      onClick={type === "ingredience" ? onOpen : onPopupOpen}
     >
       <Box
         bg={"white"}
