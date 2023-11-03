@@ -1,7 +1,7 @@
 export interface Product {
   id: string;
   name?: string;
-  price?: {
+  price: {
     amount: number;
     currency: string;
   };
@@ -14,10 +14,42 @@ export interface Product {
     amount: number;
     currency: string;
   };
-  sales?: string;
+  sales: Sales | [];
   packageInfo?: string;
   inStock?: boolean;
 }
+
+export type Sales = {
+  price: {
+    amount: number;
+    currency: string;
+  };
+  originalPrice: {
+    amount: number;
+    currency: string;
+  };
+  pricePerUnit: {
+    amount: number;
+    currency: string;
+  };
+  triggerAmount: number;
+  badges: {
+    description: {
+      icon: string;
+      text: string;
+    };
+    title: string;
+  }[];
+}[];
+
+export type IngredientData = null | {
+  productsByStoreId: {
+    [storeId: string]: Product[];
+  };
+  ingredientIds: {
+    [storeId: string]: string[];
+  };
+};
 
 export type SimpleIngredient = {
   id: string;
