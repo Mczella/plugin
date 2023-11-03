@@ -87,7 +87,7 @@ export const fetchAll = async (query: string) => {
   ]);
 
   const productsByIds = Object.fromEntries(
-    productIds.map((id: number, index: number) => [
+    productIds.map((id: string, index: number) => [
       id,
       {
         id: products[index].id,
@@ -113,9 +113,10 @@ export const fetchPriceAndStock = async (ingredientIds: {
 }) => {
   const promises = Object.entries(ingredientIds).map(
     async ([storeId, productIds]) => {
-      const [prices, stock] = await Promise.all([
+      const [prices, stock, products] = await Promise.all([
         fetchPrices(productIds),
         fetchStock(productIds),
+        fetchProducts(productIds),
       ]);
 
       const productsForStoreId = productIds.map((productId, index) => ({
@@ -125,6 +126,11 @@ export const fetchPriceAndStock = async (ingredientIds: {
         sales: prices[index].sales,
         packageInfo: stock[index].packageInfo,
         inStock: stock[index].inStock,
+        name: products[index].name,
+        unit: products[index].unit,
+        textualAmount: products[index].textualAmount,
+        badges: products[index].badges,
+        image: products[index].images[0],
       }));
 
       return {
