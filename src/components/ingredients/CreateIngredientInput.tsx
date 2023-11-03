@@ -1,8 +1,8 @@
 import { Box, Flex, IconButton, Image, Input, Text } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import { Dispatch, FC, SetStateAction, useState } from "react";
-import { useOutsideClick } from "./useOutsideClick.ts";
-import { Product } from "./types.ts";
+import { useOutsideClick } from "../hooks/useOutsideClick.ts";
+import { Product } from "../types.ts";
 
 interface Props {
   searchQuery: string;
@@ -22,7 +22,6 @@ const CreateIngredientInput: FC<Props> = ({
   selectedProducts,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
   const handleFocus = (): void => {
     setIsDropdownOpen(true);
   };
@@ -41,59 +40,53 @@ const CreateIngredientInput: FC<Props> = ({
 
   return (
     <Flex alignItems={"center"} flexDir={"column"}>
-      <Box
-        bg={"rgb(242, 244, 244)"}
-        py={"32px"}
-        mb={"48px"}
-        rounded={"3xl"}
-        display={"flex"}
-        justifyContent={"center"}
-        width="-webkit-fill-available"
-        zIndex={0}
-      >
-        <Box ref={dropdownRef}>
-          <Input
-            width={"600px"}
-            onFocus={handleFocus}
-            height={"40px"}
-            rounded={"xl"}
-            fontSize={"14px"}
+      <Box ref={dropdownRef}>
+        <Input
+          width={"740px"}
+          onFocus={handleFocus}
+          height={"40px"}
+          rounded={"xl"}
+          fontSize={"14px"}
+          bg={"white"}
+          color={"rgb(132, 140, 145)"}
+          outline={"none"}
+          border={"1px solid rgb(132, 140, 145)"}
+          placeholder={
+            "Vyhledejte produkty, které odpovídají vaším požadavkům na danou ingredienci."
+          }
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        {productsByIds &&
+        Object.keys(productsByIds).length > 0 &&
+        isDropdownOpen ? (
+          <Box
+            zIndex={1}
+            width={"740px"}
+            maxHeight={"480px"}
+            overflow="scroll"
+            sx={{
+              "::-webkit-scrollbar": {
+                color: "#007 #bada55",
+              },
+            }}
+            border={"1px solid rgb(218, 222, 224)"}
+            rounded={"lg"}
+            boxShadow={"md"}
+            position={"absolute"}
             bg={"white"}
-            color={"rgb(132, 140, 145)"}
-            outline={"none"}
-            border={"1px solid rgb(132, 140, 145)"}
-            placeholder={
-              "Vyhledejte produkty, které odpovídají vaším požadavkům na danou ingredienci."
-            }
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          {productsByIds &&
-          Object.keys(productsByIds).length > 0 &&
-          isDropdownOpen ? (
-            //close on outside click
-            <Box
-              width={"600px"}
-              maxHeight={"480px"}
-              overflow="scroll"
-              sx={{
-                "::-webkit-scrollbar": {
-                  color: "#007 #bada55",
-                },
-              }}
-              border={"1px solid rgb(218, 222, 224)"}
-              rounded={"lg"}
-              boxShadow={"md"}
-              position={"absolute"}
-              bg={"white"}
-            >
-              {productIds.map((productId) => {
-                console.log(productsByIds, productId);
+          >
+            {productIds
+              .filter(
+                (productId) =>
+                  !selectedProducts.find((product) => product.id === productId),
+              )
+              .map((productId) => {
                 const product = productsByIds[productId];
                 return (
                   <Box
                     key={productId}
-                    width={"600px"}
+                    width={"740px"}
                     borderBottom={
                       productIds.indexOf(productId) === productIds.length - 1
                         ? "none"
@@ -101,6 +94,7 @@ const CreateIngredientInput: FC<Props> = ({
                     }
                     p={"10px"}
                     _hover={{ bg: "gray.100" }}
+                    onClick={() => console.log("ahoj")}
                   >
                     <Flex
                       flexDir={"row"}
@@ -163,9 +157,8 @@ const CreateIngredientInput: FC<Props> = ({
                   </Box>
                 );
               })}
-            </Box>
-          ) : null}
-        </Box>
+          </Box>
+        ) : null}
       </Box>
     </Flex>
   );
