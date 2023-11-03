@@ -1,5 +1,5 @@
 export interface Product {
-  id: string | number;
+  id: string;
   name?: string;
   price?: {
     amount: number;
@@ -16,7 +16,7 @@ export interface Product {
   };
   sales?: string;
   packageInfo?: string;
-  inStock?: string;
+  inStock?: boolean;
 }
 
 export type SimpleIngredient = {
