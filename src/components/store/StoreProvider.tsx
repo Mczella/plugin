@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { StoreContext, store } from "./store";
+import { StoreContext, store } from "./store.tsx";
 
 export function GlobalStateProvider({
   children,
