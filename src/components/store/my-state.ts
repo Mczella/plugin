@@ -1,5 +1,5 @@
 import { StateCreator } from "zustand";
-import { NewIngredient, NewRecipe } from "./types.ts";
+import { NewIngredient, NewRecipe } from "../types.ts";
 
 export interface MyIngredientsState {
   ingredients: NewIngredient[];
@@ -14,6 +14,7 @@ export interface MyRecipesState {
 export interface MyRecipesInCartState {
   recipesInCart: string[];
   addRecipeToCart: (recipe: string) => void;
+  deleteRecipeFromCart: (recipe: string) => void;
 }
 
 export const createIngredientsSlice: StateCreator<
@@ -54,6 +55,13 @@ export const createRecipesInCartSlice: StateCreator<
   addRecipeToCart: (recipe: string) => {
     set((state) => ({
       recipesInCart: [...state.recipesInCart, recipe],
+    }));
+  },
+  deleteRecipeFromCart: (recipe: string) => {
+    set((state) => ({
+      recipesInCart: state.recipesInCart.filter(
+        (stateRecipe) => stateRecipe !== recipe,
+      ),
     }));
   },
 });
