@@ -1,6 +1,7 @@
 import { Dispatch, FC, SetStateAction } from "react";
 import { Box, Button, Grid, Image, Text } from "@chakra-ui/react";
-import { Product } from "./types.ts";
+import { Product } from "../types.ts";
+import { SmallCloseIcon } from "@chakra-ui/icons";
 
 type Props = {
   selectedProducts: Product[];
@@ -21,12 +22,27 @@ const ChosenProducts: FC<Props> = ({
       });
     });
   };
-  console.log(selectedProducts);
+
+  const handleDelete = (product: Product) => {
+    const updatedProducts = selectedProducts.filter(
+      (currentProduct) => currentProduct.id !== product.id,
+    );
+    setSelectedProducts(updatedProducts);
+  };
 
   return (
     <Grid templateColumns="repeat(7, 1fr)" gap={4}>
       {selectedProducts.map((product) => (
         <Box key={product.id} p={4} justifyItems={"center"} display={"grid"}>
+          <SmallCloseIcon
+            justifySelf={"end"}
+            position={"relative"}
+            alignSelf={"end"}
+            top={"5px"}
+            color={"rgb(218, 222, 224)"}
+            _hover={{ color: "rgb(87, 130, 4)" }}
+            onClick={() => handleDelete(product)}
+          />
           <Image
             src={product.image}
             objectFit={"contain"}
