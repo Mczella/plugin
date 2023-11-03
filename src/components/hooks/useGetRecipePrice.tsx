@@ -1,10 +1,12 @@
-import { NewRecipe } from "./types.ts";
+import { NewRecipe } from "../types.ts";
+import { useGetIngredientIds } from "./useGetIngredientsIds.tsx";
 
 type Product = {
-  id: number;
+  id: string;
   preferred?: boolean | undefined;
   price: {
     amount: number;
+    currency: string;
   };
   inStock: boolean;
 };
@@ -18,12 +20,10 @@ type IngredientData = null | {
   };
 };
 
-export const useGetRecipePrice = (
-  ingredientData: IngredientData,
-  recipe: NewRecipe,
-) => {
+export const useGetRecipePrice = (recipe: NewRecipe) => {
+  const ingredientData: IngredientData = useGetIngredientIds(recipe);
   let totalPrice = 0;
-  const productIds: number[] = [];
+  const productIds: string[] = [];
   try {
     if (ingredientData != null && recipe) {
       recipe.ingredients.forEach((ingredientId: string) => {
@@ -66,7 +66,7 @@ export const useGetRecipePrice = (
       });
     }
 
-    return { totalPrice, productIds };
+    return { totalPrice, productIds, ingredientData };
   } catch (error) {
     return { totalPrice: 0, productIds: [] };
   }
