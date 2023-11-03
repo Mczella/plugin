@@ -1,30 +1,24 @@
 import { Button, GridItem, Image, Text } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
-import { useMyStore } from "./store";
-import { NewRecipe } from "./types";
-import { useGetIngredientIds } from "./useGetIngredientsIds.tsx";
-import { useGetRecipePrice } from "./useGetRecipePrice.tsx";
+import { useMyStore } from "../store/store.tsx";
+import { NewRecipe } from "../types.ts";
+import { useGetRecipePrice } from "../hooks/useGetRecipePrice.tsx";
+import { FC } from "react";
 
 type Props = {
   recipe: NewRecipe;
 };
 
-const RecipeComponent: React.FC<Props> = ({ recipe }) => {
+const RecipeComponent: FC<Props> = ({ recipe }) => {
   const { recipesInCart, addRecipeToCart } = useMyStore();
-  const ingredientData = useGetIngredientIds(recipe);
-  const { totalPrice, productIds } = useGetRecipePrice(ingredientData, recipe);
+  const { totalPrice, productIds } = useGetRecipePrice(recipe);
   const pricePerPortion = totalPrice / recipe.portion;
 
   console.log(recipe.name, totalPrice, productIds);
   console.log(recipe.name);
 
   return (
-    <GridItem
-      key={recipe.id}
-      display="flex"
-      flexDir="column"
-      alignItems="center"
-    >
+    <GridItem display="flex" flexDir="column" alignItems="center">
       <Image
         src={recipe.image}
         fallbackSrc="https://icon-library.com/images/placeholder-image-icon/placeholder-image-icon-7.jpg"
