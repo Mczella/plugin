@@ -15,7 +15,7 @@ import {
   MyIngredientsState,
   MyRecipesInCartState,
   MyRecipesState,
-} from "./my-state";
+} from "./my-state.ts";
 
 const storage: StateStorage = {
   getItem: async (name: string): Promise<string | null> => {
@@ -48,7 +48,7 @@ export const store = createStore<
     {
       name: "rohlik-storage",
       storage: createJSONStorage(() => storage),
-      skipHydration: true, // we have own hydration logic in StoreProvider
+      skipHydration: false,
       onRehydrateStorage: () => {
         console.log("hydration starts");
 
