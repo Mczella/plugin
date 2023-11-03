@@ -1,14 +1,15 @@
-import { NewRecipe, NewIngredient } from "./types.ts";
-import { useMyStore } from "./store.tsx";
-import { fetchPriceAndStock } from "./Api";
+import { NewRecipe, NewIngredient } from "../types.ts";
+import { useMyStore } from "../store/store.tsx";
+import { fetchPriceAndStock } from "../api/api.ts";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 type Product = {
-  id: number;
+  id: string;
   preferred?: boolean | undefined;
   price: {
     amount: number;
+    currency: string;
   };
   inStock: boolean;
 };
