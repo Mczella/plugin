@@ -1,29 +1,12 @@
-import { NewRecipe } from "../types.ts";
+import { IngredientData, NewRecipe, Product } from "../types.ts";
 import { useGetIngredientIds } from "./useGetIngredientsIds.tsx";
-
-type Product = {
-  id: string;
-  preferred?: boolean | undefined;
-  price: {
-    amount: number;
-    currency: string;
-  };
-  inStock: boolean;
-};
-
-type IngredientData = null | {
-  productsByStoreId: {
-    [storeId: string]: Product[];
-  };
-  ingredientIds: {
-    [storeId: string]: string[];
-  };
-};
 
 export const useGetRecipePrice = (recipe: NewRecipe) => {
   const ingredientData: IngredientData = useGetIngredientIds(recipe);
   let totalPrice = 0;
   const productIds: string[] = [];
+  let overallCheapestProduct: Product | undefined;
+  let selectedProduct: Product | undefined;
   try {
     if (ingredientData != null && recipe) {
       recipe.ingredients.forEach((ingredientId: string) => {
@@ -31,40 +14,88 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
           ingredientData.productsByStoreId[ingredientId];
 
         if (ingredientProducts && ingredientProducts.length > 0) {
-          const preferredProducts = ingredientProducts.filter(
+          const preferredProduct = ingredientProducts.filter(
             (product) => product.preferred,
           );
           const inStockProducts = ingredientProducts.filter(
             (product) => product.inStock,
           );
 
-          let selectedProduct: Product | undefined;
-
           if (
-            preferredProducts.length > 0 &&
-            preferredProducts.some((product) => product.inStock)
+            preferredProduct.length > 0 &&
+            preferredProduct.some((product) => product.inStock)
           ) {
-            selectedProduct = preferredProducts.find(
+            selectedProduct = preferredProduct.find(
               (product) => product.inStock,
             );
           } else if (inStockProducts.length > 0) {
-            selectedProduct = inStockProducts.reduce(
-              (minPriceProduct, product) =>
-                product.price.amount < minPriceProduct.price.amount
-                  ? product
-                  : minPriceProduct,
+            const productsWithSales = inStockProducts.filter(
+              (product) => product.sales?.length > 0,
             );
+            console.log({ productsWithSales });
+            const productsWithoutSales = inStockProducts.filter(
+              (product) => product.sales.length === 0,
+            );
+            console.log({ productsWithoutSales });
+            console.log("ppppppppp", selectedProduct);
+            let cheapestProductWithSales;
+            let cheapestProductWithoutSales;
+
+            if (productsWithSales.length > 0) {
+              cheapestProductWithSales = productsWithSales.reduce(
+                (minPriceProduct, product) =>
+                  product.sales[0].price.amount <
+                  minPriceProduct.sales[0].price.amount
+                    ? product
+                    : minPriceProduct,
+              );
+            }
+            console.log({ cheapestProductWithSales });
+
+            if (productsWithoutSales.length > 0) {
+              cheapestProductWithoutSales = productsWithoutSales.reduce(
+                (minPriceProduct, product) =>
+                  product.price.amount < minPriceProduct.price.amount
+                    ? product
+                    : minPriceProduct,
+              );
+            }
+            console.log({ cheapestProductWithoutSales });
+
+            if (cheapestProductWithSales && cheapestProductWithoutSales) {
+              if (
+                cheapestProductWithSales.sales[0].price.amount <
+                cheapestProductWithoutSales.price.amount
+              ) {
+                overallCheapestProduct = cheapestProductWithSales;
+              } else {
+                overallCheapestProduct = cheapestProductWithoutSales;
+              }
+            } else if (cheapestProductWithSales) {
+              overallCheapestProduct = cheapestProductWithSales;
+            } else if (cheapestProductWithoutSales) {
+              overallCheapestProduct = cheapestProductWithoutSales;
+            } else {
+              throw new Error("Všechny alternativy vyprodány.");
+            }
           }
 
-          if (!selectedProduct) {
-            throw new Error("Všechny alternativy vyprodány.");
+          if (selectedProduct) {
+            totalPrice += selectedProduct.price.amount;
+            productIds.push(selectedProduct.id);
+          } else if (overallCheapestProduct != undefined) {
+            if (overallCheapestProduct.sales.length > 0) {
+              totalPrice += overallCheapestProduct.sales[0].price.amount;
+              productIds.push(overallCheapestProduct.id);
+            } else {
+              totalPrice += overallCheapestProduct.price.amount;
+              productIds.push(overallCheapestProduct.id);
+            }
           }
-
-          totalPrice += selectedProduct.price.amount;
-          productIds.push(selectedProduct.id);
         }
       });
     }
+    console.log(recipe.name, selectedProduct, overallCheapestProduct);
 
     return { totalPrice, productIds, ingredientData };
   } catch (error) {
