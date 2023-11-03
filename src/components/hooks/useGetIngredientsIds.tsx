@@ -1,27 +1,8 @@
-import { NewRecipe, NewIngredient } from "../types.ts";
+import { NewRecipe, NewIngredient, IngredientData } from "../types.ts";
 import { useMyStore } from "../store/store.tsx";
 import { fetchPriceAndStock } from "../api/api.ts";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-
-type Product = {
-  id: string;
-  preferred?: boolean | undefined;
-  price: {
-    amount: number;
-    currency: string;
-  };
-  inStock: boolean;
-};
-
-type IngredientData = null | {
-  productsByStoreId: {
-    [storeId: string]: Product[];
-  };
-  ingredientIds: {
-    [storeId: string]: string[];
-  };
-};
 
 export const useGetIngredientIds = (recipe: NewRecipe) => {
   const { ingredients } = useMyStore();
