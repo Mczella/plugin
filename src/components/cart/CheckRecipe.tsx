@@ -117,7 +117,9 @@ const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
                 fontWeight={"bold"}
                 minW={"210px"}
               >
-                {product.price?.amount} {product.price?.currency}
+                {product.sales.length > 0
+                  ? `${product.sales[0].price.amount} ${product.price.currency}`
+                  : `${product.price.amount} ${product.price.currency}`}
               </Text>
               <SmallCloseIcon
                 ml={"40px"}
