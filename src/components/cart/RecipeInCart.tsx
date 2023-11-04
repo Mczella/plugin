@@ -35,7 +35,7 @@ const RecipeInCart: FC<Props> = ({ recipe }) => {
     >
       <Flex>
         <Flex flexDir={"row"}>
-          <Box w={"45px"} h={"45px"} mr={"5px"}>
+          <Box minW={"45px"} maxW={"45px"} h={"45px"} mr={"5px"}>
             <Image src={specificRecipe.image} />
           </Box>
           <Flex flexDir={"column"} justify={"space-between"}>
@@ -111,7 +111,7 @@ const RecipeInCart: FC<Props> = ({ recipe }) => {
           _hover={{ color: "rgb(87, 130, 4)" }}
           onClick={() => handleDelete(specificRecipe.id)}
         />
-        <Flex flexDir={"column"} mb={"10px"}>
+        <Flex flexDir={"column"} mb={"10px"} w={"50px"}>
           {/*if sale*/}
           <Text
             textAlign={"right"}
