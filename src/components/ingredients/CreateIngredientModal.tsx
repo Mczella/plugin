@@ -2,7 +2,6 @@ import {
   Button,
   ButtonGroup,
   Flex,
-  FormControl,
   Heading,
   Modal,
   ModalBody,
@@ -29,15 +28,10 @@ import CreateIngredientInput from "./CreateIngredientInput.tsx";
 import ChosenProducts from "./ChosenProducts.tsx";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAll } from "../api/api.ts";
-import {
-  AutoComplete,
-  AutoCompleteCreatable,
-  AutoCompleteInput,
-  AutoCompleteItem,
-  AutoCompleteList,
-} from "@choc-ui/chakra-autocomplete";
 import { useMyStore } from "../store/store.tsx";
 import { SimpleIngredient, NewIngredient, Product } from "../types.ts";
+import { useForm } from "react-hook-form";
+import Autocomplete from "./Autocomplete.tsx";
 
 type Props = {
   isOpen: boolean;
@@ -57,6 +51,14 @@ const CreateIngredientModal: FC<Props> = ({
   const { addIngredient, ingredients } = useMyStore();
   // const purgeStorage = usePurgeStorage();
   // const bytesInUse = useBytesInUse();
+
+  const {
+    control,
+    handleSubmit,
+    register,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm();
 
   const [error, setError] = useState(false);
   const [name, setName] = useState<string | null>(null);
@@ -147,7 +149,7 @@ const CreateIngredientModal: FC<Props> = ({
       >
         <ModalOverlay />
         <ModalContent minW={"850px"} rounded={"xl"}>
-          <ModalCloseButton />
+          {/*<ModalCloseButton />*/}
           <ModalBody pb={6} m={"40px"}>
             <Flex
               flexDir={"column"}
@@ -164,60 +166,12 @@ const CreateIngredientModal: FC<Props> = ({
                   >
                     Přidat ingredienci
                   </Heading>
-                  <FormControl isRequired>
-                    <AutoComplete
-                      openOnFocus
-                      closeOnSelect
-                      creatable
-                      onCreateOption={({
-                        item,
-                      }: {
-                        item: { value: string };
-                      }) => {
-                        setName(item.value);
-                        setShowInput(true);
-                      }}
-                    >
-                      <AutoCompleteInput
-                        width={"740px"}
-                        height={"40px"}
-                        rounded={"xl"}
-                        fontSize={"14px"}
-                        bg={"white"}
-                        color={"rgb(132, 140, 145)"}
-                        outline={"none"}
-                        mb={"24px"}
-                        border={"1px solid rgb(132, 140, 145)"}
-                        placeholder="Vyberte z vašich ingrediencí..."
-                      />
-                      <AutoCompleteList
-                        border={"1px solid rgb(218, 222, 224)"}
-                        rounded={"lg"}
-                        boxShadow={"md"}
-                        bg={"white"}
-                      >
-                        {currentIngredients.map((ingredient) => (
-                          <AutoCompleteItem
-                            _hover={{ bg: "gray.100" }}
-                            key={ingredient.id}
-                            value={ingredient.name}
-                            textTransform="capitalize"
-                            onClick={() => setSelectedIngredient(ingredient)}
-                          >
-                            {ingredient.name}
-                          </AutoCompleteItem>
-                        ))}
-                        <AutoCompleteCreatable>
-                          {({ value }) => (
-                            <Text>
-                              Vytvořit ingredienci s názvem{" "}
-                              <Text as={"b"}>{value}</Text>.
-                            </Text>
-                          )}
-                        </AutoCompleteCreatable>
-                      </AutoCompleteList>
-                    </AutoComplete>
-                  </FormControl>
+                  <Autocomplete
+                    currentIngredients={currentIngredients}
+                    setName={setName}
+                    setSelectedIngredient={setSelectedIngredient}
+                    setShowInput={setShowInput}
+                  />
                   {showInput ? (
                     <>
                       <CreateIngredientInput
@@ -330,6 +284,9 @@ const CreateIngredientModal: FC<Props> = ({
                     rounded={"xl"}
                     boxShadow={"md"}
                     color={"white"}
+                    isDisabled={
+                      !selectedIngredient && selectedProducts.length === 0
+                    }
                     _hover={{ bg: "rgb(87, 130, 4)" }}
                     onClick={() => setStep(2)}
                   >
@@ -399,6 +356,7 @@ const CreateIngredientModal: FC<Props> = ({
                         ? () => {
                             handleIngredientClick(selectedIngredient);
                             onClose();
+                            setSelectedIngredient(null);
                             setStep(1);
                           }
                         : handleSave
