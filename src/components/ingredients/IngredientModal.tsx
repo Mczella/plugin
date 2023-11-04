@@ -25,7 +25,7 @@ import { fetchAll } from "../api/api.ts";
 import { useMyStore } from "../store/store.tsx";
 import { SimpleIngredient, NewIngredient, Product } from "../types.ts";
 import Autocomplete from "./Autocomplete.tsx";
-import ModalPartTwo from "./ModalPartTwo.tsx";
+import IngredientModalTwo from "./IngredientModalTwo.tsx";
 
 type Props = {
   isOpen: boolean;
@@ -35,7 +35,7 @@ type Props = {
   setSelectedIngredients: Dispatch<SetStateAction<NewIngredient[]>>;
 };
 
-const CreateIngredientModal: FC<Props> = ({
+const IngredientModal: FC<Props> = ({
   isOpen,
   onClose,
   focusRef,
@@ -177,7 +177,7 @@ const CreateIngredientModal: FC<Props> = ({
                   ) : null}
                 </>
               ) : (
-                <ModalPartTwo />
+                <IngredientModalTwo />
               )}
               {error ? (
                 <Text mt={"24px"} color={"red"}>
@@ -328,4 +328,4 @@ const CreateIngredientModal: FC<Props> = ({
   );
 };
 
-export default CreateIngredientModal;
+export default IngredientModal;

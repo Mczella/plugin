@@ -22,7 +22,7 @@ import EditableName from "./EditableName.tsx";
 import BreadcrumbNav from "../BreadcrumbNav.tsx";
 import Add from "../Add.tsx";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
-import CreateIngredientModal from "../ingredients/CreateIngredientModal.tsx";
+import IngredientModal from "../ingredients/IngredientModal.tsx";
 import Ingredient from "./Ingredient.tsx";
 import { NewIngredient } from "../types.ts";
 import { useMyStore } from "../store/store.tsx";
@@ -252,7 +252,7 @@ const CreateRecipe = () => {
             ))}
           </Grid>
         </Flex>
-        <CreateIngredientModal
+        <IngredientModal
           focusRef={cancelRef}
           onClose={onClose}
           isOpen={isOpen}
