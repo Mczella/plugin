@@ -5,14 +5,8 @@ import {
   Heading,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalOverlay,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
   Text,
 } from "@chakra-ui/react";
 import {
@@ -30,8 +24,8 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchAll } from "../api/api.ts";
 import { useMyStore } from "../store/store.tsx";
 import { SimpleIngredient, NewIngredient, Product } from "../types.ts";
-import { useForm } from "react-hook-form";
 import Autocomplete from "./Autocomplete.tsx";
+import ModalPartTwo from "./ModalPartTwo.tsx";
 
 type Props = {
   isOpen: boolean;
@@ -51,15 +45,6 @@ const CreateIngredientModal: FC<Props> = ({
   const { addIngredient, ingredients } = useMyStore();
   // const purgeStorage = usePurgeStorage();
   // const bytesInUse = useBytesInUse();
-
-  const {
-    control,
-    handleSubmit,
-    register,
-    reset,
-    formState: { errors, isSubmitting },
-  } = useForm();
-
   const [error, setError] = useState(false);
   const [name, setName] = useState<string | null>(null);
   const [currentIngredients, setCurrentIngredients] =
@@ -192,40 +177,7 @@ const CreateIngredientModal: FC<Props> = ({
                   ) : null}
                 </>
               ) : (
-                <>
-                  <Heading
-                    fontSize={"24px"}
-                    fontWeight={900}
-                    lineHeight={"32px"}
-                    mb={"24px"}
-                  >
-                    Zadejte množství vybrané ingredience pro tento recept
-                  </Heading>
-                  <NumberInput
-                    min={0.1}
-                    max={30}
-                    width={"600px"}
-                    height={"40px"}
-                    isRequired
-                  >
-                    <NumberInputField
-                      id={"amount"}
-                      placeholder={"Zadejte množství"}
-                      type={"number"}
-                      height={"40px"}
-                      rounded={"xl"}
-                      fontSize={"14px"}
-                      bg={"white"}
-                      color={"rgb(132, 140, 145)"}
-                      outline={"none"}
-                      border={"1px solid rgb(132, 140, 145)"}
-                    />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
-                </>
+                <ModalPartTwo />
               )}
               {error ? (
                 <Text mt={"24px"} color={"red"}>
