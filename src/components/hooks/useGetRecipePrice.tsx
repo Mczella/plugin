@@ -37,7 +37,6 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
               (product) => product.sales.length === 0,
             );
             console.log({ productsWithoutSales });
-            console.log("ppppppppp", selectedProduct);
             let cheapestProductWithSales;
             let cheapestProductWithoutSales;
 
