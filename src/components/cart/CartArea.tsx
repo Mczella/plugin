@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ShadowDom } from "../ShadowDom.tsx";
 import { Text } from "@chakra-ui/react";
 import CartButton from "./CartButton.tsx";
@@ -6,9 +6,23 @@ import { useMyStore } from "../store/store.tsx";
 import RecipeInCart from "./RecipeInCart.tsx";
 
 const CartArea = () => {
-  const [parentElement] = useState(() =>
+  const [parentElement, setParentElement] = useState(() =>
     document.querySelector('[data-test*="categoryCart"]'),
   );
+
+  const cart = document.querySelector('[data-test*="categoryCart"]');
+  const empty = document.querySelector(
+    '[class*="emptyProducts"]',
+  ) as HTMLElement;
+
+  useEffect(() => {
+    if (!cart) {
+      setParentElement(empty);
+      empty.style.display = "none";
+    } else if (cart) {
+      setParentElement(cart);
+    }
+  }, [cart]);
 
   const { recipesInCart } = useMyStore();
 
