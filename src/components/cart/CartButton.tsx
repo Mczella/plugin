@@ -10,16 +10,15 @@ const CartButton = () => {
 
   const { recipesInCart } = useMyStore();
 
+  const submitButton = document.querySelector(
+    '[data-test="cart-redirectToCart"]',
+  );
+
   useEffect(() => {
-    const submitButton = document.querySelector(
-      '[data-test="cart-redirectToCart"]',
-    );
     if (submitButton && recipesInCart.length > 0) {
-      if (submitButton) {
-        submitButton.remove();
-      }
+      submitButton.remove();
     }
-  }, [recipesInCart]);
+  }, [recipesInCart, submitButton]);
 
   return parentElement && recipesInCart.length > 0 ? (
     <ShadowDom parentElement={parentElement}>
