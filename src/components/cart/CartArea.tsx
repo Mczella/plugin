@@ -16,7 +16,7 @@ const CartArea = () => {
   ) as HTMLElement;
 
   useEffect(() => {
-    if (!cart) {
+    if (empty) {
       setParentElement(empty);
       empty.style.display = "none";
     } else if (cart) {
