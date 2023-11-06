@@ -108,7 +108,7 @@ const AddRecipeModal: FC<Props> = ({ isOpen, onClose, focusRef }) => {
                     display="flex"
                     alignItems="center"
                     rounded={"xl"}
-                    onClick={() => navigate("/recepty")}
+                    onClick={() => onClose()}
                   >
                     Zrušit
                   </Button>
