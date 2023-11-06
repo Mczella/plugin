@@ -36,8 +36,6 @@ const CreateIngredientInput: FC<Props> = ({
     console.log(selectedProducts);
   };
 
-  console.log(isDropdownOpen);
-
   return (
     <Flex alignItems={"center"} flexDir={"column"}>
       <Box ref={dropdownRef}>
