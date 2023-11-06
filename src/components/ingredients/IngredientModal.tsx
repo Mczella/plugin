@@ -26,6 +26,7 @@ import { useMyStore } from "../store/store.tsx";
 import { SimpleIngredient, NewIngredient, Product } from "../types.ts";
 import Autocomplete from "./Autocomplete.tsx";
 import IngredientModalTwo from "./IngredientModalTwo.tsx";
+import { useDebounce } from "@uidotdev/usehooks";
 
 type Props = {
   isOpen: boolean;
@@ -51,8 +52,9 @@ const IngredientModal: FC<Props> = ({
     useState<NewIngredient[]>(ingredients);
   const modalContainer = useRef(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearch = useDebounce(searchQuery, 300);
   const [showInput, setShowInput] = useState<boolean>(false);
-  const { data, isError } = useQuery(["data", searchQuery], () =>
+  const { data, isError } = useQuery(["data", debouncedSearch], () =>
     fetchAll(searchQuery),
   );
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
