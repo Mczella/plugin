@@ -25,9 +25,10 @@ const Autocomplete: FC<Props> = ({
   return (
     <FormControl isRequired>
       <AutoComplete
-        openOnFocus
+        // openOnFocus
         closeOnSelect
         creatable
+        autoComplete={"off"}
         onCreateOption={({ item }: { item: { value: string } }) => {
           setName(item.value);
           setShowInput(true);
