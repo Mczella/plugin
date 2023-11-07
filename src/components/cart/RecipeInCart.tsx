@@ -15,15 +15,11 @@ const RecipeInCart: FC<Props> = ({ recipe }) => {
     recipes.find((oneRecipe) => oneRecipe.id === recipe);
   // @ts-ignore
   const specificRecipe: NewRecipe = findRecipeById(recipe);
-  const { totalPrice, productIds, ingredientData } =
-    useGetRecipePrice(specificRecipe);
-  console.log(totalPrice, productIds, ingredientData);
+  const { totalPrice } = useGetRecipePrice(specificRecipe);
 
   const handleDelete = (id: string) => {
     deleteRecipeFromCart(id);
   };
-
-  console.log(specificRecipe.id);
 
   return (
     <Flex
