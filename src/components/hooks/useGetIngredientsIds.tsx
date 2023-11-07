@@ -18,7 +18,6 @@ export const useGetIngredientIds = (recipe: NewRecipe) => {
   useEffect(() => {
     if (data !== undefined) {
       const updatedIngredientData = { ...data };
-      console.log(updatedIngredientData);
 
       let selectedProductPreferences: {
         [key: string]: { [key: string]: boolean | undefined };
@@ -59,18 +58,18 @@ const getIngredientIds = (
 ) => {
   const ingredientIds: { [key: string]: string[] } = {};
 
-  recipe.ingredients.forEach((ingredientId) => {
+  recipe.ingredients.forEach((ingredient) => {
     const productIds: string[] = [];
 
-    storeIngredients.forEach((storeIngredient: NewIngredient) => {
-      if (storeIngredient.id === ingredientId) {
+    storeIngredients.forEach((storeIngredient) => {
+      if (storeIngredient.id === ingredient.id) {
         storeIngredient.selectedProducts.forEach((product) => {
           productIds.push(product.id);
         });
       }
     });
 
-    ingredientIds[ingredientId] = productIds;
+    ingredientIds[ingredient.id] = productIds;
   });
 
   return ingredientIds;
