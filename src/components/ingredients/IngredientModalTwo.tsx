@@ -6,8 +6,13 @@ import {
   NumberInputField,
   NumberInputStepper,
 } from "@chakra-ui/react";
+import { Dispatch, FC, SetStateAction } from "react";
 
-const IngredientModalTwo = () => {
+type Props = {
+  setAmount: Dispatch<SetStateAction<number>>;
+};
+
+const IngredientModalTwo: FC<Props> = ({ setAmount }) => {
   return (
     <>
       <Heading
@@ -21,9 +26,11 @@ const IngredientModalTwo = () => {
       <NumberInput
         min={0.1}
         max={30}
+        step={0.1}
         width={"600px"}
         height={"40px"}
         isRequired
+        onChange={(_, valueAsNumber) => setAmount(valueAsNumber)}
       >
         <NumberInputField
           id={"amount"}
