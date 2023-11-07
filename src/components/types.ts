@@ -17,6 +17,17 @@ export interface Product {
   sales: Sales | [];
   packageInfo?: string;
   inStock?: boolean;
+  tooltips: [
+    {
+      type: string; //"PARTLY_SOLD_OUT",
+      closable: boolean;
+      triggerAmount: number;
+      size: null;
+      message: string;
+      actionable: boolean;
+    },
+  ];
+  maxBasketAmount: number;
 }
 
 export type Sales = {
@@ -60,13 +71,19 @@ export type NewIngredient = {
   name: string;
   selectedProducts: SimpleIngredient[];
   id: string;
+  amount: number;
 };
+
+export type NewRecipeIngredient = {
+  id: NewIngredient["id"];
+  amount: NewIngredient["amount"];
+}[];
 
 export type NewRecipe = {
   name: string;
   portion: number;
   description?: string;
   image?: string;
-  ingredients: string[];
+  ingredients: NewRecipeIngredient;
   id: string;
 };
