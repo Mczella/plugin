@@ -24,7 +24,7 @@ import Add from "../Add.tsx";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import IngredientModal from "../ingredients/IngredientModal.tsx";
 import Ingredient from "./Ingredient.tsx";
-import { NewIngredient } from "../types.ts";
+import { NewIngredient, NewRecipeIngredient } from "../types.ts";
 import { useMyStore } from "../store/store.tsx";
 import { Controller, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -56,11 +56,7 @@ const CreateRecipe = () => {
           error: "Došlo k neočekávané chybě, zkuste to prosím znovu.",
         },
       });
-    }
-  }, []);
-
-  useEffect(() => {
-    if (state) {
+    } else {
       reset({
         name: state.name,
         description: "",
@@ -68,13 +64,16 @@ const CreateRecipe = () => {
         portion: null,
       });
     }
-  }, [state]);
+  }, []);
 
   const onSubmit = (data: any) => {
     if (selectedIngredients.length > 0) {
-      const updatedSelectedIngredients: string[] = selectedIngredients.map(
-        (ingredient) => ingredient.id,
-      );
+      const updatedSelectedIngredients: NewRecipeIngredient =
+        selectedIngredients.map((ingredient) => ({
+          id: ingredient.id,
+          amount: ingredient.amount,
+        }));
+
       const updatedData = {
         ...data,
         ingredients: updatedSelectedIngredients,
