@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState, useRef } from "react";
 import { ShadowDom } from "./ShadowDom.tsx";
 import CreateRecipe from "./recipes/CreateRecipe.tsx";
 import Recipes from "./recipes/Recipes.tsx";
@@ -14,30 +14,28 @@ const MainArea = () => {
   const location = useLocation();
 
   useEffect(() => {
-    let oldHref: null | string = null;
-    const body = document.querySelector("body");
+    const goToNonExistingPage = () => {
+      console.log("zmen url na /");
+      navigate("/");
+    };
 
-    const observer = new MutationObserver(() => {
-      const { pathname } = new URL(document.location.href);
-
-      if (pathname !== oldHref || oldHref === null) {
-        oldHref = pathname;
-        if (pathname !== "/") {
-          navigate("/");
-          console.log("naviguji na defaultni route, kde nic nerenderujeme...");
-        }
-      }
-    });
-
-    if (body) {
-      observer.observe(body, { childList: true, subtree: true });
+    const links = document.querySelectorAll(".sectionsLink");
+    if (links) {
+      Array.from(links).forEach((link) => {
+        link.addEventListener("click", goToNonExistingPage);
+      });
     }
 
-    return () => observer.disconnect();
+    () => {
+      if (links) {
+        Array.from(links).forEach((link) => {
+          link.removeEventListener("click", goToNonExistingPage);
+        });
+      }
+    };
   }, [navigate]);
 
   useLayoutEffect(() => {
-    // Google Analytics
     if (!parentElement) {
       return;
     }
