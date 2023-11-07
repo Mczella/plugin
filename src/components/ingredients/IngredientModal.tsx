@@ -50,6 +50,7 @@ const IngredientModal: FC<Props> = ({
   const [name, setName] = useState<string | null>(null);
   const [currentIngredients, setCurrentIngredients] =
     useState<NewIngredient[]>(ingredients);
+  const [amount, setAmount] = useState<number>(0);
   const modalContainer = useRef(null);
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearch = useDebounce(searchQuery, 300);
@@ -72,11 +73,11 @@ const IngredientModal: FC<Props> = ({
   }
 
   const handleIngredientClick = (ingredient: NewIngredient) => {
-    setSelectedIngredients([...selectedIngredients, ingredient]);
-    // const updatedIngredients = ingredients.filter(
-    //   (item) => !selectedIngredients.includes(item) && item !== ingredient,
-    // );
-    // setCurrentIngredients(updatedIngredients);
+    const newSelectedIngredient: NewIngredient = {
+      ...ingredient,
+      amount: amount,
+    };
+    setSelectedIngredients([...selectedIngredients, newSelectedIngredient]);
   };
 
   const handleSave = () => {
@@ -91,6 +92,7 @@ const IngredientModal: FC<Props> = ({
         name: name,
         selectedProducts: updatedSelectedProducts,
         id: Date.now().toString(36),
+        amount: amount,
       };
       addIngredient(newIngredient);
       handleIngredientClick(newIngredient);
@@ -179,7 +181,7 @@ const IngredientModal: FC<Props> = ({
                   ) : null}
                 </>
               ) : (
-                <IngredientModalTwo />
+                <IngredientModalTwo setAmount={setAmount} />
               )}
               {error ? (
                 <Text mt={"24px"} color={"red"}>
