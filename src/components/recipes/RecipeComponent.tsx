@@ -20,11 +20,8 @@ type Props = {
 
 const RecipeComponent: FC<Props> = ({ recipe }) => {
   const { recipesInCart, addRecipeToCart } = useMyStore();
-  const { totalPrice, productIds } = useGetRecipePrice(recipe);
+  const { totalPrice } = useGetRecipePrice(recipe);
   const pricePerPortion = totalPrice / recipe.portion;
-
-  console.log(recipe.name, totalPrice, productIds);
-  console.log(recipe.name);
 
   return (
     <GridItem display="flex" flexDir="column" alignItems="center">
