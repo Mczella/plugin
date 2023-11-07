@@ -1,6 +1,7 @@
 import {
   Badge,
   Box,
+  Button,
   Flex,
   Grid,
   GridItem,
@@ -46,6 +47,17 @@ const Recipes = () => {
         >
           Recepty
         </Heading>
+        <Button
+          onClick={async () => {
+            const openModal = new CustomEvent("redux-me", {
+              bubbles: true,
+              detail: { action: "open-modal", id: "1" },
+            });
+            document.body.dispatchEvent(openModal);
+          }}
+        >
+          Open Modal
+        </Button>
         <Flex flexDir={"row"} alignItems={"center"} gap={"10px"} mt={"32px"}>
           <Badge
             bg={"rgb(109, 163, 5)"}

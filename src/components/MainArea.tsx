@@ -14,6 +14,32 @@ const MainArea = () => {
   const location = useLocation();
 
   useEffect(() => {
+    let oldHref: null | string = null;
+    const body = document.querySelector("body");
+
+    const observer = new MutationObserver(() => {
+      const { pathname } = new URL(document.location.href);
+
+      if (pathname !== oldHref || oldHref === null) {
+        oldHref = pathname;
+        if (pathname !== "/") {
+          navigate("/");
+          console.log("naviguji na defaultni route, kde nic nerenderujeme...");
+        }
+      }
+    });
+
+    if (body) {
+      observer.observe(body, {
+        childList: true,
+        subtree: true,
+      });
+    }
+
+    return () => observer.disconnect();
+  }, [navigate]);
+
+  useEffect(() => {
     const goToNonExistingPage = () => {
       console.log("zmen url na /");
       navigate("/");
