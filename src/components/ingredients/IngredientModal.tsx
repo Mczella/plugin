@@ -79,6 +79,7 @@ const IngredientModal: FC<Props> = ({ isOpen, onClose, focusRef }) => {
     <>
       <div ref={modalContainer}></div>
       <Modal
+        blockScrollOnMount={!name}
         portalProps={{
           containerRef: modalContainer,
         }}
