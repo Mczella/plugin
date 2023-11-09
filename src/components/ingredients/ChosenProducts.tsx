@@ -1,33 +1,19 @@
-import { Dispatch, FC, SetStateAction } from "react";
 import { Box, Button, Grid, Image, Text } from "@chakra-ui/react";
 import { Product } from "../types.ts";
 import { SmallCloseIcon } from "@chakra-ui/icons";
+import { useMyStore } from "../store/store.tsx";
 
-type Props = {
-  selectedProducts: Product[];
-  setSelectedProducts: Dispatch<SetStateAction<Product[]>>;
-};
-
-const ChosenProducts: FC<Props> = ({
-  selectedProducts,
-  setSelectedProducts,
-}) => {
+const ChosenProducts = () => {
+  const { selectedProducts, editSelectedProducts, deleteSelectedProduct } =
+    useMyStore();
   const handleClick = (product: Product) => {
-    setSelectedProducts((prevState) => {
-      return prevState.map((existingProduct) => {
-        if (existingProduct.id === product.id) {
-          return { ...existingProduct, preferred: true };
-        }
-        return existingProduct;
-      });
+    const updatedProducts = selectedProducts.map((existingProduct: Product) => {
+      if (existingProduct.id === product.id) {
+        return { ...existingProduct, preferred: true };
+      }
+      return existingProduct;
     });
-  };
-
-  const handleDelete = (product: Product) => {
-    const updatedProducts = selectedProducts.filter(
-      (currentProduct) => currentProduct.id !== product.id,
-    );
-    setSelectedProducts(updatedProducts);
+    editSelectedProducts(updatedProducts);
   };
 
   return (
@@ -41,7 +27,7 @@ const ChosenProducts: FC<Props> = ({
             top={"5px"}
             color={"rgb(218, 222, 224)"}
             _hover={{ color: "rgb(87, 130, 4)" }}
-            onClick={() => handleDelete(product)}
+            onClick={() => deleteSelectedProduct(product)}
           />
           <Image
             src={product.image}
@@ -65,7 +51,7 @@ const ChosenProducts: FC<Props> = ({
             _hover={{ bg: "rgb(109, 163, 5)", color: "white" }}
             onClick={() => handleClick(product)}
           >
-            {/*change to star or whatever in the corner of the box*/}
+            {/*change to a star or whatever in the corner of the box*/}
             {product.preferred ? "Preferovaná" : "Označit za preferovanou"}
           </Button>
         </Box>

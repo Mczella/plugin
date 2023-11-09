@@ -24,7 +24,7 @@ import Add from "../Add.tsx";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import IngredientModal from "../ingredients/IngredientModal.tsx";
 import Ingredient from "./Ingredient.tsx";
-import { NewIngredient, NewRecipeIngredient } from "../types.ts";
+import { NewRecipeIngredient } from "../types.ts";
 import { useMyStore } from "../store/store.tsx";
 import { Controller, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -41,12 +41,10 @@ const CreateRecipe = () => {
 
   const [image, setImage] = useState("");
   const [error, setError] = useState(false);
-  const [selectedIngredients, setSelectedIngredients] = useState<
-    NewIngredient[]
-  >([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef<HTMLInputElement>(null);
-  const { addRecipe } = useMyStore();
+  const { addRecipe, selectedIngredients, editSelectedIngredients } =
+    useMyStore();
   const { state } = useLocation();
 
   useEffect(() => {
@@ -56,6 +54,7 @@ const CreateRecipe = () => {
           error: "Došlo k neočekávané chybě, zkuste to prosím znovu.",
         },
       });
+      editSelectedIngredients([]);
     } else {
       reset({
         name: state.name,
@@ -81,6 +80,7 @@ const CreateRecipe = () => {
       };
 
       addRecipe(updatedData);
+      editSelectedIngredients([]);
       navigate("/recepty");
     } else if (selectedIngredients.length === 0) {
       setError(true);
@@ -93,7 +93,6 @@ const CreateRecipe = () => {
     }
   }, [selectedIngredients]);
 
-  console.log("Selected", selectedIngredients);
   return (
     <Flex
       flexDir={"column"}
@@ -241,13 +240,10 @@ const CreateRecipe = () => {
               onOpen={onOpen}
             />
             {selectedIngredients.map((selectedIngredient) => (
-              <Box key={selectedIngredient.name}>
-                <Ingredient
-                  ingredient={selectedIngredient}
-                  setSelectedIngredients={setSelectedIngredients}
-                  selectedIngredients={selectedIngredients}
-                />
-              </Box>
+              <Ingredient
+                key={selectedIngredient.id}
+                ingredient={selectedIngredient}
+              />
             ))}
           </Grid>
         </Flex>
@@ -255,8 +251,6 @@ const CreateRecipe = () => {
           focusRef={cancelRef}
           onClose={onClose}
           isOpen={isOpen}
-          selectedIngredients={selectedIngredients}
-          setSelectedIngredients={setSelectedIngredients}
         />
       </form>
     </Flex>

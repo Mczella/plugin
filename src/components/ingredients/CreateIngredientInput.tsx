@@ -1,27 +1,30 @@
 import { Box, Flex, IconButton, Image, Input, Text } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
-import { Dispatch, FC, SetStateAction, useState } from "react";
+import { useState } from "react";
 import { useOutsideClick } from "../hooks/useOutsideClick.ts";
 import { Product } from "../types.ts";
+import { useDebounce } from "@uidotdev/usehooks";
+import { useQuery } from "@tanstack/react-query";
+import { fetchAll } from "../api/api.ts";
+import { useMyStore } from "../store/store.tsx";
 
-interface Props {
-  searchQuery: string;
-  setSearchQuery: Dispatch<SetStateAction<string>>;
-  productIds: string[];
-  productsByIds: { [p: string]: Product };
-  setSelectedProducts: Dispatch<SetStateAction<Product[]>>;
-  selectedProducts: Product[];
-}
-
-const CreateIngredientInput: FC<Props> = ({
-  searchQuery,
-  setSearchQuery,
-  productsByIds,
-  productIds,
-  setSelectedProducts,
-  selectedProducts,
-}) => {
+const CreateIngredientInput = () => {
+  const { addToSelectedProducts, selectedProducts } = useMyStore();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearch = useDebounce(searchQuery, 300);
+  const { data, isError } = useQuery(["data", debouncedSearch], () =>
+    fetchAll(searchQuery),
+  );
+  const { productsByIds, productIds } = data ?? {
+    productIds: [],
+    productsByIds: {},
+  };
+
+  if (isError) {
+    return <div>Error</div>;
+  }
+
   const handleFocus = (): void => {
     setIsDropdownOpen(true);
   };
@@ -30,10 +33,9 @@ const CreateIngredientInput: FC<Props> = ({
     setIsDropdownOpen(false);
   });
 
-  const handleAddToRecipe = (product: Product) => {
-    const productWithPreferred = { ...product, preferred: false };
-    setSelectedProducts((prevState) => [...prevState, productWithPreferred]);
-    console.log(selectedProducts);
+  const handleAddToIngredient = (product: Product) => {
+    const productWithPreferred: Product = { ...product, preferred: false };
+    addToSelectedProducts(productWithPreferred);
   };
 
   return (
@@ -76,10 +78,10 @@ const CreateIngredientInput: FC<Props> = ({
           >
             {productIds
               .filter(
-                (productId) =>
+                (productId: Product["id"]) =>
                   !selectedProducts.find((product) => product.id === productId),
               )
-              .map((productId) => {
+              .map((productId: Product["id"]) => {
                 const product = productsByIds[productId];
                 return (
                   <Box
@@ -92,6 +94,13 @@ const CreateIngredientInput: FC<Props> = ({
                     }
                     p={"10px"}
                     _hover={{ bg: "gray.100" }}
+                    // onClick={async () => {
+                    //   const openModal = new CustomEvent("redux-event", {
+                    //     bubbles: true,
+                    //     detail: { action: "open-modal", id: "1" },
+                    //   });
+                    //   document.body.dispatchEvent(openModal);
+                    // }}
                     onClick={() => console.log("ahoj")}
                   >
                     <Flex
@@ -150,7 +159,7 @@ const CreateIngredientInput: FC<Props> = ({
                           bg={"white"}
                           rounded={"2xl"}
                           icon={<AddIcon color={"black"} boxSize={6} />}
-                          onClick={() => handleAddToRecipe(product)}
+                          onClick={() => handleAddToIngredient(product)}
                         />
                       </Box>
                     </Flex>

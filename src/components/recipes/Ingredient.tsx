@@ -8,17 +8,12 @@ import {
   SimpleGrid,
   Text,
 } from "@chakra-ui/react";
-import { Dispatch, FC, SetStateAction } from "react";
-import { NewIngredient } from "../types.ts";
 import { SmallCloseIcon } from "@chakra-ui/icons";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProducts } from "../api/api.ts";
-
-type Props = {
-  ingredient: NewIngredient;
-  setSelectedIngredients: Dispatch<SetStateAction<NewIngredient[]>>;
-  selectedIngredients: NewIngredient[];
-};
+import { useMyStore } from "../store/store.tsx";
+import { FC } from "react";
+import { NewIngredient } from "../types.ts";
 
 type SimpleProduct = {
   id: string;
@@ -29,11 +24,16 @@ type SimpleProduct = {
   mainCategoryId: number;
 };
 
-const Ingredient: FC<Props> = ({
-  ingredient,
-  setSelectedIngredients,
-  selectedIngredients,
-}) => {
+type Props = {
+  ingredient: NewIngredient;
+};
+
+const Ingredient: FC<Props> = ({ ingredient }) => {
+  const { editSelectedIngredients, selectedIngredients } = useMyStore();
+  if (ingredient == undefined) {
+    throw new Error("No selected ingredient.");
+  }
+
   const threeProducts = ingredient.selectedProducts.slice(0, 3);
   const restOfProducts = ingredient.selectedProducts.length - 3;
   const ArrayOfProductIds = threeProducts.map((product) => product.id);
@@ -49,7 +49,7 @@ const Ingredient: FC<Props> = ({
     const updatedIngredients = selectedIngredients.filter(
       (ingredient) => ingredient.id !== ingredientId,
     );
-    setSelectedIngredients(updatedIngredients);
+    editSelectedIngredients(updatedIngredients);
   };
 
   return (
