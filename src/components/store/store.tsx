@@ -12,9 +12,11 @@ import {
   createIngredientsSlice,
   createRecipesInCartSlice,
   createRecipesSlice,
+  createTemporaryUISlice,
   MyIngredientsState,
   MyRecipesInCartState,
   MyRecipesState,
+  MyTemporaryUIState,
 } from "./my-state.ts";
 
 const storage: StateStorage = {
@@ -37,13 +39,17 @@ const storage: StateStorage = {
 // type State = MyState;
 
 export const store = createStore<
-  MyIngredientsState & MyRecipesState & MyRecipesInCartState
+  MyIngredientsState &
+    MyRecipesState &
+    MyRecipesInCartState &
+    MyTemporaryUIState
 >()(
   persist(
     (...a) => ({
       ...createIngredientsSlice(...a),
       ...createRecipesSlice(...a),
       ...createRecipesInCartSlice(...a),
+      ...createTemporaryUISlice(...a),
     }),
     {
       name: "rohlik-storage",
