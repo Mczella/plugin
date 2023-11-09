@@ -7,7 +7,7 @@ import CheckRecipes from "./cart/CheckRecipes.tsx";
 
 const MainArea = () => {
   const [parentElement] = useState(() =>
-    document.querySelector<HTMLElement>("#pageFullWidth")
+    document.querySelector<HTMLElement>("#pageFullWidth"),
   );
 
   const navigate = useNavigate();
