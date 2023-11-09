@@ -78,8 +78,6 @@ export const fetchPrices = async (productIds: string[]) => {
 export const fetchAll = async (query: string) => {
   const productIds = await fetchData(query);
 
-  console.log(productIds);
-
   const [products, prices, stock] = await Promise.all([
     fetchProducts(productIds),
     fetchPrices(productIds),
