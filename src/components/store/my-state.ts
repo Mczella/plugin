@@ -1,5 +1,5 @@
 import { StateCreator } from "zustand";
-import { NewIngredient, NewRecipe } from "../types.ts";
+import { NewIngredient, NewRecipe, Product } from "../types.ts";
 
 export interface MyIngredientsState {
   ingredients: NewIngredient[];
@@ -9,6 +9,19 @@ export interface MyIngredientsState {
 export interface MyRecipesState {
   recipes: NewRecipe[];
   addRecipe: (newRecipe: NewRecipe) => void;
+}
+
+export interface MyTemporaryUIState {
+  selectedIngredient: NewIngredient | null;
+  selectedIngredients: NewIngredient[];
+  selectedProducts: Product[];
+  selectIngredient: (ingredient: NewIngredient | null) => void;
+  addToSelectedIngredients: (ingredient: NewIngredient) => void;
+  editSelectedIngredients: (ingredients: NewIngredient[] | undefined) => void;
+  addToSelectedProducts: (product: Product) => void;
+  editSelectedProducts: (products: Product[] | undefined) => void;
+  deleteSelectedIngredient: (ingredient: NewIngredient) => void;
+  deleteSelectedProduct: (product: Product) => void;
 }
 
 export interface MyRecipesInCartState {
@@ -41,6 +54,56 @@ export const createRecipesSlice: StateCreator<
   addRecipe: (newRecipe: NewRecipe) => {
     set((state) => ({
       recipes: [...state.recipes, newRecipe],
+    }));
+  },
+});
+
+export const createTemporaryUISlice: StateCreator<
+  MyTemporaryUIState,
+  [],
+  [],
+  MyTemporaryUIState
+> = (set) => ({
+  selectedIngredient: null,
+  selectedIngredients: [],
+  selectedProducts: [],
+  selectIngredient: (ingredient: NewIngredient | null) => {
+    set({
+      selectedIngredient: ingredient,
+    });
+  },
+  addToSelectedIngredients: (ingredient: NewIngredient) => {
+    set((state) => ({
+      selectedIngredients: [...state.selectedIngredients, ingredient],
+    }));
+  },
+  editSelectedIngredients: (ingredients: NewIngredient[] | undefined) => {
+    set({
+      selectedIngredients: ingredients,
+    });
+  },
+  addToSelectedProducts: (product: Product) => {
+    set((state) => ({
+      selectedProducts: [...state.selectedProducts, product],
+    }));
+  },
+  editSelectedProducts: (products: Product[] | undefined) => {
+    set({
+      selectedProducts: products,
+    });
+  },
+  deleteSelectedIngredient: (ingredient: NewIngredient) => {
+    set((state) => ({
+      selectedIngredients: state.selectedIngredients.filter(
+        (stateIngredient) => stateIngredient !== ingredient,
+      ),
+    }));
+  },
+  deleteSelectedProduct: (product: Product) => {
+    set((state) => ({
+      selectedProducts: state.selectedProducts.filter(
+        (stateProduct) => stateProduct !== product,
+      ),
     }));
   },
 });
