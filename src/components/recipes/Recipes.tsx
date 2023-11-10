@@ -13,7 +13,7 @@ import { useMyStore } from "../store/store.tsx";
 import RecipeComponent from "./RecipeComponent.tsx";
 import { Icon } from "@chakra-ui/icons";
 import BreadcrumbNav from "../BreadcrumbNav.tsx";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import AddRecipeModal from "./AddRecipeModal.tsx";
 import { useRef } from "react";
 
@@ -26,6 +26,7 @@ const Recipes = () => {
   } = useDisclosure();
   const focusRef = useRef<HTMLInputElement>(null);
   // const [value, setValue] = useState("1");
+  const navigate = useNavigate();
 
   const { state } = useLocation();
   return (
@@ -35,6 +36,7 @@ const Recipes = () => {
       mx={"calc(3% + 16px)"}
       w={"1000px"}
       minH={"100vh"}
+      mb={"30px"}
     >
       <BreadcrumbNav type={"recipes"} />
       <Flex flexDir={"column"}>
@@ -83,7 +85,9 @@ const Recipes = () => {
             />
           </GridItem>
           <GridItem display="flex" flexDir="column" alignItems="center">
-            <Add text={"Upravit ingredience"} type={"recept"} />
+            <Box onClick={() => navigate("/produkty")}>
+              <Add text={"Produkty"} type={"recept"} />
+            </Box>
           </GridItem>
         </Grid>
         {state && (
