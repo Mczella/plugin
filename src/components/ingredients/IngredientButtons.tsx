@@ -1,24 +1,14 @@
 import { Button, ButtonGroup } from "@chakra-ui/react";
-import { useMyStore } from "../store/store.tsx";
 import { FC } from "react";
-import { NewIngredient } from "../types.ts";
+import { useMyStore } from "../store/store.tsx";
 
 type Props = {
   modalReset: () => void;
   handleSave: () => void;
+  id: string | undefined;
 };
-const IngredientButtons: FC<Props> = ({ modalReset, handleSave }) => {
-  const { selectedIngredient, addToSelectedIngredients, amount } = useMyStore();
-
-  const handleIngredientClick = (ingredient: NewIngredient) => {
-    const newSelectedIngredient: NewIngredient = {
-      ...ingredient,
-      amount: amount,
-    };
-    addToSelectedIngredients(newSelectedIngredient);
-    modalReset();
-  };
-
+const IngredientButtons: FC<Props> = ({ modalReset, handleSave, id }) => {
+  const { selectedProducts } = useMyStore();
   return (
     <ButtonGroup
       mt={"40px"}
@@ -51,15 +41,11 @@ const IngredientButtons: FC<Props> = ({ modalReset, handleSave }) => {
         rounded={"xl"}
         boxShadow={"md"}
         color={"white"}
-        isDisabled={amount === 0}
+        isDisabled={selectedProducts.length === 0 ? true : false}
         _hover={{ bg: "rgb(87, 130, 4)" }}
-        onClick={() => {
-          selectedIngredient && amount > 0
-            ? handleIngredientClick(selectedIngredient)
-            : handleSave();
-        }}
+        onClick={() => handleSave()}
       >
-        Vytvořit
+        {id ? "Uložit" : "Vytvořit"}
       </Button>
     </ButtonGroup>
   );
