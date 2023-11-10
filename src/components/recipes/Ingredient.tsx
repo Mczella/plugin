@@ -7,43 +7,83 @@ import {
   Image,
   SimpleGrid,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { SmallCloseIcon } from "@chakra-ui/icons";
 import { useQuery } from "@tanstack/react-query";
-import { fetchProducts } from "../api/api.ts";
+import { fetchProductsDetails } from "../api/api.ts";
 import { useMyStore } from "../store/store.tsx";
-import { FC } from "react";
+import { FC, useRef } from "react";
 import { NewIngredient } from "../types.ts";
+import IngredientModal from "../ingredients/IngredientModal.tsx";
+import { useLocation } from "react-router-dom";
 
-type SimpleProduct = {
-  id: string;
-  name: string;
-  images: string[];
-  unit: string;
-  textualAmount: string;
-  mainCategoryId: number;
-};
+// type SimpleProduct = {
+//   id: string;
+//   name: string;
+//   images: string[];
+//   unit: string;
+//   textualAmount: string;
+//   mainCategoryId: number;
+// };
 
 type Props = {
   ingredient: NewIngredient;
 };
 
 const Ingredient: FC<Props> = ({ ingredient }) => {
-  const { editSelectedIngredients, selectedIngredients } = useMyStore();
+  const {
+    editSelectedIngredients,
+    selectedIngredients,
+    addToSelectedProducts,
+    editName,
+  } = useMyStore();
+
   if (ingredient == undefined) {
     throw new Error("No selected ingredient.");
   }
 
-  const threeProducts = ingredient.selectedProducts.slice(0, 3);
+  const {
+    isOpen: isEditInRecipeOpen,
+    onOpen: onEditInRecipeOpen,
+    onClose: onEditInRecipeClose,
+  } = useDisclosure();
+  const {
+    isOpen: isEditOpen,
+    onOpen: onEditOpen,
+    onClose: onEditClose,
+  } = useDisclosure();
+  const focusRef = useRef<HTMLInputElement>(null);
   const restOfProducts = ingredient.selectedProducts.length - 3;
-  const ArrayOfProductIds = threeProducts.map((product) => product.id);
-  const { data, isError } = useQuery(["data", ArrayOfProductIds], () =>
-    fetchProducts(ArrayOfProductIds),
+  const arrayOfAllProductIds = ingredient.selectedProducts.map(
+    (product) => product.id,
   );
+  const location = useLocation();
+  const { data, isError } = useQuery(["data", arrayOfAllProductIds], () =>
+    fetchProductsDetails(arrayOfAllProductIds),
+  );
+  console.log(location);
 
   if (isError) {
     return <div>Error.</div>;
   }
+
+  const handleOpenIngredient = async () => {
+    console.log({ data });
+    if (data) {
+      const productsArray = data.productIds.map(
+        (productId: string) => data.productsByIds[productId],
+      );
+      productsArray.map((product) => {
+        addToSelectedProducts(product);
+      });
+
+      editName(ingredient.name);
+
+      //if not /produkty, it's the ingredient inside createRecipe and I want to add amount
+      location.pathname === "/produkty" ? onEditOpen() : onEditInRecipeOpen();
+    }
+  };
 
   const handleDelete = (ingredientId: string) => {
     const updatedIngredients = selectedIngredients.filter(
@@ -53,7 +93,13 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
   };
 
   return (
-    <Flex flexDir={"column"}>
+    <Flex
+      flexDir={"column"}
+      onClick={() => {
+        console.log("hej");
+        handleOpenIngredient();
+      }}
+    >
       <Flex
         flexDir={"column"}
         justify={"flex-start"}
@@ -75,7 +121,10 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
           top={"5px"}
           color={"rgb(218, 222, 224)"}
           _hover={{ color: "rgb(87, 130, 4)" }}
-          onClick={() => handleDelete(ingredient.id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDelete(ingredient.id);
+          }}
         />
         <SimpleGrid
           height={"100%"}
@@ -83,33 +132,42 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
           columns={ingredient.selectedProducts.length > 1 ? 2 : 1}
           spacing={"4px"}
         >
-          {data &&
-            data.map((product: SimpleProduct) => (
-              <Box
-                w={"60px"}
-                h={"60px"}
-                display={"flex"}
-                justifyContent={"center"}
-                alignItems={"center"}
-                key={product.id}
-              >
-                <Image
-                  src={product.images[0]}
-                  objectFit={"contain"}
-                  h={"55px"}
-                />
-              </Box>
-            ))}
-          {restOfProducts > 0 && (
-            <Box
-              w={"60px"}
-              h={"60px"}
-              display={"flex"}
-              justifyContent={"center"}
-              alignItems={"center"}
-            >
-              <Text as={"b"}>{`+ ${restOfProducts}`}</Text>
-            </Box>
+          {data && (
+            <>
+              {Object.keys(data.productsByIds)
+                .slice(0, 3)
+                .map((productId) => {
+                  const product = data.productsByIds[productId];
+                  return (
+                    <Box
+                      w={"60px"}
+                      h={"60px"}
+                      display={"flex"}
+                      justifyContent={"center"}
+                      alignItems={"center"}
+                      key={product.id}
+                    >
+                      <Image
+                        src={product.image}
+                        objectFit={"contain"}
+                        h={"55px"}
+                      />
+                    </Box>
+                  );
+                })}
+
+              {restOfProducts > 0 && (
+                <Box
+                  w={"60px"}
+                  h={"60px"}
+                  display={"flex"}
+                  justifyContent={"center"}
+                  alignItems={"center"}
+                >
+                  <Text as={"b"}>{`+ ${restOfProducts}`}</Text>
+                </Box>
+              )}
+            </>
           )}
         </SimpleGrid>
       </Flex>
@@ -133,6 +191,20 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
         <EditablePreview />
         <EditableInput />
       </Editable>
+      <IngredientModal
+        id={ingredient.id}
+        focusRef={focusRef}
+        isOpen={isEditInRecipeOpen}
+        onClose={onEditInRecipeClose}
+        type={"editInRecipe"}
+      />
+      <IngredientModal
+        id={ingredient.id}
+        focusRef={focusRef}
+        isOpen={isEditOpen}
+        onClose={onEditClose}
+        type={"edit"}
+      />
     </Flex>
   );
 };
