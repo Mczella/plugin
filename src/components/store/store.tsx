@@ -95,7 +95,16 @@ export function useBytesInUse() {
 export function usePurgeStorage() {
   return useCallback(() => {
     store.persist.clearStorage();
-    store.setState({ ingredients: [], recipes: [], recipesInCart: [] });
+    store.setState({
+      ingredients: [],
+      recipes: [],
+      recipesInCart: [],
+      name: null,
+      amount: 0,
+      selectedIngredients: [],
+      selectedProducts: [],
+      selectedIngredient: null,
+    });
   }, []);
 }
 
