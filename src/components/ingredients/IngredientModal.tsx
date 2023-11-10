@@ -121,7 +121,33 @@ const IngredientModal: FC<Props> = ({
       });
 
       editSelectedIngredients(editedRecipeIngredients);
+    } else if (name != null && selectedProducts.length > 0 && type === "edit") {
+      const editedIngredients = ingredients.map((ingredient) => {
+        if (ingredient.id === id) {
+          return {
+            ...ingredient,
+            name: name,
+            selectedProducts: updatedSelectedProducts,
+          };
+        }
+        return ingredient;
+      });
+
+      editIngredients(editedIngredients);
+    } else if (
+      name != null &&
+      selectedProducts.length > 0 &&
+      type === "create"
+    ) {
+      const newIngredient: NewIngredient = {
+        name: name,
+        selectedProducts: updatedSelectedProducts,
+        id: Date.now().toString(36),
+      };
+      addIngredient(newIngredient);
     }
+
+    modalReset();
   };
 
   return (
@@ -149,6 +175,7 @@ const IngredientModal: FC<Props> = ({
 
               {type === "editInRecipe" || type === "createInRecipe" ? (
                 <IngredientInRecipeButtons
+                  id={id}
                   step={step}
                   setStep={setStep}
                   modalReset={modalReset}
@@ -156,6 +183,7 @@ const IngredientModal: FC<Props> = ({
                 />
               ) : (
                 <IngredientButtons
+                  id={id}
                   modalReset={modalReset}
                   handleSave={handleSave}
                 />
