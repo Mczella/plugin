@@ -71,7 +71,7 @@ export type NewIngredient = {
   name: string;
   selectedProducts: SimpleIngredient[];
   id: string;
-  amount: number;
+  amount?: number;
 };
 
 export type NewRecipeIngredient = {
