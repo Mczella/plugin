@@ -74,17 +74,18 @@ const IngredientModal: FC<Props> = ({
       selectedProducts.length > 0 &&
       type === "createInRecipe"
     ) {
+      const createdId = Date.now().toString(36);
       const newIngredient: NewIngredient = {
         name: name,
         selectedProducts: updatedSelectedProducts,
-        id: Date.now().toString(36),
+        id: createdId,
       };
       addIngredient(newIngredient);
 
       const newRecipeIngredient: NewIngredient = {
         name: name,
         selectedProducts: updatedSelectedProducts,
-        id: Date.now().toString(36),
+        id: createdId,
         amount: amount,
       };
       addToSelectedIngredients(newRecipeIngredient);
@@ -171,7 +172,11 @@ const IngredientModal: FC<Props> = ({
               justifyContent={"center"}
               alignItems={"center"}
             >
-              {step === 1 ? <IngredientModalOne /> : <IngredientModalTwo />}
+              {step === 1 ? (
+                <IngredientModalOne type={type} />
+              ) : (
+                <IngredientModalTwo />
+              )}
 
               {type === "editInRecipe" || type === "createInRecipe" ? (
                 <IngredientInRecipeButtons
