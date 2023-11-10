@@ -41,7 +41,7 @@ const IngredientButtons: FC<Props> = ({ modalReset, handleSave, id }) => {
         rounded={"xl"}
         boxShadow={"md"}
         color={"white"}
-        isDisabled={selectedProducts.length === 0 ? true : false}
+        isDisabled={selectedProducts.length === 0}
         _hover={{ bg: "rgb(87, 130, 4)" }}
         onClick={() => handleSave()}
       >
