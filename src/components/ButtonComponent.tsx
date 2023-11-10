@@ -1,4 +1,4 @@
-import { Button, Image, Link as ChakraLink, Text } from "@chakra-ui/react";
+import { Button, Image, Text } from "@chakra-ui/react";
 import { FC } from "react";
 import { Link } from "react-router-dom";
 
