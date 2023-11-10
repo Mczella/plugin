@@ -6,25 +6,22 @@ import {
   AutoCompleteItem,
   AutoCompleteList,
 } from "@choc-ui/chakra-autocomplete";
-import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { NewIngredient } from "../types.ts";
 import CreateIngredientInput from "./CreateIngredientInput.tsx";
 import ChosenProducts from "./ChosenProducts.tsx";
 import { useMyStore } from "../store/store.tsx";
 import Ingredient from "../recipes/Ingredient.tsx";
 
-type Props = {
-  setName: Dispatch<SetStateAction<string | null>>;
-};
-
-const IngredientModalOne: FC<Props> = ({ setName }) => {
+const IngredientModalOne = () => {
   const {
     ingredients,
     selectedIngredient,
     selectIngredient,
     selectedIngredients,
+    editName,
+    name,
   } = useMyStore();
-  const [showInput, setShowInput] = useState<boolean>(false);
   const [currentIngredients, setCurrentIngredients] =
     useState<NewIngredient[]>(ingredients);
 
@@ -57,8 +54,7 @@ const IngredientModalOne: FC<Props> = ({ setName }) => {
           creatable
           autoComplete={"off"}
           onCreateOption={({ item }: { item: { value: string } }) => {
-            setName(item.value);
-            setShowInput(true);
+            editName(item.value);
           }}
         >
           <AutoCompleteInput
@@ -71,7 +67,9 @@ const IngredientModalOne: FC<Props> = ({ setName }) => {
             outline={"none"}
             mb={"24px"}
             border={"1px solid rgb(132, 140, 145)"}
-            placeholder="Vyberte z vašich ingrediencí..."
+            placeholder={
+              name != null ? name : "Vyberte z vašich ingrediencí..."
+            }
           />
           <AutoCompleteList
             border={"1px solid rgb(218, 222, 224)"}
@@ -87,7 +85,6 @@ const IngredientModalOne: FC<Props> = ({ setName }) => {
                 textTransform="capitalize"
                 onClick={() => {
                   selectIngredient(ingredient);
-                  setShowInput(false);
                 }}
               >
                 {ingredient.name}
@@ -95,9 +92,13 @@ const IngredientModalOne: FC<Props> = ({ setName }) => {
             ))}
             <AutoCompleteCreatable>
               {({ value }) =>
-                selectedIngredients.some(
-                  (selected) => selected.name === value,
-                ) ? (
+                name ? (
+                  <Text>
+                    Změnit název na <Text as={"b"}>{value}</Text>.
+                  </Text>
+                ) : selectedIngredients.some(
+                    (selected) => selected.name === value,
+                  ) ? (
                   <Text>Tato ingredience již existuje.</Text>
                 ) : (
                   <Text>
@@ -108,7 +109,7 @@ const IngredientModalOne: FC<Props> = ({ setName }) => {
             </AutoCompleteCreatable>
           </AutoCompleteList>
         </AutoComplete>
-        {showInput ? (
+        {name ? (
           <>
             <CreateIngredientInput />
             <ChosenProducts />
