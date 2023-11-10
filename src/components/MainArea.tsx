@@ -4,6 +4,7 @@ import CreateRecipe from "./recipes/CreateRecipe.tsx";
 import Recipes from "./recipes/Recipes.tsx";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import CheckRecipes from "./cart/CheckRecipes.tsx";
+import Products from "./products/Products.tsx";
 
 const MainArea = () => {
   const [parentElement] = useState(() =>
@@ -52,6 +53,7 @@ const MainArea = () => {
         <Route path="/" element={<></>} />
         <Route path="/pridat-recept/:id" element={<CreateRecipe />} />
         <Route path="/recepty" element={<Recipes />} />
+        <Route path="/produkty" element={<Products />} />
         <Route path="/prehled-receptu" element={<CheckRecipes />} />
       </Routes>
     </ShadowDom>
