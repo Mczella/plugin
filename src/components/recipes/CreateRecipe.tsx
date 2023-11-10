@@ -250,7 +250,7 @@ const CreateRecipe = () => {
           <Grid templateColumns="repeat(6, 1fr)" gap={"19px"}>
             <Add
               text={"Přidat ingredienci"}
-              type={"ingredience"}
+              type={"pridat-ingredienci-recept"}
               onOpen={onOpen}
             />
             {selectedIngredients.map((selectedIngredient) => (
