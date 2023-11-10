@@ -2,7 +2,7 @@ import { Box, Flex, Image, Text } from "@chakra-ui/react";
 import { AddIcon, MinusIcon, SmallCloseIcon } from "@chakra-ui/icons";
 import { FC } from "react";
 import { useMyStore } from "../store/store.tsx";
-import { NewRecipe, Product } from "../types.ts";
+import { Product } from "../types.ts";
 import { useGetRecipePrice } from "../hooks/useGetRecipePrice.tsx";
 
 type Props = {
@@ -23,14 +23,20 @@ const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
   const findRecipeById = (recipeInCart: string) =>
     recipes.find((oneRecipe) => oneRecipe.id === recipeInCart);
 
-  // @ts-ignore
-  const specificRecipe: NewRecipe = findRecipeById(recipeInCart);
-  const { productIds, ingredientData } = useGetRecipePrice(specificRecipe);
+  const specificRecipe = findRecipeById(recipeInCart);
 
+  if (!specificRecipe) {
+    throw new Error("error");
+  }
+
+  const { productIds, ingredientData } = useGetRecipePrice(specificRecipe);
+  console.log({ specificRecipe });
   const getFilteredIngredientData = (
     productIds: string[],
     ingredientData: IngredientData | undefined,
   ) => {
+    console.log({ ingredientData });
+    console.log({ productIds });
     const products: { [p: string]: Product[] } = {};
     if (ingredientData) {
       Object.keys(ingredientData.productsByStoreId).forEach((storeId) => {
@@ -46,7 +52,7 @@ const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
   };
 
   const ingredients = getFilteredIngredientData(productIds, ingredientData);
-
+  console.log({ ingredients });
   return (
     <>
       <Text
