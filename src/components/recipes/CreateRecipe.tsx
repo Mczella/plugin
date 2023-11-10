@@ -43,9 +43,22 @@ const CreateRecipe = () => {
   const [error, setError] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef<HTMLInputElement>(null);
-  const { addRecipe, selectedIngredients, editSelectedIngredients } =
-    useMyStore();
+  const {
+    addRecipe,
+    selectedIngredients,
+    editSelectedIngredients,
+    editAmount,
+    editSelectedProducts,
+    selectIngredient,
+  } = useMyStore();
   const { state } = useLocation();
+
+  const recipeReset = () => {
+    editAmount(0);
+    editSelectedProducts([]);
+    selectIngredient(null);
+    editSelectedIngredients([]);
+  };
 
   useEffect(() => {
     if (state == null) {
@@ -54,7 +67,8 @@ const CreateRecipe = () => {
           error: "Došlo k neočekávané chybě, zkuste to prosím znovu.",
         },
       });
-      editSelectedIngredients([]);
+
+      recipeReset();
     } else {
       reset({
         name: state.name,
@@ -80,7 +94,7 @@ const CreateRecipe = () => {
       };
 
       addRecipe(updatedData);
-      editSelectedIngredients([]);
+      recipeReset();
       navigate("/recepty");
     } else if (selectedIngredients.length === 0) {
       setError(true);
@@ -251,6 +265,7 @@ const CreateRecipe = () => {
           focusRef={cancelRef}
           onClose={onClose}
           isOpen={isOpen}
+          type={"createInRecipe"}
         />
       </form>
     </Flex>
