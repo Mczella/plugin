@@ -6,13 +6,10 @@ import {
   NumberInputField,
   NumberInputStepper,
 } from "@chakra-ui/react";
-import { Dispatch, FC, SetStateAction } from "react";
+import { useMyStore } from "../store/store.tsx";
 
-type Props = {
-  setAmount: Dispatch<SetStateAction<number>>;
-};
-
-const IngredientModalTwo: FC<Props> = ({ setAmount }) => {
+const IngredientModalTwo = () => {
+  const { editAmount, amount } = useMyStore();
   return (
     <>
       <Heading
@@ -25,12 +22,12 @@ const IngredientModalTwo: FC<Props> = ({ setAmount }) => {
       </Heading>
       <NumberInput
         min={0.1}
-        max={30}
-        step={0.1}
+        max={3000}
         width={"600px"}
         height={"40px"}
+        defaultValue={amount ? amount : 0}
         isRequired
-        onChange={(_, valueAsNumber) => setAmount(valueAsNumber)}
+        onChange={(_, valueAsNumber) => editAmount(valueAsNumber)}
       >
         <NumberInputField
           id={"amount"}
