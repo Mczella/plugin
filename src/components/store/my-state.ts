@@ -4,6 +4,7 @@ import { NewIngredient, NewRecipe, Product } from "../types.ts";
 export interface MyIngredientsState {
   ingredients: NewIngredient[];
   addIngredient: (ingredient: NewIngredient) => void;
+  editIngredients: (ingredients: NewIngredient[]) => void;
 }
 
 export interface MyRecipesState {
@@ -12,6 +13,10 @@ export interface MyRecipesState {
 }
 
 export interface MyTemporaryUIState {
+  amount: number;
+  editAmount: (amount: number) => void;
+  name: string | null;
+  editName: (name: string | null) => void;
   selectedIngredient: NewIngredient | null;
   selectedIngredients: NewIngredient[];
   selectedProducts: Product[];
@@ -42,6 +47,11 @@ export const createIngredientsSlice: StateCreator<
       ingredients: [...state.ingredients, ingredient],
     }));
   },
+  editIngredients: (ingredients: NewIngredient[]) => {
+    set({
+      ingredients: ingredients,
+    });
+  },
 });
 
 export const createRecipesSlice: StateCreator<
@@ -64,9 +74,21 @@ export const createTemporaryUISlice: StateCreator<
   [],
   MyTemporaryUIState
 > = (set) => ({
+  name: null,
+  amount: 0,
   selectedIngredient: null,
   selectedIngredients: [],
   selectedProducts: [],
+  editName: (name: string | null) => {
+    set({
+      name: name,
+    });
+  },
+  editAmount: (amount: number) => {
+    set({
+      amount: amount,
+    });
+  },
   selectIngredient: (ingredient: NewIngredient | null) => {
     set({
       selectedIngredient: ingredient,
