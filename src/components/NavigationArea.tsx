@@ -4,7 +4,7 @@ import { ButtonComponent } from "./ButtonComponent.tsx";
 
 const NavigationArea = () => {
   const [parentElement] = useState(() =>
-    document.querySelector(".sectionsItem")
+    document.querySelector(".sectionsItem"),
   );
 
   const location = window.location.hash;
@@ -17,7 +17,7 @@ const NavigationArea = () => {
     <ShadowDom parentElement={parentElement}>
       <ButtonComponent
         navigate={"recepty"}
-        label={"Recepty"}
+        label={"Chytrý nákup"}
         icon={"https://www.svgrepo.com/show/303501/red-star-1-logo.svg"}
       />
     </ShadowDom>
