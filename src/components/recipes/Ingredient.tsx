@@ -37,6 +37,8 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
     selectedIngredients,
     addToSelectedProducts,
     editName,
+    editIngredients,
+    ingredients,
   } = useMyStore();
 
   if (ingredient == undefined) {
@@ -121,10 +123,21 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
           top={"5px"}
           color={"rgb(218, 222, 224)"}
           _hover={{ color: "rgb(87, 130, 4)" }}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleDelete(ingredient.id);
-          }}
+          //TODO: might have to delete the recipe too
+          onClick={
+            location.pathname === "/produkty"
+              ? (e) => {
+                  e.stopPropagation();
+                  const updatedIngredients = ingredients.filter(
+                    (ing) => ing.id !== ingredient.id,
+                  );
+                  editIngredients(updatedIngredients);
+                }
+              : (e) => {
+                  e.stopPropagation();
+                  handleDelete(ingredient.id);
+                }
+          }
         />
         <SimpleGrid
           height={"100%"}
