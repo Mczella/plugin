@@ -3,6 +3,7 @@ import { useGetIngredientIds } from "./useGetIngredientsIds.tsx";
 
 export const useGetRecipePrice = (recipe: NewRecipe) => {
   const ingredientData: IngredientData = useGetIngredientIds(recipe);
+  console.log({ ingredientData });
   let totalPrice = 0;
   const productIds: string[] = [];
   let overallCheapestProduct: Product | undefined;
@@ -10,19 +11,25 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
   try {
     if (ingredientData != null && recipe) {
       recipe.ingredients.forEach(
-        (ingredient: { id: string; amount: number }) => {
+        (ingredient: { id: string; amount: number | undefined }) => {
+          console.log({ ingredient });
           const ingredientId = ingredient.id;
           // const ingredientAmount = ingredient.amount;
           const ingredientProducts =
             ingredientData.productsByStoreId[ingredientId];
 
+          console.log({ ingredientProducts });
+
           if (ingredientProducts && ingredientProducts.length > 0) {
             const preferredProduct = ingredientProducts.filter(
               (product) => product.preferred,
             );
+
+            console.log({ preferredProduct });
             const inStockProducts = ingredientProducts.filter(
               (product) => product.inStock,
             );
+            console.log({ inStockProducts });
 
             if (
               preferredProduct.length > 0 &&
@@ -35,10 +42,12 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
               const productsWithSales = inStockProducts.filter(
                 (product) => product.sales?.length > 0,
               );
+              console.log({ productsWithSales });
 
               const productsWithoutSales = inStockProducts.filter(
                 (product) => product.sales.length === 0,
               );
+              console.log({ productsWithoutSales });
 
               let cheapestProductWithSales;
               let cheapestProductWithoutSales;
@@ -52,6 +61,7 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
                       : minPriceProduct,
                 );
               }
+              console.log({ cheapestProductWithSales });
 
               if (productsWithoutSales.length > 0) {
                 cheapestProductWithoutSales = productsWithoutSales.reduce(
@@ -61,7 +71,7 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
                       : minPriceProduct,
                 );
               }
-
+              console.log({ cheapestProductWithoutSales });
               if (cheapestProductWithSales && cheapestProductWithoutSales) {
                 if (
                   cheapestProductWithSales.sales[0].price.amount <
@@ -79,20 +89,21 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
                 throw new Error("Všechny alternativy vyprodány.");
               }
             }
-
-            if (selectedProduct) {
-              totalPrice += selectedProduct.price.amount;
-              productIds.push(selectedProduct.id);
-            } else if (overallCheapestProduct != undefined) {
-              if (overallCheapestProduct.sales.length > 0) {
-                totalPrice += overallCheapestProduct.sales[0].price.amount;
-                productIds.push(overallCheapestProduct.id);
-              } else {
-                totalPrice += overallCheapestProduct.price.amount;
-                productIds.push(overallCheapestProduct.id);
-              }
+            console.log({ overallCheapestProduct });
+          }
+          if (selectedProduct) {
+            totalPrice += selectedProduct.price.amount;
+            productIds.push(selectedProduct.id);
+          } else if (overallCheapestProduct != undefined) {
+            if (overallCheapestProduct.sales.length > 0) {
+              totalPrice += overallCheapestProduct.sales[0].price.amount;
+              productIds.push(overallCheapestProduct.id);
+            } else {
+              totalPrice += overallCheapestProduct.price.amount;
+              productIds.push(overallCheapestProduct.id);
             }
           }
+          selectedProduct = undefined;
         },
       );
     }
