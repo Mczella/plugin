@@ -21,11 +21,7 @@ import IngredientModal from "../ingredients/IngredientModal.tsx";
 const Products = () => {
   const { ingredients, editSelectedProducts } = useMyStore();
   // const [productArray, setProductArray] = useState<Product["id"][]>([]);
-  const {
-    isOpen: isPopupOpen,
-    onOpen: onPopupOpen,
-    onClose: onPopupClose,
-  } = useDisclosure();
+  const { isOpen: isOpen, onOpen: onOpen, onClose: onClose } = useDisclosure();
   const focusRef = useRef<HTMLInputElement>(null);
 
   const { state } = useLocation();
@@ -82,13 +78,13 @@ const Products = () => {
           <GridItem display="flex" flexDir="column" alignItems="center">
             <Add
               text={"Přidat ingredienci"}
-              type={"recept"}
-              onPopupOpen={onPopupOpen}
+              type={"pridat-ingredienci"}
+              onOpen={onOpen}
             />
           </GridItem>
           <GridItem display="flex" flexDir="column" alignItems="center">
             <Box onClick={() => navigate("/recepty")}>
-              <Add text={"Recepty"} type={"recept"} />
+              <Add text={"Recepty"} type={"odkaz"} />
             </Box>
           </GridItem>
         </Grid>
@@ -129,8 +125,8 @@ const Products = () => {
       </Flex>
       <IngredientModal
         focusRef={focusRef}
-        isOpen={isPopupOpen}
-        onClose={onPopupClose}
+        isOpen={isOpen}
+        onClose={onClose}
         type={"create"}
       />
     </Box>
