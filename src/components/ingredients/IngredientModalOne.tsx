@@ -6,14 +6,18 @@ import {
   AutoCompleteItem,
   AutoCompleteList,
 } from "@choc-ui/chakra-autocomplete";
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { NewIngredient } from "../types.ts";
 import CreateIngredientInput from "./CreateIngredientInput.tsx";
 import ChosenProducts from "./ChosenProducts.tsx";
 import { useMyStore } from "../store/store.tsx";
 import Ingredient from "../recipes/Ingredient.tsx";
 
-const IngredientModalOne = () => {
+type Props = {
+  type: "create" | "createInRecipe" | "edit" | "editInRecipe";
+};
+
+const IngredientModalOne: FC<Props> = ({ type }) => {
   const {
     ingredients,
     selectedIngredient,
@@ -68,7 +72,11 @@ const IngredientModalOne = () => {
             mb={"24px"}
             border={"1px solid rgb(132, 140, 145)"}
             placeholder={
-              name != null ? name : "Vyberte z vašich ingrediencí..."
+              name != null
+                ? name
+                : type === "create"
+                ? "Vytvořte novou ingredienci..."
+                : "Vyberte z vašich ingrediencí..."
             }
           />
           <AutoCompleteList
