@@ -86,7 +86,7 @@ const Recipes = () => {
           </GridItem>
           <GridItem display="flex" flexDir="column" alignItems="center">
             <Box onClick={() => navigate("/produkty")}>
-              <Add text={"Produkty"} type={"recept"} />
+              <Add text={"Produkty"} type={"odkaz"} />
             </Box>
           </GridItem>
         </Grid>
