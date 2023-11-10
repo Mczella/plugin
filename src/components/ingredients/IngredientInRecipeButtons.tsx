@@ -8,12 +8,14 @@ type Props = {
   setStep: Dispatch<SetStateAction<number>>;
   modalReset: () => void;
   handleSave: () => void;
+  id: string | undefined;
 };
 const IngredientInRecipeButtons: FC<Props> = ({
   step,
   setStep,
   modalReset,
   handleSave,
+  id,
 }) => {
   const {
     selectedProducts,
@@ -136,7 +138,7 @@ const IngredientInRecipeButtons: FC<Props> = ({
             : handleSave();
         }}
       >
-        Vytvořit
+        {id ? "Uložit" : "Vytvořit"}
       </Button>
     </ButtonGroup>
   );
