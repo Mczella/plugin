@@ -13,6 +13,8 @@ export interface MyRecipesState {
 }
 
 export interface MyTemporaryUIState {
+  optimize: boolean;
+  editOptimize: (optimize: boolean) => void;
   amount: number;
   editAmount: (amount: number) => void;
   name: string | null;
@@ -31,6 +33,20 @@ export interface MyTemporaryUIState {
 
 export interface MyRecipesInCartState {
   recipesInCart: string[];
+  ingredientsInCart: {
+    name: string;
+    id: string;
+    amount: number;
+    unit: string;
+    packageAmount: number;
+  }[];
+  addIngredientToCart: (
+    name: string,
+    id: string,
+    amount: number,
+    unit: string,
+    packageAmount: number,
+  ) => void;
   addRecipeToCart: (recipe: string) => void;
   deleteRecipeFromCart: (recipe: string) => void;
 }
@@ -74,11 +90,17 @@ export const createTemporaryUISlice: StateCreator<
   [],
   MyTemporaryUIState
 > = (set) => ({
+  optimize: false,
   name: null,
   amount: 0,
   selectedIngredient: null,
   selectedIngredients: [],
   selectedProducts: [],
+  editOptimize: (optimize: boolean) => {
+    set({
+      optimize: optimize,
+    });
+  },
   editName: (name: string | null) => {
     set({
       name: name,
@@ -137,6 +159,37 @@ export const createRecipesInCartSlice: StateCreator<
   MyRecipesInCartState
 > = (set) => ({
   recipesInCart: [],
+  ingredientsInCart: [],
+  addIngredientToCart: (
+    name: string,
+    id: string,
+    amount: number,
+    unit: string,
+    packageAmount: number,
+  ) => {
+    set((state) => {
+      const existingIngredient = state.ingredientsInCart.find(
+        (ingredient) => ingredient.id === id,
+      );
+
+      if (existingIngredient) {
+        return {
+          ingredientsInCart: state.ingredientsInCart.map((ingredient) =>
+            ingredient.id === id
+              ? { ...ingredient, amount: ingredient.amount + amount }
+              : ingredient,
+          ),
+        };
+      } else {
+        return {
+          ingredientsInCart: [
+            ...state.ingredientsInCart,
+            { name, id, amount, unit, packageAmount },
+          ],
+        };
+      }
+    });
+  },
   addRecipeToCart: (recipe: string) => {
     set((state) => ({
       recipesInCart: [...state.recipesInCart, recipe],
