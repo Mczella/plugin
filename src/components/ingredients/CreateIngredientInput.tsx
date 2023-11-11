@@ -1,27 +1,29 @@
 import { Box, Flex, IconButton, Image, Input, Text } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
-import { Dispatch, FC, SetStateAction, useState } from "react";
-import { useOutsideClick } from "./useOutsideClick.ts";
-import { Product } from "./types.ts";
+import { useState } from "react";
+import { useOutsideClick } from "../hooks/useOutsideClick.ts";
+import { Product } from "../types.ts";
+import { useDebounce } from "@uidotdev/usehooks";
+import { useQuery } from "@tanstack/react-query";
+import { fetchAll } from "../api/api.ts";
+import { useMyStore } from "../store/store.tsx";
 
-interface Props {
-  searchQuery: string;
-  setSearchQuery: Dispatch<SetStateAction<string>>;
-  productIds: string[];
-  productsByIds: { [p: string]: Product };
-  setSelectedProducts: Dispatch<SetStateAction<Product[]>>;
-  selectedProducts: Product[];
-}
-
-const CreateIngredientInput: FC<Props> = ({
-  searchQuery,
-  setSearchQuery,
-  productsByIds,
-  productIds,
-  setSelectedProducts,
-  selectedProducts,
-}) => {
+const CreateIngredientInput = () => {
+  const { addToSelectedProducts, selectedProducts } = useMyStore();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearch = useDebounce(searchQuery, 300);
+  const { data, isError } = useQuery(["data", debouncedSearch], () =>
+    fetchAll(searchQuery),
+  );
+  const { productsByIds, productIds } = data ?? {
+    productIds: [],
+    productsByIds: {},
+  };
+
+  if (isError) {
+    return <div>Error</div>;
+  }
 
   const handleFocus = (): void => {
     setIsDropdownOpen(true);
@@ -31,69 +33,60 @@ const CreateIngredientInput: FC<Props> = ({
     setIsDropdownOpen(false);
   });
 
-  const handleAddToRecipe = (product: Product) => {
-    const productWithPreferred = { ...product, preferred: false };
-    setSelectedProducts((prevState) => [...prevState, productWithPreferred]);
-    console.log(selectedProducts);
+  const handleAddToIngredient = (product: Product) => {
+    const productWithPreferred: Product = { ...product, preferred: false };
+    addToSelectedProducts(productWithPreferred);
   };
-
-  console.log(isDropdownOpen);
 
   return (
     <Flex alignItems={"center"} flexDir={"column"}>
-      <Box
-        bg={"rgb(242, 244, 244)"}
-        py={"32px"}
-        mb={"48px"}
-        rounded={"3xl"}
-        display={"flex"}
-        justifyContent={"center"}
-        width="-webkit-fill-available"
-        zIndex={0}
-      >
-        <Box ref={dropdownRef}>
-          <Input
-            width={"600px"}
-            onFocus={handleFocus}
-            height={"40px"}
-            rounded={"xl"}
-            fontSize={"14px"}
+      <Box ref={dropdownRef}>
+        <Input
+          width={"740px"}
+          onFocus={handleFocus}
+          height={"40px"}
+          rounded={"xl"}
+          fontSize={"14px"}
+          bg={"white"}
+          color={"rgb(132, 140, 145)"}
+          outline={"none"}
+          border={"1px solid rgb(132, 140, 145)"}
+          placeholder={
+            "Vyhledejte produkty, které odpovídají vaším požadavkům na danou ingredienci."
+          }
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        {productsByIds &&
+        Object.keys(productsByIds).length > 0 &&
+        isDropdownOpen ? (
+          <Box
+            zIndex={1}
+            width={"740px"}
+            maxHeight={"480px"}
+            overflow="scroll"
+            sx={{
+              "::-webkit-scrollbar": {
+                color: "#007 #bada55",
+              },
+            }}
+            border={"1px solid rgb(218, 222, 224)"}
+            rounded={"lg"}
+            boxShadow={"md"}
+            position={"absolute"}
             bg={"white"}
-            color={"rgb(132, 140, 145)"}
-            outline={"none"}
-            border={"1px solid rgb(132, 140, 145)"}
-            placeholder={
-              "Vyhledejte produkty, které odpovídají vaším požadavkům na danou ingredienci."
-            }
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          {productsByIds &&
-          Object.keys(productsByIds).length > 0 &&
-          isDropdownOpen ? (
-            //close on outside click
-            <Box
-              width={"600px"}
-              maxHeight={"480px"}
-              overflow="scroll"
-              sx={{
-                "::-webkit-scrollbar": {
-                  color: "#007 #bada55",
-                },
-              }}
-              border={"1px solid rgb(218, 222, 224)"}
-              rounded={"lg"}
-              boxShadow={"md"}
-              position={"absolute"}
-              bg={"white"}
-            >
-              {productIds.map((productId) => {
-                console.log(productsByIds, productId);
+          >
+            {productIds
+              .filter(
+                (productId: Product["id"]) =>
+                  !selectedProducts.find((product) => product.id === productId),
+              )
+              .map((productId: Product["id"]) => {
                 const product = productsByIds[productId];
                 return (
                   <Box
                     key={productId}
-                    width={"600px"}
+                    width={"740px"}
                     borderBottom={
                       productIds.indexOf(productId) === productIds.length - 1
                         ? "none"
@@ -101,6 +94,14 @@ const CreateIngredientInput: FC<Props> = ({
                     }
                     p={"10px"}
                     _hover={{ bg: "gray.100" }}
+                    // onClick={async () => {
+                    //   const openModal = new CustomEvent("redux-event", {
+                    //     bubbles: true,
+                    //     detail: { action: "open-modal", id: "1" },
+                    //   });
+                    //   document.body.dispatchEvent(openModal);
+                    // }}
+                    onClick={() => console.log("ahoj")}
                   >
                     <Flex
                       flexDir={"row"}
@@ -141,7 +142,9 @@ const CreateIngredientInput: FC<Props> = ({
                             fontWeight={600}
                             lineHeight={"22px"}
                           >
-                            {product.price?.amount} {product.price?.currency}
+                            {product.sales.length > 0
+                              ? `${product.sales[0].price.amount} ${product.price.currency}`
+                              : `${product.price.amount} ${product.price.currency}`}
                           </Text>
                         </Flex>
                       </Flex>
@@ -156,16 +159,15 @@ const CreateIngredientInput: FC<Props> = ({
                           bg={"white"}
                           rounded={"2xl"}
                           icon={<AddIcon color={"black"} boxSize={6} />}
-                          onClick={() => handleAddToRecipe(product)}
+                          onClick={() => handleAddToIngredient(product)}
                         />
                       </Box>
                     </Flex>
                   </Box>
                 );
               })}
-            </Box>
-          ) : null}
-        </Box>
+          </Box>
+        ) : null}
       </Box>
     </Flex>
   );

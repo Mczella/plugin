@@ -16,8 +16,8 @@ const NavigationArea = () => {
   return parentElement ? (
     <ShadowDom parentElement={parentElement}>
       <ButtonComponent
-        navigate={"/#/recepty"}
-        label={"Recepty"}
+        navigate={"recepty"}
+        label={"Chytrý nákup"}
         icon={"https://www.svgrepo.com/show/303501/red-star-1-logo.svg"}
       />
     </ShadowDom>

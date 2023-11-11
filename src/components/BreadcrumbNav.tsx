@@ -1,7 +1,12 @@
 import { ChevronRightIcon } from "@chakra-ui/icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@chakra-ui/react";
+import { FC } from "react";
 
-const BreadcrumbNav = () => {
+type Props = {
+  type: "recipes" | "pridat-recept";
+};
+
+const BreadcrumbNav: FC<Props> = ({ type }) => {
   return (
     <Breadcrumb
       padding={"2px 21px 16px 0px"}
@@ -21,11 +26,13 @@ const BreadcrumbNav = () => {
         </BreadcrumbLink>
       </BreadcrumbItem>
 
-      <BreadcrumbItem isCurrentPage>
-        <BreadcrumbLink fontSize={"12px"} href="/#/pridat-recept">
-          Nový recept
-        </BreadcrumbLink>
-      </BreadcrumbItem>
+      {type === "pridat-recept" ? (
+        <BreadcrumbItem isCurrentPage>
+          <BreadcrumbLink fontSize={"12px"} href="/#/pridat-recept">
+            Nový recept
+          </BreadcrumbLink>
+        </BreadcrumbItem>
+      ) : null}
     </Breadcrumb>
   );
 };

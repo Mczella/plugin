@@ -1,26 +1,8 @@
-import { NewRecipe, NewIngredient } from "./types.ts";
-import { useMyStore } from "./store.tsx";
-import { fetchPriceAndStock } from "./Api";
+import { NewRecipe, NewIngredient, IngredientData } from "../types.ts";
+import { useMyStore } from "../store/store.tsx";
+import { fetchPriceAndStock } from "../api/api.ts";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-
-type Product = {
-  id: number;
-  preferred?: boolean | undefined;
-  price: {
-    amount: number;
-  };
-  inStock: boolean;
-};
-
-type IngredientData = null | {
-  productsByStoreId: {
-    [storeId: string]: Product[];
-  };
-  ingredientIds: {
-    [storeId: string]: string[];
-  };
-};
 
 export const useGetIngredientIds = (recipe: NewRecipe) => {
   const { ingredients } = useMyStore();
@@ -36,7 +18,6 @@ export const useGetIngredientIds = (recipe: NewRecipe) => {
   useEffect(() => {
     if (data !== undefined) {
       const updatedIngredientData = { ...data };
-      console.log(updatedIngredientData);
 
       let selectedProductPreferences: {
         [key: string]: { [key: string]: boolean | undefined };
@@ -77,18 +58,18 @@ const getIngredientIds = (
 ) => {
   const ingredientIds: { [key: string]: string[] } = {};
 
-  recipe.ingredients.forEach((ingredientId) => {
+  recipe.ingredients.forEach((ingredient) => {
     const productIds: string[] = [];
 
-    storeIngredients.forEach((storeIngredient: NewIngredient) => {
-      if (storeIngredient.id === ingredientId) {
+    storeIngredients.forEach((storeIngredient) => {
+      if (storeIngredient.id === ingredient.id) {
         storeIngredient.selectedProducts.forEach((product) => {
           productIds.push(product.id);
         });
       }
     });
 
-    ingredientIds[ingredientId] = productIds;
+    ingredientIds[ingredient.id] = productIds;
   });
 
   return ingredientIds;
