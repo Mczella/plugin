@@ -11,10 +11,10 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
   try {
     if (ingredientData != null && recipe) {
       recipe.ingredients.forEach(
-        (ingredient: { id: string; amount: number | undefined }) => {
+        (ingredient: { id: string; amount: number }) => {
           console.log({ ingredient });
           const ingredientId = ingredient.id;
-          // const ingredientAmount = ingredient.amount;
+          const ingredientAmount = ingredient.amount;
           const ingredientProducts =
             ingredientData.productsByStoreId[ingredientId];
 
@@ -26,8 +26,20 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
             );
 
             console.log({ preferredProduct });
-            const inStockProducts = ingredientProducts.filter(
-              (product) => product.inStock,
+            const inStockProducts = ingredientProducts.filter((product) =>
+              product.tooltips.length === 0
+                ? product.inStock &&
+                  ingredientAmount / product.packageInfo!.amount <
+                    product.maxBasketAmount
+                : product.tooltips[0].triggerAmount
+                ? product.inStock &&
+                  ingredientAmount / product.packageInfo!.amount <
+                    product.tooltips[0].triggerAmount &&
+                  ingredientAmount / product.packageInfo!.amount <
+                    product.maxBasketAmount
+                : product.inStock &&
+                  ingredientAmount / product.packageInfo!.amount <
+                    product.maxBasketAmount,
             );
             console.log({ inStockProducts });
 
@@ -92,14 +104,27 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
             console.log({ overallCheapestProduct });
           }
           if (selectedProduct) {
-            totalPrice += selectedProduct.price.amount;
+            const neededAmountOfProducts =
+              ingredientAmount / selectedProduct.packageInfo!.amount;
+            console.log(neededAmountOfProducts);
+            const amountOfProductsToBuy = Math.ceil(neededAmountOfProducts);
+            console.log(amountOfProductsToBuy);
+            totalPrice += selectedProduct.price.amount * amountOfProductsToBuy;
             productIds.push(selectedProduct.id);
           } else if (overallCheapestProduct != undefined) {
+            const neededAmountOfProducts =
+              ingredientAmount / overallCheapestProduct.packageInfo!.amount;
+            console.log(neededAmountOfProducts);
+            const amountOfProductsToBuy = Math.ceil(neededAmountOfProducts);
+            console.log(amountOfProductsToBuy);
             if (overallCheapestProduct.sales.length > 0) {
-              totalPrice += overallCheapestProduct.sales[0].price.amount;
+              totalPrice +=
+                overallCheapestProduct.sales[0].price.amount *
+                amountOfProductsToBuy;
               productIds.push(overallCheapestProduct.id);
             } else {
-              totalPrice += overallCheapestProduct.price.amount;
+              totalPrice +=
+                overallCheapestProduct.price.amount * amountOfProductsToBuy;
               productIds.push(overallCheapestProduct.id);
             }
           }
