@@ -1,6 +1,7 @@
 import {
   Badge,
   Box,
+  Button,
   Flex,
   Grid,
   GridItem,
@@ -15,10 +16,11 @@ import { Icon } from "@chakra-ui/icons";
 import BreadcrumbNav from "../BreadcrumbNav.tsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import AddRecipeModal from "./AddRecipeModal.tsx";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { NewRecipe } from "../types.ts";
 
 const Recipes = () => {
-  const { recipes } = useMyStore();
+  const { recipes, ingredientsInCart, ingredients } = useMyStore();
   const {
     isOpen: isPopupOpen,
     onOpen: onPopupOpen,
@@ -27,8 +29,41 @@ const Recipes = () => {
   const focusRef = useRef<HTMLInputElement>(null);
   // const [value, setValue] = useState("1");
   const navigate = useNavigate();
-
+  console.log(ingredientsInCart);
   const { state } = useLocation();
+  console.log("hz", recipes);
+  const [filteredRecipes, setFilteredRecipes] = useState<NewRecipe[]>(recipes);
+
+  const handleFilter = (
+    ingredient: {
+      name: string;
+      id: any;
+      amount: number;
+      unit: string;
+      packageAmount: number;
+    },
+    remainingAmount: number,
+  ) => {
+    const findIngredientById = (ingredientId: string) =>
+      ingredients.find((ingredient) => ingredient.id === ingredientId);
+
+    const filtered = filteredRecipes.filter((recipe) =>
+      recipe.ingredients.some((recipeIngredient) => {
+        const recipeIngredientId = findIngredientById(recipeIngredient.id);
+        return (
+          recipeIngredientId &&
+          recipeIngredientId.selectedProducts.some(
+            (id) =>
+              id.id === ingredient.id &&
+              recipeIngredient.amount <= remainingAmount,
+          )
+        );
+      }),
+    );
+    setFilteredRecipes(filtered);
+    console.log(filteredRecipes);
+  };
+
   return (
     <Box
       pt={"16px"}
@@ -103,6 +138,30 @@ const Recipes = () => {
         >
           Vaše recepty
         </Heading>
+        {ingredientsInCart.map((ingredient) => {
+          const remainingAmount = Number(
+            (ingredient.packageAmount - ingredient.amount).toFixed(1),
+          );
+
+          if (remainingAmount !== 0) {
+            return (
+              <Box key={ingredient.id}>
+                <Text>
+                  {ingredient.packageAmount} {ingredient.amount}
+                </Text>
+                <Text>
+                  {`Z receptů vám zbyde zhruba ${remainingAmount} ${ingredient.unit} produktu ${ingredient.name}`}
+                </Text>
+                <Button
+                  onClick={() => handleFilter(ingredient, remainingAmount)}
+                >
+                  Filtrovat recepty se zbývajícím množstvím {ingredient.name}
+                </Button>
+              </Box>
+            );
+          }
+        })}
+
         {/*<RadioGroup onChange={setValue} value={value}>*/}
         {/*  <Stack direction="row" gap={"16px"}>*/}
         {/*    <Radio value="1" fontSize={"12px"}>*/}
@@ -120,7 +179,7 @@ const Recipes = () => {
         {/*  </Stack>*/}
         {/*</RadioGroup>*/}
         <Grid templateColumns="repeat(5, 1fr)" gap="10px">
-          {recipes.map((recipe) => (
+          {filteredRecipes.map((recipe) => (
             <RecipeComponent key={recipe.id} recipe={recipe} />
           ))}
         </Grid>
