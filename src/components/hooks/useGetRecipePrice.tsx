@@ -8,10 +8,17 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
   const productIds: string[] = [];
   let overallCheapestProduct: Product | undefined;
   let selectedProduct: Product | undefined;
+  const needed: {
+    name: string;
+    id: string;
+    amount: number;
+    unit: string;
+    packageAmount: number;
+  }[] = [];
   try {
     if (ingredientData != null && recipe) {
       recipe.ingredients.forEach(
-        (ingredient: { id: string; amount: number }) => {
+        (ingredient: { id: string; amount: number | undefined }) => {
           console.log({ ingredient });
           const ingredientId = ingredient.id;
           const ingredientAmount = ingredient.amount;
@@ -29,16 +36,16 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
             const inStockProducts = ingredientProducts.filter((product) =>
               product.tooltips.length === 0
                 ? product.inStock &&
-                  ingredientAmount / product.packageInfo!.amount <
+                  ingredientAmount! / product.packageInfo!.amount <
                     product.maxBasketAmount
                 : product.tooltips[0].triggerAmount
                 ? product.inStock &&
-                  ingredientAmount / product.packageInfo!.amount <
+                  ingredientAmount! / product.packageInfo!.amount <
                     product.tooltips[0].triggerAmount &&
-                  ingredientAmount / product.packageInfo!.amount <
+                  ingredientAmount! / product.packageInfo!.amount <
                     product.maxBasketAmount
                 : product.inStock &&
-                  ingredientAmount / product.packageInfo!.amount <
+                  ingredientAmount! / product.packageInfo!.amount <
                     product.maxBasketAmount,
             );
             console.log({ inStockProducts });
@@ -104,18 +111,32 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
             console.log({ overallCheapestProduct });
           }
           if (selectedProduct) {
-            const neededAmountOfProducts =
-              ingredientAmount / selectedProduct.packageInfo!.amount;
-            console.log(neededAmountOfProducts);
-            const amountOfProductsToBuy = Math.ceil(neededAmountOfProducts);
+            const neededAmountOfProduct =
+              ingredientAmount! / selectedProduct.packageInfo!.amount;
+            console.log(neededAmountOfProduct);
+            needed.push({
+              name: selectedProduct.name!,
+              id: selectedProduct.id,
+              amount: ingredientAmount!,
+              unit: selectedProduct.packageInfo?.unit!,
+              packageAmount: selectedProduct.packageInfo?.amount!,
+            });
+            const amountOfProductsToBuy = Math.ceil(neededAmountOfProduct);
             console.log(amountOfProductsToBuy);
             totalPrice += selectedProduct.price.amount * amountOfProductsToBuy;
             productIds.push(selectedProduct.id);
           } else if (overallCheapestProduct != undefined) {
-            const neededAmountOfProducts =
-              ingredientAmount / overallCheapestProduct.packageInfo!.amount;
-            console.log(neededAmountOfProducts);
-            const amountOfProductsToBuy = Math.ceil(neededAmountOfProducts);
+            const neededAmountOfProduct =
+              ingredientAmount! / overallCheapestProduct.packageInfo!.amount;
+            console.log(neededAmountOfProduct);
+            needed.push({
+              name: overallCheapestProduct.name!,
+              id: overallCheapestProduct.id,
+              amount: ingredientAmount!,
+              unit: overallCheapestProduct.packageInfo?.unit!,
+              packageAmount: overallCheapestProduct.packageInfo?.amount!,
+            });
+            const amountOfProductsToBuy = Math.ceil(neededAmountOfProduct);
             console.log(amountOfProductsToBuy);
             if (overallCheapestProduct.sales.length > 0) {
               totalPrice +=
@@ -133,7 +154,7 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
       );
     }
 
-    return { totalPrice, productIds, ingredientData };
+    return { totalPrice, productIds, ingredientData, needed };
   } catch (error) {
     return { totalPrice: 0, productIds: [] };
   }
