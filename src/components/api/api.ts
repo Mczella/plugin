@@ -162,6 +162,8 @@ export const fetchPriceAndStock = async (ingredientIds: {
         textualAmount: products[index].textualAmount,
         badges: products[index].badges,
         image: products[index].images[0],
+        tooltips: stock[index].tooltips,
+        maxBasketAmount: stock[index].maxBasketAmount,
       }));
 
       return {
