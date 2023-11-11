@@ -55,7 +55,7 @@ const Recipes = () => {
           recipeIngredientId.selectedProducts.some(
             (id) =>
               id.id === ingredient.id &&
-              recipeIngredient.amount <= remainingAmount,
+              recipeIngredient.amount! <= remainingAmount,
           )
         );
       }),
