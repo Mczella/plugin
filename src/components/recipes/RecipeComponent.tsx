@@ -19,9 +19,31 @@ type Props = {
 };
 
 const RecipeComponent: FC<Props> = ({ recipe }) => {
-  const { recipesInCart, addRecipeToCart } = useMyStore();
-  const { totalPrice } = useGetRecipePrice(recipe);
+  const {
+    recipesInCart,
+    addRecipeToCart,
+    addIngredientToCart,
+    ingredientsInCart,
+    recipes,
+  } = useMyStore();
+  const { totalPrice, needed } = useGetRecipePrice(recipe);
   const pricePerPortion = totalPrice / recipe.portion;
+  console.log(needed);
+  console.log(ingredientsInCart);
+  console.log("recipes", recipes);
+
+  const handleBuy = () => {
+    needed!.forEach((item) => {
+      addIngredientToCart(
+        item.name,
+        item.id,
+        item.amount,
+        item.unit,
+        item.packageAmount,
+      );
+    });
+    addRecipeToCart(recipe.id);
+  };
 
   return (
     <GridItem display="flex" flexDir="column" alignItems="center">
@@ -132,7 +154,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
             fontWeight={"normal"}
             color={"rgb(28, 37, 41)"}
           >
-            100 Kč
+            {totalPrice === 0 ? null : "100 Kč"}
           </Text>
           <Text
             fontSize="24px"
@@ -163,7 +185,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
             fontWeight={"bold"}
             isDisabled={totalPrice === 0}
             _hover={{ bg: "rgb(87, 130, 4)", color: "white" }}
-            onClick={() => addRecipeToCart(recipe.id)}
+            onClick={handleBuy}
           >
             Do košíku
           </Button>
