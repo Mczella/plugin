@@ -46,6 +46,8 @@ const IngredientModal: FC<Props> = ({
     editIngredients,
     editSelectedIngredients,
     editName,
+    optimize,
+    editOptimize,
   } = useMyStore();
   const purgeStorage = usePurgeStorage();
   // // const bytesInUse = useBytesInUse();
@@ -55,6 +57,7 @@ const IngredientModal: FC<Props> = ({
   const modalReset = () => {
     setStep(1);
     editAmount(0);
+    editOptimize(false);
     editSelectedProducts([]);
     selectIngredient(null);
     onClose();
@@ -79,6 +82,8 @@ const IngredientModal: FC<Props> = ({
         name: name,
         selectedProducts: updatedSelectedProducts,
         id: createdId,
+        unit: selectedProducts[0].unit,
+        optimize: optimize,
       };
       addIngredient(newIngredient);
 
@@ -87,6 +92,8 @@ const IngredientModal: FC<Props> = ({
         selectedProducts: updatedSelectedProducts,
         id: createdId,
         amount: amount,
+        unit: selectedProducts[0].unit,
+        optimize: optimize,
       };
       addToSelectedIngredients(newRecipeIngredient);
 
@@ -144,6 +151,8 @@ const IngredientModal: FC<Props> = ({
         name: name,
         selectedProducts: updatedSelectedProducts,
         id: Date.now().toString(36),
+        unit: selectedProducts[0].unit,
+        optimize: optimize,
       };
       addIngredient(newIngredient);
     }
