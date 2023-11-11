@@ -5,7 +5,7 @@ export interface Product {
     amount: number;
     currency: string;
   };
-  unit?: string;
+  unit: string;
   textualAmount?: string;
   badges?: string;
   image?: string;
@@ -15,20 +15,27 @@ export interface Product {
     currency: string;
   };
   sales: Sales | [];
-  packageInfo?: string;
+  packageInfo?: {
+    amount: number;
+    unit: string;
+  };
   inStock?: boolean;
-  tooltips: [
-    {
-      type: string; //"PARTLY_SOLD_OUT",
-      closable: boolean;
-      triggerAmount: number;
-      size: null;
-      message: string;
-      actionable: boolean;
-    },
-  ];
+  tooltips: Tooltips;
   maxBasketAmount: number;
 }
+
+export type Tooltips =
+  | []
+  | [
+      {
+        type: string; //"PARTLY_SOLD_OUT",
+        closable: boolean;
+        triggerAmount: number | null;
+        size: null;
+        message: string;
+        actionable: boolean;
+      },
+    ];
 
 export type Sales = {
   price: {
@@ -72,11 +79,14 @@ export type NewIngredient = {
   selectedProducts: SimpleIngredient[];
   id: string;
   amount?: number;
+  unit: string;
+  optimize: boolean;
 };
 
 export type NewRecipeIngredient = {
   id: NewIngredient["id"];
   amount: NewIngredient["amount"];
+  unit: NewIngredient["unit"];
 }[];
 
 export type NewRecipe = {
