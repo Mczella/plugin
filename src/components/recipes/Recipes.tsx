@@ -68,12 +68,12 @@ const Recipes = () => {
     packageAmount: number,
     ingredientAmount: number,
   ): number => {
-    let remainingAmount = packageAmount - ingredientAmount;
+    const packageSize = Number(packageAmount.toFixed(1));
+    let remainingAmount = packageSize - ingredientAmount;
 
     while (remainingAmount < 0) {
-      remainingAmount += ingredientAmount;
+      remainingAmount += packageSize;
     }
-
     return remainingAmount;
   };
 
@@ -154,8 +154,8 @@ const Recipes = () => {
         {ingredientsInCart.map((ingredient) => {
           const remainingAmount: number = Number(
             getRemainingAmount(
-              ingredient.amount,
               ingredient.packageAmount,
+              ingredient.amount,
             ).toFixed(1),
           );
 
