@@ -64,7 +64,6 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
   const { data, isError } = useQuery(["data", arrayOfAllProductIds], () =>
     fetchProductsDetails(arrayOfAllProductIds),
   );
-  console.log(location);
 
   if (isError) {
     return <div>Error.</div>;
@@ -87,6 +86,7 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
     }
   };
 
+  console.log(location);
   const handleDelete = (ingredientId: string) => {
     const updatedIngredients = selectedIngredients.filter(
       (ingredient) => ingredient.id !== ingredientId,
