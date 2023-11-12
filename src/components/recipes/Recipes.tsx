@@ -64,6 +64,19 @@ const Recipes = () => {
     setFilteredRecipes(filtered);
   };
 
+  const getRemainingAmount = (
+    packageAmount: number,
+    ingredientAmount: number,
+  ): number => {
+    let remainingAmount = packageAmount - ingredientAmount;
+
+    while (remainingAmount < 0) {
+      remainingAmount += ingredientAmount;
+    }
+
+    return remainingAmount;
+  };
+
   return (
     <Box
       pt={"16px"}
@@ -139,8 +152,11 @@ const Recipes = () => {
           Vaše recepty
         </Heading>
         {ingredientsInCart.map((ingredient) => {
-          const remainingAmount = Number(
-            (ingredient.packageAmount - ingredient.amount).toFixed(1),
+          const remainingAmount: number = Number(
+            getRemainingAmount(
+              ingredient.amount,
+              ingredient.packageAmount,
+            ).toFixed(1),
           );
 
           if (remainingAmount !== 0) {
