@@ -39,6 +39,7 @@ const CreateIngredientInput = () => {
   };
 
   return (
+    //TODO: disable enter
     <Flex alignItems={"center"} flexDir={"column"}>
       <Box ref={dropdownRef}>
         <Input
