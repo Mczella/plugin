@@ -70,6 +70,7 @@ const IngredientModalOne: FC<Props> = ({ type }) => {
           autoComplete={"off"}
           onCreateOption={({ item }: { item: { value: string } }) => {
             editName(item.value);
+            selectIngredient(null);
           }}
         >
           <AutoCompleteInput
@@ -104,6 +105,7 @@ const IngredientModalOne: FC<Props> = ({ type }) => {
                 textTransform="capitalize"
                 onClick={() => {
                   selectIngredient(ingredient);
+                  editName(null);
                 }}
               >
                 {ingredient.name}
@@ -140,50 +142,53 @@ const IngredientModalOne: FC<Props> = ({ type }) => {
         ) : null}
       </FormControl>
       {!selectedIngredient ? (
-        <Checkbox
-          colorScheme={"green"}
-          size="lg"
-          mt={"20px"}
-          border={"rgb(132, 140, 145)"}
-          onChange={() => editOptimize(!optimize)}
-          isChecked={optimize}
-        >
-          <Text fontSize={"14px"} fontWeight={400}>
-            Přejete si optimalizovat recepty za účelem spotřebovat celý produkt?
-          </Text>
-        </Checkbox>
+        <>
+          <Checkbox
+            colorScheme={"green"}
+            size="lg"
+            mt={"20px"}
+            border={"rgb(132, 140, 145)"}
+            onChange={() => editOptimize(!optimize)}
+            isChecked={optimize}
+          >
+            <Text fontSize={"14px"} fontWeight={400}>
+              Přejete si optimalizovat recepty za účelem spotřebovat celý
+              produkt?
+            </Text>
+          </Checkbox>
+          <HStack gap={"20px"}>
+            <Checkbox
+              colorScheme="green"
+              size="lg"
+              mt="20px"
+              border="rgb(132, 140, 145)"
+              onChange={() =>
+                editSortBy(sortBy === "price" ? "pricePerUnit" : "price")
+              }
+              isChecked={sortBy === "price"}
+            >
+              <Text fontSize="14px" fontWeight={400}>
+                Řadit dle celkové ceny
+              </Text>
+            </Checkbox>
+            <Checkbox
+              colorScheme="green"
+              size="lg"
+              mt="20px"
+              value="pricePerUnit"
+              border="rgb(132, 140, 145)"
+              onChange={() =>
+                editSortBy(sortBy === "price" ? "pricePerUnit" : "price")
+              }
+              isChecked={sortBy === "pricePerUnit"}
+            >
+              <Text fontSize="14px" fontWeight={400}>
+                Řadit dle ceny za jednotku
+              </Text>
+            </Checkbox>
+          </HStack>
+        </>
       ) : null}
-      <HStack gap={"20px"}>
-        <Checkbox
-          colorScheme="green"
-          size="lg"
-          mt="20px"
-          border="rgb(132, 140, 145)"
-          onChange={() =>
-            editSortBy(sortBy === "price" ? "pricePerUnit" : "price")
-          }
-          isChecked={sortBy === "price"}
-        >
-          <Text fontSize="14px" fontWeight={400}>
-            Řadit dle celkové ceny
-          </Text>
-        </Checkbox>
-        <Checkbox
-          colorScheme="green"
-          size="lg"
-          mt="20px"
-          value="pricePerUnit"
-          border="rgb(132, 140, 145)"
-          onChange={() =>
-            editSortBy(sortBy === "price" ? "pricePerUnit" : "price")
-          }
-          isChecked={sortBy === "pricePerUnit"}
-        >
-          <Text fontSize="14px" fontWeight={400}>
-            Řadit dle ceny za jednotku
-          </Text>
-        </Checkbox>
-      </HStack>
     </>
   );
 };
