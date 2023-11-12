@@ -60,8 +60,8 @@ const Recipes = () => {
         );
       }),
     );
+
     setFilteredRecipes(filtered);
-    console.log(filteredRecipes);
   };
 
   return (
