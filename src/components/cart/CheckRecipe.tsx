@@ -32,7 +32,7 @@ const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
   const { productIds, ingredientData } = useGetRecipePrice(specificRecipe);
   console.log({ specificRecipe });
   const getFilteredIngredientData = (
-    productIds: string[],
+    productIds: { id: string; storeId: string }[],
     ingredientData: IngredientData | undefined,
   ) => {
     console.log({ ingredientData });
@@ -41,7 +41,11 @@ const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
     if (ingredientData) {
       Object.keys(ingredientData.productsByStoreId).forEach((storeId) => {
         products[storeId] = ingredientData.productsByStoreId[storeId].filter(
-          (product: Product) => productIds.includes(product.id),
+          (product: Product) =>
+            productIds.some(
+              (productId) =>
+                productId.id === product.id && productId.storeId === storeId,
+            ),
         );
       });
     }
