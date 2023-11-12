@@ -5,7 +5,7 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
   const ingredientData: IngredientData = useGetIngredientIds(recipe);
   console.log({ ingredientData });
   let totalPrice = 0;
-  const productIds: string[] = [];
+  const productIds: { id: string; storeId: string }[] = [];
   let overallCheapestProduct: Product | undefined;
   let selectedProduct: Product | undefined;
   const needed: {
@@ -25,7 +25,7 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
           const ingredientProducts =
             ingredientData.productsByStoreId[ingredientId];
 
-          console.log({ ingredientProducts });
+          console.log("halo", ingredientId);
 
           if (ingredientProducts && ingredientProducts.length > 0) {
             const preferredProduct = ingredientProducts.filter(
@@ -124,7 +124,7 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
             const amountOfProductsToBuy = Math.ceil(neededAmountOfProduct);
             console.log(amountOfProductsToBuy);
             totalPrice += selectedProduct.price.amount * amountOfProductsToBuy;
-            productIds.push(selectedProduct.id);
+            productIds.push({ id: selectedProduct.id, storeId: ingredientId });
           } else if (overallCheapestProduct != undefined) {
             const neededAmountOfProduct =
               ingredientAmount! / overallCheapestProduct.packageInfo!.amount;
@@ -142,11 +142,17 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
               totalPrice +=
                 overallCheapestProduct.sales[0].price.amount *
                 amountOfProductsToBuy;
-              productIds.push(overallCheapestProduct.id);
+              productIds.push({
+                id: overallCheapestProduct.id,
+                storeId: ingredientId,
+              });
             } else {
               totalPrice +=
                 overallCheapestProduct.price.amount * amountOfProductsToBuy;
-              productIds.push(overallCheapestProduct.id);
+              productIds.push({
+                id: overallCheapestProduct.id,
+                storeId: ingredientId,
+              });
             }
           }
           selectedProduct = undefined;
