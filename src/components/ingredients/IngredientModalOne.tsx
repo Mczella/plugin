@@ -1,4 +1,11 @@
-import { Flex, FormControl, Heading, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Checkbox,
+  Flex,
+  FormControl,
+  Heading,
+  Text,
+} from "@chakra-ui/react";
 import {
   AutoComplete,
   AutoCompleteCreatable,
@@ -25,6 +32,8 @@ const IngredientModalOne: FC<Props> = ({ type }) => {
     selectedIngredients,
     editName,
     name,
+    editOptimize,
+    optimize,
   } = useMyStore();
   const [currentIngredients, setCurrentIngredients] =
     useState<NewIngredient[]>(ingredients);
@@ -128,6 +137,23 @@ const IngredientModalOne: FC<Props> = ({ type }) => {
           </Flex>
         ) : null}
       </FormControl>
+      {!selectedIngredient ? (
+        <Box fontSize={"14px"} fontWeight={600} lineHeight={"32px"}>
+          <Checkbox
+            colorScheme={"green"}
+            size="lg"
+            mt={"20px"}
+            border={"rgb(132, 140, 145)"}
+            onChange={() => editOptimize(!optimize)}
+            isChecked={optimize}
+          >
+            <Text fontSize={"14px"} fontWeight={400}>
+              Přejete si optimalizovat recepty za účelem spotřebovat celý
+              produkt?
+            </Text>
+          </Checkbox>
+        </Box>
+      ) : null}
     </>
   );
 };
