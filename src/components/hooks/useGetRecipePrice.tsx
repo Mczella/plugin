@@ -1,10 +1,10 @@
 import { IngredientData, NewRecipe, Product } from "../types.ts";
 import { useGetIngredientIds } from "./useGetIngredientsIds.tsx";
-import { useMyStore } from "../store/store.tsx";
+// import { useMyStore } from "../store/store.tsx";
 
 export const useGetRecipePrice = (recipe: NewRecipe) => {
   const ingredientData: IngredientData = useGetIngredientIds(recipe);
-  const { ingredients } = useMyStore();
+  // const { ingredients } = useMyStore();
   console.log({ ingredientData });
   let totalPrice = 0;
   const productIds: { id: string; storeId: string }[] = [];
@@ -22,7 +22,7 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
       recipe.ingredients.forEach(
         (ingredient: { id: string; amount: number | undefined }) => {
           console.log({ ingredient });
-          const getPrice = ingredients.find((ing) => ing.id === ingredient.id);
+          // const getPrice = ingredients.find((ing) => ing.id === ingredient.id);
           const ingredientId = ingredient.id;
           const ingredientAmount = ingredient.amount;
           const ingredientProducts =
