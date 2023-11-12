@@ -1,4 +1,5 @@
 import {
+  Box,
   Checkbox,
   Heading,
   HStack,
@@ -16,6 +17,7 @@ const IngredientModalTwo = () => {
     useMyStore();
   console.log(selectedProducts);
   console.log({ optimize });
+  const unit = selectedProducts.length > 0 ? selectedProducts[0].unit : "";
   return (
     <>
       <Heading
@@ -53,16 +55,22 @@ const IngredientModalTwo = () => {
             <NumberDecrementStepper />
           </NumberInputStepper>
         </NumberInput>
-        <Text>ahoj {selectedProducts[1]?.unit}</Text>
+        <Text>{unit}</Text>
       </HStack>
-      <Checkbox
-        mt={"20px"}
-        fontSize={"14px"}
-        onChange={() => editOptimize(!optimize)}
-        isChecked={optimize}
-      >
-        Přejete si optimalizovat recepty za účelem spotřebovat celý produkt?
-      </Checkbox>
+      <Box fontSize={"14px"} fontWeight={600} lineHeight={"32px"}>
+        <Checkbox
+          colorScheme={"green"}
+          size="lg"
+          mt={"20px"}
+          border={"rgb(132, 140, 145)"}
+          onChange={() => editOptimize(!optimize)}
+          isChecked={optimize}
+        >
+          <Text fontSize={"14px"} fontWeight={400}>
+            Přejete si optimalizovat recepty za účelem spotřebovat celý produkt?
+          </Text>
+        </Checkbox>
+      </Box>
     </>
   );
 };
