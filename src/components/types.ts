@@ -81,6 +81,7 @@ export type NewIngredient = {
   amount?: number;
   unit: string;
   optimize: boolean;
+  sortBy: "price" | "pricePerUnit";
 };
 
 export type NewRecipeIngredient = {
