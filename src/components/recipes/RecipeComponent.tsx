@@ -19,28 +19,28 @@ type Props = {
 };
 
 const RecipeComponent: FC<Props> = ({ recipe }) => {
-  const {
-    recipesInCart,
-    addRecipeToCart,
-    addIngredientToCart,
-    ingredientsInCart,
-    recipes,
-  } = useMyStore();
-  const { totalPrice, needed } = useGetRecipePrice(recipe);
+  const { recipesInCart, addRecipeToCart, addIngredientToCart, ingredients } =
+    useMyStore();
+  const { totalPrice, needed, productIds } = useGetRecipePrice(recipe);
   const pricePerPortion = totalPrice / recipe.portion;
-  console.log(needed);
-  console.log(ingredientsInCart);
-  console.log("recipes", recipes);
 
   const handleBuy = () => {
-    needed!.forEach((item) => {
-      addIngredientToCart(
-        item.name,
-        item.id,
-        item.amount,
-        item.unit,
-        item.packageAmount,
+    productIds.forEach((item) => {
+      const filteredIngredient = ingredients.find(
+        (ingredient) => ingredient.id === item.storeId,
       );
+      const filteredNeeded = needed?.find(
+        (ingredient) => ingredient.id === item.id,
+      );
+      if (filteredIngredient && filteredNeeded && filteredIngredient.optimize) {
+        addIngredientToCart(
+          filteredNeeded.name,
+          filteredNeeded.id,
+          filteredNeeded.amount,
+          filteredNeeded.unit,
+          filteredNeeded.packageAmount,
+        );
+      }
     });
     addRecipeToCart(recipe.id);
   };
