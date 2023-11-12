@@ -13,6 +13,8 @@ export interface MyRecipesState {
 }
 
 export interface MyTemporaryUIState {
+  sortBy: "price" | "pricePerUnit";
+  editSortBy: (sortBy: "price" | "pricePerUnit") => void;
   optimize: boolean;
   editOptimize: (optimize: boolean) => void;
   amount: number;
@@ -90,12 +92,18 @@ export const createTemporaryUISlice: StateCreator<
   [],
   MyTemporaryUIState
 > = (set) => ({
+  sortBy: "price",
   optimize: false,
   name: null,
   amount: 0,
   selectedIngredient: null,
   selectedIngredients: [],
   selectedProducts: [],
+  editSortBy: (sortBy: "price" | "pricePerUnit") => {
+    set({
+      sortBy: sortBy,
+    });
+  },
   editOptimize: (optimize: boolean) => {
     set({
       optimize: optimize,
