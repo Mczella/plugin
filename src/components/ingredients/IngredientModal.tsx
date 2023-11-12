@@ -93,7 +93,6 @@ const IngredientModal: FC<Props> = ({
         id: createdId,
         amount: amount,
         unit: selectedProducts[0].unit,
-        optimize: optimize,
       };
       addToSelectedIngredients(newRecipeIngredient);
 
@@ -109,6 +108,7 @@ const IngredientModal: FC<Props> = ({
             ...ingredient,
             name: name,
             selectedProducts: updatedSelectedProducts,
+            optimize: optimize,
           };
         }
         return ingredient;
@@ -136,6 +136,7 @@ const IngredientModal: FC<Props> = ({
             ...ingredient,
             name: name,
             selectedProducts: updatedSelectedProducts,
+            optimize: optimize,
           };
         }
         return ingredient;
