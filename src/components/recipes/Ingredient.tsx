@@ -39,6 +39,8 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
     editName,
     editIngredients,
     ingredients,
+    editSortBy,
+    editOptimize,
   } = useMyStore();
 
   if (ingredient == undefined) {
@@ -80,6 +82,8 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
       });
 
       editName(ingredient.name);
+      editSortBy(ingredient.sortBy);
+      editOptimize(ingredient.optimize);
 
       //if not /produkty, it's the ingredient inside createRecipe and I want to add amount
       location.pathname === "/produkty" ? onEditOpen() : onEditInRecipeOpen();
