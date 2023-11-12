@@ -1,6 +1,4 @@
 import {
-  Box,
-  Checkbox,
   Heading,
   HStack,
   NumberDecrementStepper,
@@ -13,10 +11,7 @@ import {
 import { useMyStore } from "../store/store.tsx";
 
 const IngredientModalTwo = () => {
-  const { editAmount, amount, selectedProducts, editOptimize, optimize } =
-    useMyStore();
-  console.log(selectedProducts);
-  console.log({ optimize });
+  const { editAmount, amount, selectedProducts } = useMyStore();
   const unit = selectedProducts.length > 0 ? selectedProducts[0].unit : "";
   return (
     <>
@@ -57,20 +52,6 @@ const IngredientModalTwo = () => {
         </NumberInput>
         <Text>{unit}</Text>
       </HStack>
-      <Box fontSize={"14px"} fontWeight={600} lineHeight={"32px"}>
-        <Checkbox
-          colorScheme={"green"}
-          size="lg"
-          mt={"20px"}
-          border={"rgb(132, 140, 145)"}
-          onChange={() => editOptimize(!optimize)}
-          isChecked={optimize}
-        >
-          <Text fontSize={"14px"} fontWeight={400}>
-            Přejete si optimalizovat recepty za účelem spotřebovat celý produkt?
-          </Text>
-        </Checkbox>
-      </Box>
     </>
   );
 };
