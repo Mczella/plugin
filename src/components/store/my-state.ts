@@ -1,5 +1,13 @@
 import { StateCreator } from "zustand";
-import { NewIngredient, NewRecipe, Product } from "../types.ts";
+import {
+  NewIngredient,
+  NewRecipe,
+  NewRecipeIngredient,
+  Preferred,
+  Price,
+  Product,
+  Stock,
+} from "../types.ts";
 
 export interface MyIngredientsState {
   ingredients: NewIngredient[];
@@ -22,15 +30,19 @@ export interface MyTemporaryUIState {
   name: string | null;
   editName: (name: string | null) => void;
   selectedIngredient: NewIngredient | null;
-  selectedIngredients: NewIngredient[];
-  selectedProducts: Product[];
+  selectedIngredients: NewRecipeIngredient[];
+  selectedProducts: (Product & Stock & Price & Preferred)[];
   selectIngredient: (ingredient: NewIngredient | null) => void;
-  addToSelectedIngredients: (ingredient: NewIngredient) => void;
-  editSelectedIngredients: (ingredients: NewIngredient[] | undefined) => void;
-  addToSelectedProducts: (product: Product) => void;
-  editSelectedProducts: (products: Product[] | undefined) => void;
-  deleteSelectedIngredient: (ingredient: NewIngredient) => void;
-  deleteSelectedProduct: (product: Product) => void;
+  addToSelectedIngredients: (ingredient: NewRecipeIngredient) => void;
+  editSelectedIngredients: (
+    ingredients: NewRecipeIngredient[] | undefined,
+  ) => void;
+  addToSelectedProducts: (product: Product & Stock & Price & Preferred) => void;
+  editSelectedProducts: (
+    products: (Product & Stock & Price & Preferred)[] | undefined,
+  ) => void;
+  deleteSelectedIngredient: (ingredient: NewRecipeIngredient) => void;
+  deleteSelectedProduct: (product: Product & Stock & Price & Preferred) => void;
 }
 
 export interface MyRecipesInCartState {
@@ -124,34 +136,36 @@ export const createTemporaryUISlice: StateCreator<
       selectedIngredient: ingredient,
     });
   },
-  addToSelectedIngredients: (ingredient: NewIngredient) => {
+  addToSelectedIngredients: (ingredient: NewRecipeIngredient) => {
     set((state) => ({
       selectedIngredients: [...state.selectedIngredients, ingredient],
     }));
   },
-  editSelectedIngredients: (ingredients: NewIngredient[] | undefined) => {
+  editSelectedIngredients: (ingredients: NewRecipeIngredient[] | undefined) => {
     set({
       selectedIngredients: ingredients,
     });
   },
-  addToSelectedProducts: (product: Product) => {
+  addToSelectedProducts: (product: Product & Stock & Price & Preferred) => {
     set((state) => ({
       selectedProducts: [...state.selectedProducts, product],
     }));
   },
-  editSelectedProducts: (products: Product[] | undefined) => {
+  editSelectedProducts: (
+    products: (Product & Stock & Price & Preferred)[] | undefined,
+  ) => {
     set({
       selectedProducts: products,
     });
   },
-  deleteSelectedIngredient: (ingredient: NewIngredient) => {
+  deleteSelectedIngredient: (ingredient: NewRecipeIngredient) => {
     set((state) => ({
       selectedIngredients: state.selectedIngredients.filter(
         (stateIngredient) => stateIngredient !== ingredient,
       ),
     }));
   },
-  deleteSelectedProduct: (product: Product) => {
+  deleteSelectedProduct: (product: Product & Stock & Price & Preferred) => {
     set((state) => ({
       selectedProducts: state.selectedProducts.filter(
         (stateProduct) => stateProduct !== product,
