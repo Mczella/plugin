@@ -1,7 +1,6 @@
 import {
   Badge,
   Box,
-  Button,
   Flex,
   Grid,
   GridItem,
@@ -19,7 +18,7 @@ import Ingredient from "../recipes/Ingredient.tsx";
 import IngredientModal from "../ingredients/IngredientModal.tsx";
 
 const Products = () => {
-  const { ingredients, editSelectedProducts } = useMyStore();
+  const { ingredients } = useMyStore();
   // const [productArray, setProductArray] = useState<Product["id"][]>([]);
   const { isOpen: isOpen, onOpen: onOpen, onClose: onClose } = useDisclosure();
   const focusRef = useRef<HTMLInputElement>(null);
@@ -36,8 +35,7 @@ const Products = () => {
       minH={"100vh"}
       mb={"30px"}
     >
-      <Button onClick={() => editSelectedProducts([])}>clean</Button>
-      <BreadcrumbNav type={"recipes"} />
+      <BreadcrumbNav type={"produkty"} />
       <Flex flexDir={"column"}>
         <Heading
           pt={"12px"}
