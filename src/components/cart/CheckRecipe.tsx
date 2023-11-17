@@ -2,20 +2,11 @@ import { Box, Flex, Image, Text } from "@chakra-ui/react";
 import { AddIcon, MinusIcon, SmallCloseIcon } from "@chakra-ui/icons";
 import { FC } from "react";
 import { useMyStore } from "../store/store.tsx";
-import { Product } from "../types.ts";
+import { IngredientData, Preferred, Price, Product, Stock } from "../types.ts";
 import { useGetRecipePrice } from "../hooks/useGetRecipePrice.tsx";
 
 type Props = {
   recipeInCart: string;
-};
-
-type IngredientData = null | {
-  productsByStoreId: {
-    [storeId: string]: Product[];
-  };
-  ingredientIds: {
-    [storeId: string]: string[];
-  };
 };
 
 const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
@@ -37,7 +28,8 @@ const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
   ) => {
     console.log({ ingredientData });
     console.log({ productIds });
-    const products: { [p: string]: Product[] } = {};
+    const products: { [p: string]: (Stock & Price & Preferred & Product)[] } =
+      {};
     if (ingredientData) {
       Object.keys(ingredientData.productsByStoreId).forEach((storeId) => {
         products[storeId] = ingredientData.productsByStoreId[storeId].filter(
@@ -50,6 +42,7 @@ const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
       });
     }
 
+    console.log("jjjj", products);
     return {
       productsByStoreId: products,
     };
