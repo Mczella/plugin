@@ -13,6 +13,7 @@ import { useMyStore } from "../store/store.tsx";
 const IngredientModalTwo = () => {
   const { editAmount, amount, selectedProducts } = useMyStore();
   const unit = selectedProducts.length > 0 ? selectedProducts[0].unit : "";
+  console.log("mnozstvi", amount);
   return (
     <>
       <Heading
