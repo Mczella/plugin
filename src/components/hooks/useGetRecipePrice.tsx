@@ -7,120 +7,89 @@ import {
   Stock,
 } from "../types.ts";
 import { useGetIngredientIds } from "./useGetIngredientsIds.tsx";
+import { useMyStore } from "../store/store.tsx";
 
-export const useGetRecipePrice = (recipe: NewRecipe) => {
+type NeededProduct = {
+  name: string;
+  id: string;
+  amount: number;
+  unit: string;
+  packageAmount: number;
+};
+
+type Result = {
+  totalPrice: number;
+  productIds: { id: string; storeId: string }[];
+  ingredientData: IngredientData;
+  needed: NeededProduct[];
+};
+
+export const useGet = (recipe: NewRecipe): Result => {
   const ingredientData: IngredientData = useGetIngredientIds(recipe);
-  // const { ingredients } = useMyStore();
-  console.log({ ingredientData });
+  const { ingredients } = useMyStore();
   let totalPrice = 0;
   const productIds: { id: string; storeId: string }[] = [];
   let overallCheapestProduct: (Stock & Price & Preferred & Product) | undefined;
   let selectedProduct: (Stock & Price & Preferred & Product) | undefined;
-  const needed: {
-    name: string;
-    id: string;
-    amount: number;
-    unit: string;
-    packageAmount: number;
-  }[] = [];
+  const needed: NeededProduct[] = [];
+
   try {
     if (ingredientData != null && recipe) {
       recipe.ingredients.forEach(
         (ingredient: { id: string; amount: number }) => {
-          console.log("ing", ingredient);
-          // const getPrice = ingredients.find((ing) => ing.id === ingredient.id);
           const ingredientId = ingredient.id;
           const ingredientAmount = ingredient.amount;
+          const ingredientInfo = ingredients.find(
+            (ing) => ing.id === ingredient.id,
+          );
+          if (!ingredientInfo) {
+            throw new Error("No matching ingredient.");
+          }
+          const sortBy = ingredientInfo.sortBy;
+          console.log(sortBy);
           const ingredientProducts =
             ingredientData.productsByStoreId[ingredientId];
 
+          const inStockProducts = ingredientProducts.filter((product) =>
+            productsInStock(product, ingredientAmount),
+          );
+
           if (ingredientProducts && ingredientProducts.length > 0) {
-            const preferredProduct = ingredientProducts.filter(
-              (product) => product.preferred,
-            );
-
-            console.log({ preferredProduct });
-            const inStockProducts = ingredientProducts.filter((product) =>
-              product.tooltips.length === 0
-                ? product.inStock &&
-                  ingredientAmount / product.packageInfo.amount <
-                    product.maxBasketAmount
-                : product.tooltips[0].triggerAmount
-                ? product.inStock &&
-                  ingredientAmount / product.packageInfo.amount <
-                    product.tooltips[0].triggerAmount &&
-                  ingredientAmount / product.packageInfo.amount <
-                    product.maxBasketAmount
-                : product.inStock &&
-                  ingredientAmount / product.packageInfo.amount <
-                    product.maxBasketAmount,
-            );
-            console.log({ inStockProducts });
-
-            if (
-              preferredProduct.length > 0 &&
-              preferredProduct.some((product) => product.inStock)
-            ) {
-              selectedProduct = preferredProduct.find(
-                (product) => product.inStock,
-              );
-            } else if (inStockProducts.length > 0) {
-              const productsWithSales = inStockProducts.filter(
-                (product) => product.sales.length > 0,
-              );
-              console.log({ productsWithSales });
-
-              const productsWithoutSales = inStockProducts.filter(
-                (product) => product.sales.length === 0,
-              );
-              console.log({ productsWithoutSales });
-
-              let cheapestProductWithSales;
-              let cheapestProductWithoutSales;
-
-              if (productsWithSales.length > 0) {
-                cheapestProductWithSales = productsWithSales.reduce(
-                  (minPriceProduct, product) =>
-                    product.sales[0].price.amount <
-                    minPriceProduct.sales[0].price.amount
-                      ? product
-                      : minPriceProduct,
-                );
-              }
-              console.log({ cheapestProductWithSales });
-
-              if (productsWithoutSales.length > 0) {
-                cheapestProductWithoutSales = productsWithoutSales.reduce(
-                  (minPriceProduct, product) =>
-                    product.price.amount < minPriceProduct.price.amount
-                      ? product
-                      : minPriceProduct,
-                );
-              }
-              console.log({ cheapestProductWithoutSales });
-              if (cheapestProductWithSales && cheapestProductWithoutSales) {
-                if (
-                  cheapestProductWithSales.sales[0].price.amount <
-                  cheapestProductWithoutSales.price.amount
-                ) {
-                  overallCheapestProduct = cheapestProductWithSales;
-                } else {
-                  overallCheapestProduct = cheapestProductWithoutSales;
-                }
-              } else if (cheapestProductWithSales) {
-                overallCheapestProduct = cheapestProductWithSales;
-              } else if (cheapestProductWithoutSales) {
-                overallCheapestProduct = cheapestProductWithoutSales;
-              } else {
-                throw new Error("Všechny alternativy vyprodány.");
-              }
+            const preferredProduct = findPreferredProduct(ingredientProducts);
+            if (preferredProduct) {
+              selectedProduct = preferredProduct;
             }
-            console.log({ overallCheapestProduct });
           }
+
+          if (inStockProducts.length > 0) {
+            const productsWithSales = filterProductsWithSales(inStockProducts);
+            const productsWithoutSales =
+              filterProductsWithoutSales(inStockProducts);
+
+            const cheapestProductWithSales = findCheapestSalesProduct(
+              productsWithSales,
+              sortBy,
+            );
+            console.log(cheapestProductWithSales);
+            const cheapestProductWithoutSales = findCheapestNormalProduct(
+              productsWithoutSales,
+              sortBy,
+            );
+            console.log(cheapestProductWithoutSales);
+            overallCheapestProduct = getOverallCheapestProduct(
+              cheapestProductWithSales,
+              cheapestProductWithoutSales,
+              sortBy,
+            );
+            console.log(overallCheapestProduct);
+          } else {
+            throw new Error("Všechny alternativy vyprodány.");
+          }
+
           if (selectedProduct) {
             const neededAmountOfProduct =
               ingredientAmount / selectedProduct.packageInfo.amount;
-            console.log(neededAmountOfProduct);
+
             needed.push({
               name: selectedProduct.name,
               id: selectedProduct.id,
@@ -128,14 +97,15 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
               unit: selectedProduct.packageInfo.unit,
               packageAmount: selectedProduct.packageInfo.amount,
             });
+
             const amountOfProductsToBuy = Math.ceil(neededAmountOfProduct);
-            console.log(amountOfProductsToBuy);
+
             totalPrice += selectedProduct.price.amount * amountOfProductsToBuy;
             productIds.push({ id: selectedProduct.id, storeId: ingredientId });
-          } else if (overallCheapestProduct != undefined) {
+          } else if (overallCheapestProduct !== undefined) {
             const neededAmountOfProduct =
               ingredientAmount / overallCheapestProduct.packageInfo.amount;
-            console.log(neededAmountOfProduct);
+
             needed.push({
               name: overallCheapestProduct.name,
               id: overallCheapestProduct.id,
@@ -143,12 +113,14 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
               unit: overallCheapestProduct.packageInfo.unit,
               packageAmount: overallCheapestProduct.packageInfo.amount,
             });
+
             const amountOfProductsToBuy = Math.ceil(neededAmountOfProduct);
-            console.log(amountOfProductsToBuy);
+
             if (overallCheapestProduct.sales.length > 0) {
               totalPrice +=
                 overallCheapestProduct.sales[0].price.amount *
                 amountOfProductsToBuy;
+
               productIds.push({
                 id: overallCheapestProduct.id,
                 storeId: ingredientId,
@@ -156,6 +128,7 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
             } else {
               totalPrice +=
                 overallCheapestProduct.price.amount * amountOfProductsToBuy;
+
               productIds.push({
                 id: overallCheapestProduct.id,
                 storeId: ingredientId,
@@ -169,6 +142,93 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
 
     return { totalPrice, productIds, ingredientData, needed };
   } catch (error) {
-    return { totalPrice: 0, productIds: [] };
+    console.error(error);
+    return { totalPrice: 0, productIds: [], ingredientData, needed: [] };
+  }
+};
+
+const productsInStock = (
+  product: Stock & Price & Preferred & Product,
+  ingredientAmount: number,
+) => {
+  const { tooltips, inStock, packageInfo, maxBasketAmount } = product;
+
+  if (tooltips.length === 0) {
+    return inStock && ingredientAmount / packageInfo.amount < maxBasketAmount;
+  } else if (tooltips[0].triggerAmount) {
+    return (
+      inStock &&
+      ingredientAmount / packageInfo.amount < tooltips[0].triggerAmount &&
+      ingredientAmount / packageInfo.amount < maxBasketAmount
+    );
+  } else {
+    return inStock && ingredientAmount / packageInfo.amount < maxBasketAmount;
+  }
+};
+
+const findPreferredProduct = (
+  products: (Stock & Price & Preferred & Product)[],
+) => {
+  const preferredProducts = products.filter(
+    (product) => product.preferred && product.inStock,
+  );
+  return preferredProducts.length > 0 ? preferredProducts[0] : undefined;
+};
+
+const filterProductsWithSales = (
+  products: (Stock & Price & Preferred & Product)[],
+) => {
+  return products.filter((product) => product.sales.length > 0);
+};
+
+const filterProductsWithoutSales = (
+  products: (Stock & Price & Preferred & Product)[],
+) => {
+  return products.filter((product) => product.sales.length === 0);
+};
+
+const findCheapestNormalProduct = (
+  products: (Stock & Price & Preferred & Product)[],
+  key: "price" | "pricePerUnit",
+) => {
+  if (products.length > 0) {
+    return products.reduce((minPriceProduct, product) =>
+      product[key].amount < minPriceProduct[key].amount
+        ? product
+        : minPriceProduct,
+    );
+  }
+  return undefined;
+};
+
+const findCheapestSalesProduct = (
+  products: (Stock & Price & Preferred & Product)[],
+  key: "price" | "pricePerUnit",
+) => {
+  if (products.length > 0) {
+    return products.reduce((minPriceProduct, product) =>
+      product.sales[0][key].amount < minPriceProduct.sales[0][key].amount
+        ? product
+        : minPriceProduct,
+    );
+  }
+  return undefined;
+};
+
+const getOverallCheapestProduct = (
+  withSales: (Stock & Price & Preferred & Product) | undefined,
+  withoutSales: (Stock & Price & Preferred & Product) | undefined,
+  key: "price" | "pricePerUnit",
+) => {
+  if (withSales && withoutSales) {
+    return withSales.sales[0][key].amount < withoutSales[key].amount
+      ? withSales
+      : withoutSales;
+  } else if (withSales) {
+    return withSales;
+  } else if (withoutSales) {
+    return withoutSales;
+  } else {
+    throw new Error("Všechny alternativy vyprodány.");
   }
 };
