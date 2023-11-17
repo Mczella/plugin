@@ -1,6 +1,12 @@
-import { IngredientData, NewRecipe, Product } from "../types.ts";
+import {
+  IngredientData,
+  NewRecipe,
+  Preferred,
+  Price,
+  Product,
+  Stock,
+} from "../types.ts";
 import { useGetIngredientIds } from "./useGetIngredientsIds.tsx";
-// import { useMyStore } from "../store/store.tsx";
 
 export const useGetRecipePrice = (recipe: NewRecipe) => {
   const ingredientData: IngredientData = useGetIngredientIds(recipe);
@@ -8,8 +14,8 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
   console.log({ ingredientData });
   let totalPrice = 0;
   const productIds: { id: string; storeId: string }[] = [];
-  let overallCheapestProduct: Product | undefined;
-  let selectedProduct: Product | undefined;
+  let overallCheapestProduct: (Stock & Price & Preferred & Product) | undefined;
+  let selectedProduct: (Stock & Price & Preferred & Product) | undefined;
   const needed: {
     name: string;
     id: string;
@@ -20,8 +26,8 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
   try {
     if (ingredientData != null && recipe) {
       recipe.ingredients.forEach(
-        (ingredient: { id: string; amount: number | undefined }) => {
-          console.log({ ingredient });
+        (ingredient: { id: string; amount: number }) => {
+          console.log("ing", ingredient);
           // const getPrice = ingredients.find((ing) => ing.id === ingredient.id);
           const ingredientId = ingredient.id;
           const ingredientAmount = ingredient.amount;
@@ -37,16 +43,16 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
             const inStockProducts = ingredientProducts.filter((product) =>
               product.tooltips.length === 0
                 ? product.inStock &&
-                  ingredientAmount! / product.packageInfo!.amount <
+                  ingredientAmount / product.packageInfo.amount <
                     product.maxBasketAmount
                 : product.tooltips[0].triggerAmount
                 ? product.inStock &&
-                  ingredientAmount! / product.packageInfo!.amount <
+                  ingredientAmount / product.packageInfo.amount <
                     product.tooltips[0].triggerAmount &&
-                  ingredientAmount! / product.packageInfo!.amount <
+                  ingredientAmount / product.packageInfo.amount <
                     product.maxBasketAmount
                 : product.inStock &&
-                  ingredientAmount! / product.packageInfo!.amount <
+                  ingredientAmount / product.packageInfo.amount <
                     product.maxBasketAmount,
             );
             console.log({ inStockProducts });
@@ -60,7 +66,7 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
               );
             } else if (inStockProducts.length > 0) {
               const productsWithSales = inStockProducts.filter(
-                (product) => product.sales?.length > 0,
+                (product) => product.sales.length > 0,
               );
               console.log({ productsWithSales });
 
@@ -113,14 +119,14 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
           }
           if (selectedProduct) {
             const neededAmountOfProduct =
-              ingredientAmount! / selectedProduct.packageInfo!.amount;
+              ingredientAmount / selectedProduct.packageInfo.amount;
             console.log(neededAmountOfProduct);
             needed.push({
-              name: selectedProduct.name!,
+              name: selectedProduct.name,
               id: selectedProduct.id,
-              amount: ingredientAmount!,
-              unit: selectedProduct.packageInfo?.unit!,
-              packageAmount: selectedProduct.packageInfo?.amount!,
+              amount: ingredientAmount,
+              unit: selectedProduct.packageInfo.unit,
+              packageAmount: selectedProduct.packageInfo.amount,
             });
             const amountOfProductsToBuy = Math.ceil(neededAmountOfProduct);
             console.log(amountOfProductsToBuy);
@@ -128,14 +134,14 @@ export const useGetRecipePrice = (recipe: NewRecipe) => {
             productIds.push({ id: selectedProduct.id, storeId: ingredientId });
           } else if (overallCheapestProduct != undefined) {
             const neededAmountOfProduct =
-              ingredientAmount! / overallCheapestProduct.packageInfo!.amount;
+              ingredientAmount / overallCheapestProduct.packageInfo.amount;
             console.log(neededAmountOfProduct);
             needed.push({
-              name: overallCheapestProduct.name!,
+              name: overallCheapestProduct.name,
               id: overallCheapestProduct.id,
-              amount: ingredientAmount!,
-              unit: overallCheapestProduct.packageInfo?.unit!,
-              packageAmount: overallCheapestProduct.packageInfo?.amount!,
+              amount: ingredientAmount,
+              unit: overallCheapestProduct.packageInfo.unit,
+              packageAmount: overallCheapestProduct.packageInfo.amount,
             });
             const amountOfProductsToBuy = Math.ceil(neededAmountOfProduct);
             console.log(amountOfProductsToBuy);
