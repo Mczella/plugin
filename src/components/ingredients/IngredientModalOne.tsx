@@ -141,54 +141,51 @@ const IngredientModalOne: FC<Props> = ({ type }) => {
           </Flex>
         ) : null}
       </FormControl>
-      {!selectedIngredient ? (
-        <>
+      <>
+        <Checkbox
+          colorScheme={"green"}
+          size="lg"
+          mt={"20px"}
+          border={"rgb(132, 140, 145)"}
+          onChange={() => editOptimize(!optimize)}
+          isChecked={optimize}
+        >
+          <Text fontSize={"14px"} fontWeight={400}>
+            Přejete si optimalizovat recepty za účelem spotřebovat celý produkt?
+          </Text>
+        </Checkbox>
+        <HStack gap={"20px"}>
           <Checkbox
-            colorScheme={"green"}
+            colorScheme="green"
             size="lg"
-            mt={"20px"}
-            border={"rgb(132, 140, 145)"}
-            onChange={() => editOptimize(!optimize)}
-            isChecked={optimize}
+            mt="20px"
+            border="rgb(132, 140, 145)"
+            onChange={() =>
+              editSortBy(sortBy === "price" ? "pricePerUnit" : "price")
+            }
+            isChecked={sortBy === "price"}
           >
-            <Text fontSize={"14px"} fontWeight={400}>
-              Přejete si optimalizovat recepty za účelem spotřebovat celý
-              produkt?
+            <Text fontSize="14px" fontWeight={400}>
+              Řadit dle celkové ceny
             </Text>
           </Checkbox>
-          <HStack gap={"20px"}>
-            <Checkbox
-              colorScheme="green"
-              size="lg"
-              mt="20px"
-              border="rgb(132, 140, 145)"
-              onChange={() =>
-                editSortBy(sortBy === "price" ? "pricePerUnit" : "price")
-              }
-              isChecked={sortBy === "price"}
-            >
-              <Text fontSize="14px" fontWeight={400}>
-                Řadit dle celkové ceny
-              </Text>
-            </Checkbox>
-            <Checkbox
-              colorScheme="green"
-              size="lg"
-              mt="20px"
-              value="pricePerUnit"
-              border="rgb(132, 140, 145)"
-              onChange={() =>
-                editSortBy(sortBy === "price" ? "pricePerUnit" : "price")
-              }
-              isChecked={sortBy === "pricePerUnit"}
-            >
-              <Text fontSize="14px" fontWeight={400}>
-                Řadit dle ceny za jednotku
-              </Text>
-            </Checkbox>
-          </HStack>
-        </>
-      ) : null}
+          <Checkbox
+            colorScheme="green"
+            size="lg"
+            mt="20px"
+            value="pricePerUnit"
+            border="rgb(132, 140, 145)"
+            onChange={() =>
+              editSortBy(sortBy === "price" ? "pricePerUnit" : "price")
+            }
+            isChecked={sortBy === "pricePerUnit"}
+          >
+            <Text fontSize="14px" fontWeight={400}>
+              Řadit dle ceny za jednotku
+            </Text>
+          </Checkbox>
+        </HStack>
+      </>
     </>
   );
 };
