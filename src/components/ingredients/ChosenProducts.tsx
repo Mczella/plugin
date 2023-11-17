@@ -1,18 +1,21 @@
 import { Box, Button, Grid, Image, Text } from "@chakra-ui/react";
-import { Product } from "../types.ts";
+import { Preferred, Price, Product, Stock } from "../types.ts";
 import { SmallCloseIcon } from "@chakra-ui/icons";
 import { useMyStore } from "../store/store.tsx";
 
 const ChosenProducts = () => {
   const { selectedProducts, editSelectedProducts, deleteSelectedProduct } =
     useMyStore();
-  const handleClick = (product: Product) => {
-    const updatedProducts = selectedProducts.map((existingProduct: Product) => {
-      if (existingProduct.id === product.id) {
-        return { ...existingProduct, preferred: true };
-      }
-      return existingProduct;
-    });
+  console.log("selected", selectedProducts);
+  const handleClick = (product: Product & Stock & Price & Preferred) => {
+    const updatedProducts = selectedProducts.map(
+      (existingProduct: Product & Stock & Price & Preferred) => {
+        if (existingProduct.id === product.id) {
+          return { ...existingProduct, preferred: true };
+        }
+        return existingProduct;
+      },
+    );
     editSelectedProducts(updatedProducts);
   };
 
