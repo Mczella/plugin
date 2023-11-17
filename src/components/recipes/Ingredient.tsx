@@ -14,21 +14,11 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchProductsDetails } from "../api/api.ts";
 import { useMyStore } from "../store/store.tsx";
 import { FC, useRef } from "react";
-import { NewIngredient } from "../types.ts";
+import { NewIngredient, NewRecipeIngredient } from "../types.ts";
 import IngredientModal from "../ingredients/IngredientModal.tsx";
-import { useLocation } from "react-router-dom";
-
-// type SimpleProduct = {
-//   id: string;
-//   name: string;
-//   images: string[];
-//   unit: string;
-//   textualAmount: string;
-//   mainCategoryId: number;
-// };
 
 type Props = {
-  ingredient: NewIngredient;
+  ingredient: NewIngredient | NewRecipeIngredient;
 };
 
 const Ingredient: FC<Props> = ({ ingredient }) => {
@@ -41,6 +31,7 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
     ingredients,
     editSortBy,
     editOptimize,
+    editAmount,
   } = useMyStore();
 
   if (ingredient == undefined) {
@@ -62,7 +53,6 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
   const arrayOfAllProductIds = ingredient.selectedProducts.map(
     (product) => product.id,
   );
-  const location = useLocation();
   const { data, isError } = useQuery(["data", arrayOfAllProductIds], () =>
     fetchProductsDetails(arrayOfAllProductIds),
   );
@@ -85,12 +75,15 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
       editSortBy(ingredient.sortBy);
       editOptimize(ingredient.optimize);
 
-      //if not /produkty, it's the ingredient inside createRecipe and I want to add amount
-      location.pathname === "/produkty" ? onEditOpen() : onEditInRecipeOpen();
+      if ("amount" in ingredient) {
+        editAmount(ingredient.amount);
+        onEditInRecipeOpen();
+      } else {
+        onEditOpen();
+      }
     }
   };
 
-  console.log(location);
   const handleDelete = (ingredientId: string) => {
     const updatedIngredients = selectedIngredients.filter(
       (ingredient) => ingredient.id !== ingredientId,
@@ -102,7 +95,6 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
     <Flex
       flexDir={"column"}
       onClick={() => {
-        console.log("hej");
         handleOpenIngredient();
       }}
     >
@@ -130,17 +122,17 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
           //TODO: remove in createRecipe
           //TODO: might have to delete the recipe too
           onClick={
-            location.pathname === "/produkty"
+            "amount" in ingredient
               ? (e) => {
+                  e.stopPropagation();
+                  handleDelete(ingredient.id);
+                }
+              : (e) => {
                   e.stopPropagation();
                   const updatedIngredients = ingredients.filter(
                     (ing) => ing.id !== ingredient.id,
                   );
                   editIngredients(updatedIngredients);
-                }
-              : (e) => {
-                  e.stopPropagation();
-                  handleDelete(ingredient.id);
                 }
           }
         />
