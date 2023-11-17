@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, Text } from "@chakra-ui/react";
 import { useMyStore } from "../store/store.tsx";
 import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
-import { NewIngredient } from "../types.ts";
+import { NewIngredient, NewRecipeIngredient } from "../types.ts";
 
 type Props = {
   step: number;
@@ -26,7 +26,7 @@ const IngredientInRecipeButtons: FC<Props> = ({
   const [error, setError] = useState(false);
 
   const handleIngredientClick = (ingredient: NewIngredient) => {
-    const newSelectedIngredient: NewIngredient = {
+    const newSelectedIngredient: NewRecipeIngredient = {
       ...ingredient,
       amount: amount,
     };
