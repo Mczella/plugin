@@ -24,7 +24,7 @@ type Result = {
   needed: NeededProduct[];
 };
 
-export const useGet = (recipe: NewRecipe): Result => {
+export const useGetRecipePrice = (recipe: NewRecipe): Result => {
   const ingredientData: IngredientData = useGetIngredientIds(recipe);
   const { ingredients } = useMyStore();
   let totalPrice = 0;
