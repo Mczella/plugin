@@ -3,7 +3,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@chakra-ui/react";
 import { FC } from "react";
 
 type Props = {
-  type: "recipes" | "pridat-recept";
+  type: "recipes" | "pridat-recept" | "produkty" | "pridat-produkt";
 };
 
 const BreadcrumbNav: FC<Props> = ({ type }) => {
@@ -22,7 +22,11 @@ const BreadcrumbNav: FC<Props> = ({ type }) => {
 
       <BreadcrumbItem>
         <BreadcrumbLink fontSize={"12px"} href="/#/recepty">
-          Recepty
+          {type === "recipes" || type === "pridat-recept"
+            ? "Recepty"
+            : type === "produkty"
+            ? "Produkty"
+            : null}
         </BreadcrumbLink>
       </BreadcrumbItem>
 
