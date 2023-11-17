@@ -26,6 +26,7 @@ type Result = {
 
 export const useGetRecipePrice = (recipe: NewRecipe): Result => {
   const ingredientData: IngredientData = useGetIngredientIds(recipe);
+  console.log({ ingredientData });
   const { ingredients } = useMyStore();
   let totalPrice = 0;
   const productIds: { id: string; storeId: string }[] = [];
@@ -54,11 +55,9 @@ export const useGetRecipePrice = (recipe: NewRecipe): Result => {
             productsInStock(product, ingredientAmount),
           );
 
-          if (ingredientProducts && ingredientProducts.length > 0) {
-            const preferredProduct = findPreferredProduct(ingredientProducts);
-            if (preferredProduct) {
-              selectedProduct = preferredProduct;
-            }
+          const preferredProduct = findPreferredProduct(ingredientProducts);
+          if (preferredProduct) {
+            selectedProduct = preferredProduct;
           }
 
           if (inStockProducts.length > 0) {
