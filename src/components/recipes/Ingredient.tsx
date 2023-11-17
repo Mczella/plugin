@@ -16,6 +16,7 @@ import { useMyStore } from "../store/store.tsx";
 import { FC, useRef } from "react";
 import { NewIngredient, NewRecipeIngredient } from "../types.ts";
 import IngredientModal from "../ingredients/IngredientModal.tsx";
+import { useGetIngredientPrice } from "../hooks/useGetIngredientPrice.tsx";
 
 type Props = {
   ingredient: NewIngredient | NewRecipeIngredient;
@@ -37,7 +38,7 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
   if (ingredient == undefined) {
     throw new Error("No selected ingredient.");
   }
-
+  const { totalPrice } = useGetIngredientPrice(ingredient);
   const {
     isOpen: isEditInRecipeOpen,
     onOpen: onEditInRecipeOpen,
@@ -190,6 +191,14 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
         casing={"capitalize"}
       >
         {ingredient.name}
+      </Text>
+      <Text
+        px={"4px"}
+        color={"rgb(28, 37, 41)"}
+        fontSize={"14px"}
+        lineHeight={"22px"}
+      >
+        {totalPrice}
       </Text>
       <Editable
         px={"4px"}
