@@ -1,5 +1,4 @@
 import {
-  Button,
   Flex,
   Modal,
   ModalBody,
@@ -9,10 +8,13 @@ import {
 import { FC, RefObject, useRef, useState } from "react";
 import {
   useMyStore,
-  usePurgeStorage,
   // usePurgeStorage,
 } from "../store/store.tsx";
-import { SimpleIngredient, NewIngredient } from "../types.ts";
+import {
+  SimpleIngredient,
+  NewIngredient,
+  NewRecipeIngredient,
+} from "../types.ts";
 import IngredientModalOne from "./IngredientModalOne.tsx";
 import IngredientModalTwo from "./IngredientModalTwo.tsx";
 import IngredientInRecipeButtons from "./IngredientInRecipeButtons.tsx";
@@ -39,6 +41,7 @@ const IngredientModal: FC<Props> = ({
     selectedProducts,
     editSelectedProducts,
     selectIngredient,
+    selectedIngredients,
     name,
     editAmount,
     amount,
@@ -51,7 +54,7 @@ const IngredientModal: FC<Props> = ({
     sortBy,
     editSortBy,
   } = useMyStore();
-  const purgeStorage = usePurgeStorage();
+  // const purgeStorage = usePurgeStorage();
   // // const bytesInUse = useBytesInUse();
   const modalContainer = useRef(null);
   const [step, setStep] = useState<number>(1);
@@ -91,11 +94,13 @@ const IngredientModal: FC<Props> = ({
       };
       addIngredient(newIngredient);
 
-      const newRecipeIngredient: NewIngredient = {
+      const newRecipeIngredient: NewRecipeIngredient = {
         name: name,
         selectedProducts: updatedSelectedProducts,
         id: createdId,
         amount: amount,
+        optimize: optimize,
+        sortBy: sortBy,
         unit: selectedProducts[0].unit,
       };
       addToSelectedIngredients(newRecipeIngredient);
@@ -121,17 +126,20 @@ const IngredientModal: FC<Props> = ({
 
       editIngredients(editedIngredients);
 
-      const editedRecipeIngredients = ingredients.map((ingredient) => {
-        if (ingredient.id === id) {
-          return {
-            ...ingredient,
-            name: name,
-            selectedProducts: updatedSelectedProducts,
-            amount: amount,
-          };
-        }
-        return ingredient;
-      });
+      const editedRecipeIngredients: NewRecipeIngredient[] =
+        selectedIngredients.map((ingredient) => {
+          if (ingredient.id === id) {
+            return {
+              ...ingredient,
+              name: name,
+              selectedProducts: updatedSelectedProducts,
+              amount: amount,
+              optimize: optimize,
+              sortBy: sortBy,
+            };
+          }
+          return ingredient;
+        });
 
       editSelectedIngredients(editedRecipeIngredients);
     } else if (name != null && selectedProducts.length > 0 && type === "edit") {
@@ -194,7 +202,6 @@ const IngredientModal: FC<Props> = ({
               ) : (
                 <IngredientModalTwo />
               )}
-
               {type === "editInRecipe" || type === "createInRecipe" ? (
                 <IngredientInRecipeButtons
                   id={id}
@@ -210,14 +217,13 @@ const IngredientModal: FC<Props> = ({
                   handleSave={handleSave}
                 />
               )}
-              <Button
-                onClick={() => {
-                  purgeStorage();
-                }}
-              >
-                Purge Storage
-              </Button>
-              {/*bytesInUse: {bytesInUse}*/}
+              {/*<Button*/}
+              {/*  onClick={() => {*/}
+              {/*    purgeStorage();*/}
+              {/*  }}*/}
+              {/*>*/}
+              {/*  Purge Storage*/}
+              {/*</Button>*/}
             </Flex>
           </ModalBody>
         </ModalContent>
