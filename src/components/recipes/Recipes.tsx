@@ -46,19 +46,20 @@ const Recipes = () => {
   ) => {
     const findIngredientById = (ingredientId: string) =>
       ingredients.find((ingredient) => ingredient.id === ingredientId);
-
     const filtered = filteredRecipes.filter((recipe) =>
-      recipe.ingredients.some((recipeIngredient) => {
-        const recipeIngredientId = findIngredientById(recipeIngredient.id);
-        return (
-          recipeIngredientId &&
-          recipeIngredientId.selectedProducts.some(
-            (id) =>
-              id.id === ingredient.id &&
-              recipeIngredient.amount! <= remainingAmount,
-          )
-        );
-      }),
+      recipe.ingredients.some(
+        (recipeIngredient: { id: string; amount: number }) => {
+          const recipeIngredientId = findIngredientById(recipeIngredient.id);
+          return (
+            recipeIngredientId &&
+            recipeIngredientId.selectedProducts.some(
+              (id) =>
+                id.id === ingredient.id &&
+                recipeIngredient.amount! <= remainingAmount,
+            )
+          );
+        },
+      ),
     );
 
     setFilteredRecipes(filtered);
@@ -151,32 +152,27 @@ const Recipes = () => {
         >
           Vaše recepty
         </Heading>
-        {ingredientsInCart.map((ingredient) => {
-          const remainingAmount: number = Number(
-            getRemainingAmount(
-              ingredient.packageAmount,
-              ingredient.amount,
-            ).toFixed(1),
-          );
+        <Flex flexDir={"row"}>
+          {ingredientsInCart.map((ingredient) => {
+            const remainingAmount: number = Number(
+              getRemainingAmount(
+                ingredient.packageAmount,
+                ingredient.amount,
+              ).toFixed(1),
+            );
 
-          if (remainingAmount !== 0) {
-            return (
-              <Box key={ingredient.id}>
-                <Text>
-                  {ingredient.packageAmount} {ingredient.amount}
-                </Text>
-                <Text>
-                  {`Z receptů vám zbyde zhruba ${remainingAmount} ${ingredient.unit} produktu ${ingredient.name}`}
-                </Text>
+            if (remainingAmount !== 0) {
+              return (
                 <Button
                   onClick={() => handleFilter(ingredient, remainingAmount)}
                 >
-                  Filtrovat recepty se zbývajícím množstvím {ingredient.name}
+                  Filtrovat recepty obsahující {remainingAmount}{" "}
+                  {ingredient.unit} produktu {ingredient.name}
                 </Button>
-              </Box>
-            );
-          }
-        })}
+              );
+            }
+          })}
+        </Flex>
 
         {/*<RadioGroup onChange={setValue} value={value}>*/}
         {/*  <Stack direction="row" gap={"16px"}>*/}
