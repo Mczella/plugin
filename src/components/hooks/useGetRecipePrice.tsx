@@ -98,8 +98,14 @@ export const useGetRecipePrice = (recipe: NewRecipe): Result => {
             });
 
             const amountOfProductsToBuy = Math.ceil(neededAmountOfProduct);
-
-            totalPrice += selectedProduct.price.amount * amountOfProductsToBuy;
+            const salesPrice = selectedProduct.sales[0].price.amount;
+            if (salesPrice) {
+              totalPrice +=
+                selectedProduct.sales[0].price.amount * amountOfProductsToBuy;
+            } else {
+              totalPrice +=
+                selectedProduct.price.amount * amountOfProductsToBuy;
+            }
             productIds.push({ id: selectedProduct.id, storeId: ingredientId });
           } else if (overallCheapestProduct !== undefined) {
             const neededAmountOfProduct =
