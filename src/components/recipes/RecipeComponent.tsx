@@ -19,10 +19,32 @@ type Props = {
 };
 
 const RecipeComponent: FC<Props> = ({ recipe }) => {
-  const { recipesInCart, addRecipeToCart, addIngredientToCart, ingredients } =
-    useMyStore();
-  const { totalPrice, needed, productIds } = useGetRecipePrice(recipe);
+  const {
+    recipesInCart,
+    deleteRecipeFromCart,
+    addRecipeToCart,
+    addIngredientToCart,
+    ingredients,
+  } = useMyStore();
+  const { totalPrice, needed, productIds, discount } =
+    useGetRecipePrice(recipe);
   const pricePerPortion = totalPrice / recipe.portion;
+
+  const handleAdd = () => {
+    addRecipeToCart({ recipe: recipe.id, amount: 1 });
+  };
+
+  const handleSubtract = () => {
+    const currentRecipe = recipesInCart.find(
+      (recipeInCart) => recipeInCart.recipe === recipe.id,
+    );
+
+    if (currentRecipe && currentRecipe.amount === 1) {
+      deleteRecipeFromCart(recipe.id);
+    } else {
+      addRecipeToCart({ recipe: recipe.id, amount: -1 });
+    }
+  };
 
   const handleBuy = () => {
     productIds.forEach((item) => {
@@ -42,7 +64,8 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
         );
       }
     });
-    addRecipeToCart(recipe.id);
+    console.log("asdfghjk", recipe.id);
+    addRecipeToCart({ recipe: recipe.id, amount: 1 });
   };
 
   return (
@@ -88,7 +111,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
               fontWeight={"bold"}
               px={"5px"}
             >
-              -30 %
+              {`-${Math.ceil(discount)} %`}
             </Text>
           </Flex>
           <Image
@@ -109,7 +132,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
             px={"7px"}
             rounded={"2xl"}
           >
-            {`${recipe.portion} porce`}
+            {discount > 0 ? `${recipe.portion} porce` : null}
           </Badge>
         </Box>
       </Box>
@@ -139,7 +162,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
           fontWeight={600}
           lineHeight={"22px"}
         >
-          ušetříte 30 %
+          {discount > 0 ? ` ušetříte ${Math.ceil(discount)} %` : null}
         </Text>
         {/*:*/}
         {/*<Box>*/}
@@ -174,8 +197,12 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
         >
           {`${Math.ceil(pricePerPortion)} Kč/porce`}
         </Text>
-        {recipesInCart.includes(recipe.id) ? (
-          <PlusMinus />
+        {recipesInCart.some((item) => recipe.id === item.recipe) ? (
+          <PlusMinus
+            handleAdd={handleAdd}
+            handleSubtract={handleSubtract}
+            recipe={recipe}
+          />
         ) : (
           <Button
             bg="white"
