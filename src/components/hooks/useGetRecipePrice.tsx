@@ -22,6 +22,7 @@ type Result = {
   productIds: { id: string; storeId: string }[];
   ingredientData: IngredientData;
   needed: NeededProduct[];
+  discount: number;
 };
 
 export const useGetRecipePrice = (recipe: NewRecipe): Result => {
@@ -29,6 +30,7 @@ export const useGetRecipePrice = (recipe: NewRecipe): Result => {
   console.log({ ingredientData });
   const { ingredients } = useMyStore();
   let totalPrice = 0;
+  let saved = 0;
   const productIds: { id: string; storeId: string }[] = [];
   let overallCheapestProduct: (Stock & Price & Preferred & Product) | undefined;
   let selectedProduct: (Stock & Price & Preferred & Product) | undefined;
@@ -102,6 +104,10 @@ export const useGetRecipePrice = (recipe: NewRecipe): Result => {
             if (salesPrice) {
               totalPrice +=
                 selectedProduct.sales[0].price.amount * amountOfProductsToBuy;
+              saved +=
+                (selectedProduct.price.amount -
+                  selectedProduct.sales[0].price.amount) *
+                amountOfProductsToBuy;
             } else {
               totalPrice +=
                 selectedProduct.price.amount * amountOfProductsToBuy;
@@ -126,6 +132,11 @@ export const useGetRecipePrice = (recipe: NewRecipe): Result => {
                 overallCheapestProduct.sales[0].price.amount *
                 amountOfProductsToBuy;
 
+              saved +=
+                (overallCheapestProduct.price.amount -
+                  overallCheapestProduct.sales[0].price.amount) *
+                amountOfProductsToBuy;
+
               productIds.push({
                 id: overallCheapestProduct.id,
                 storeId: ingredientId,
@@ -145,10 +156,18 @@ export const useGetRecipePrice = (recipe: NewRecipe): Result => {
       );
     }
 
-    return { totalPrice, productIds, ingredientData, needed };
+    const discount = calculateDiscountPercentage(saved, totalPrice);
+
+    return { totalPrice, productIds, ingredientData, needed, discount };
   } catch (error) {
     console.error(error);
-    return { totalPrice: 0, productIds: [], ingredientData, needed: [] };
+    return {
+      totalPrice: 0,
+      productIds: [],
+      ingredientData,
+      needed: [],
+      discount: 0,
+    };
   }
 };
 
@@ -237,3 +256,10 @@ const getOverallCheapestProduct = (
     throw new Error("Všechny alternativy vyprodány.");
   }
 };
+
+function calculateDiscountPercentage(
+  amountSaved: number,
+  priceAfterDiscount: number,
+): number {
+  return (amountSaved / priceAfterDiscount) * 100;
+}
