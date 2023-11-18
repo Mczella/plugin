@@ -8,11 +8,11 @@ import {
   Image,
   Text,
 } from "@chakra-ui/react";
-import { AddIcon } from "@chakra-ui/icons";
 import { useMyStore } from "../store/store.tsx";
 import { NewRecipe } from "../types.ts";
 import { useGetRecipePrice } from "../hooks/useGetRecipePrice.tsx";
 import { FC } from "react";
+import PlusMinus from "../PlusMinus.tsx";
 
 type Props = {
   recipe: NewRecipe;
@@ -166,14 +166,18 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
           </Text>
         </HStack>
         {/*: <Text></Text>*/}
-        <Text fontSize="12px" lineHeight={1.4} color={"rgb(93, 103, 108)"}>
+        <Text
+          mb={"10px"}
+          fontSize="12px"
+          lineHeight={1.4}
+          color={"rgb(93, 103, 108)"}
+        >
           {`${Math.ceil(pricePerPortion)} Kč/porce`}
         </Text>
         {recipesInCart.includes(recipe.id) ? (
-          <AddIcon />
+          <PlusMinus />
         ) : (
           <Button
-            mt="10px"
             bg="white"
             color="black"
             border="1px solid rgba(0, 0, 0, 0.15)"
