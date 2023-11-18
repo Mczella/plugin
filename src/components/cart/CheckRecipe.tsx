@@ -1,9 +1,10 @@
-import { Box, Flex, Image, Text } from "@chakra-ui/react";
-import { AddIcon, MinusIcon, SmallCloseIcon } from "@chakra-ui/icons";
+import { Flex, Image, Text } from "@chakra-ui/react";
+import { SmallCloseIcon } from "@chakra-ui/icons";
 import { FC } from "react";
 import { useMyStore } from "../store/store.tsx";
 import { IngredientData, Preferred, Price, Product, Stock } from "../types.ts";
 import { useGetRecipePrice } from "../hooks/useGetRecipePrice.tsx";
+import PlusMinus from "../PlusMinus.tsx";
 
 type Props = {
   recipeInCart: string;
@@ -86,33 +87,7 @@ const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
               <Text pl={"4"}>{product.textualAmount}</Text>
             </Flex>
             <Flex flexDir={"row"} alignItems={"center"}>
-              <Flex flexDir={"row"} alignItems={"center"} gap={"15px"}>
-                <Box
-                  h={"32px"}
-                  w={"32px"}
-                  border={"1px solid rgba(0, 0, 0, 0.15)"}
-                  rounded={"md"}
-                  display={"flex"}
-                  justifyContent={"center"}
-                  alignItems={"center"}
-                  _hover={{ border: "1px solid rgb(156, 164, 169)" }}
-                >
-                  <MinusIcon />
-                </Box>
-                <Text fontWeight={"bold"}>1</Text>
-                <Box
-                  h={"32px"}
-                  w={"32px"}
-                  border={"1px solid rgba(0, 0, 0, 0.15)"}
-                  rounded={"md"}
-                  display={"flex"}
-                  justifyContent={"center"}
-                  alignItems={"center"}
-                  _hover={{ border: "1px solid rgb(156, 164, 169)" }}
-                >
-                  <AddIcon />
-                </Box>
-              </Flex>
+              <PlusMinus />
               <Text
                 textAlign={"right"}
                 color={"rgb(28, 37, 41)"}
