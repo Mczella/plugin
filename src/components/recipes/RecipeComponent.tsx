@@ -103,17 +103,19 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
                 "https://www.rohlik.cz/img/icons/icon-favorite-active.svg?v3"
               }
             />
-            <Text
-              alignSelf={"center"}
-              py={"5px"}
-              bg={"rgba(209, 17, 0, 0.9)"}
-              color={"white"}
-              fontSize={"16px"}
-              fontWeight={"bold"}
-              px={"5px"}
-            >
-              {`-${Math.ceil(discount)} %`}
-            </Text>
+            {discount > 0 ? (
+              <Text
+                alignSelf={"center"}
+                py={"5px"}
+                bg={"rgba(209, 17, 0, 0.9)"}
+                color={"white"}
+                fontSize={"16px"}
+                fontWeight={"bold"}
+                px={"5px"}
+              >
+                {`-${Math.ceil(discount)} %`}
+              </Text>
+            ) : null}
           </Flex>
           <Image
             src={recipe.image}
@@ -133,7 +135,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
             px={"7px"}
             rounded={"2xl"}
           >
-            {discount > 0 ? `${recipe.portion} porce` : null}
+            {`${recipe.portion} porce`}
           </Badge>
         </Box>
       </Box>
@@ -170,7 +172,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
         {/*  */}
         {/*</Box>*/}
         <HStack>
-          {saved > 0 ? (
+          {discount > 0 ? (
             <Text
               as={"s"}
               fontSize={"18px"}
@@ -185,7 +187,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
             fontSize="24px"
             lineHeight="1.4"
             fontWeight={"bold"}
-            color={"rgb(209, 17, 0)"}
+            color={discount > 0 ? "rgb(209, 17, 0)" : "rgb(28, 37, 41)"}
           >
             {totalPrice === 0 ? "Vyprodáno" : `${Math.ceil(totalPrice)} Kč`}
           </Text>
