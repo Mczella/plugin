@@ -214,10 +214,9 @@ export const createRecipesInCartSlice: StateCreator<
   },
   addRecipeToCart: (recipeInfo: { recipe: string; amount: number }) => {
     set((state) => {
-      const existingRecipe = state.recipesInCart.map(
+      const existingRecipe = state.recipesInCart.some(
         (recipe) => recipe.recipe === recipeInfo.recipe,
       );
-
       if (existingRecipe) {
         return {
           recipesInCart: state.recipesInCart.map((recipe) =>
