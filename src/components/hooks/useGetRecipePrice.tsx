@@ -23,6 +23,7 @@ type Result = {
   ingredientData: IngredientData;
   needed: NeededProduct[];
   discount: number;
+  saved: number;
 };
 
 export const useGetRecipePrice = (recipe: NewRecipe): Result => {
@@ -158,7 +159,7 @@ export const useGetRecipePrice = (recipe: NewRecipe): Result => {
 
     const discount = calculateDiscountPercentage(saved, totalPrice);
 
-    return { totalPrice, productIds, ingredientData, needed, discount };
+    return { totalPrice, productIds, ingredientData, needed, discount, saved };
   } catch (error) {
     console.error(error);
     return {
@@ -167,6 +168,7 @@ export const useGetRecipePrice = (recipe: NewRecipe): Result => {
       ingredientData,
       needed: [],
       discount: 0,
+      saved: 0,
     };
   }
 };
