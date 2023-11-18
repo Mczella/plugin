@@ -46,7 +46,7 @@ export interface MyTemporaryUIState {
 }
 
 export interface MyRecipesInCartState {
-  recipesInCart: string[];
+  recipesInCart: { recipe: string; amount: number }[];
   ingredientsInCart: {
     name: string;
     id: string;
@@ -61,7 +61,7 @@ export interface MyRecipesInCartState {
     unit: string,
     packageAmount: number,
   ) => void;
-  addRecipeToCart: (recipe: string) => void;
+  addRecipeToCart: (recipeInfo: { recipe: string; amount: number }) => void;
   deleteRecipeFromCart: (recipe: string) => void;
 }
 
@@ -212,15 +212,31 @@ export const createRecipesInCartSlice: StateCreator<
       }
     });
   },
-  addRecipeToCart: (recipe: string) => {
-    set((state) => ({
-      recipesInCart: [...state.recipesInCart, recipe],
-    }));
+  addRecipeToCart: (recipeInfo: { recipe: string; amount: number }) => {
+    set((state) => {
+      const existingRecipe = state.recipesInCart.map(
+        (recipe) => recipe.recipe === recipeInfo.recipe,
+      );
+
+      if (existingRecipe) {
+        return {
+          recipesInCart: state.recipesInCart.map((recipe) =>
+            recipe.recipe === recipeInfo.recipe
+              ? { ...recipe, amount: recipe.amount + recipeInfo.amount }
+              : recipe,
+          ),
+        };
+      } else {
+        return {
+          recipesInCart: [...state.recipesInCart, recipeInfo],
+        };
+      }
+    });
   },
   deleteRecipeFromCart: (recipe: string) => {
     set((state) => ({
       recipesInCart: state.recipesInCart.filter(
-        (stateRecipe) => stateRecipe !== recipe,
+        (item) => item.recipe !== recipe,
       ),
     }));
   },
