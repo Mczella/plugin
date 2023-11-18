@@ -26,9 +26,10 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
     addIngredientToCart,
     ingredients,
   } = useMyStore();
-  const { totalPrice, needed, productIds, discount } =
+  const { totalPrice, needed, productIds, saved, discount } =
     useGetRecipePrice(recipe);
   const pricePerPortion = totalPrice / recipe.portion;
+  const priceBeforeSale = totalPrice + saved;
 
   const handleAdd = () => {
     addRecipeToCart({ recipe: recipe.id, amount: 1 });
@@ -168,17 +169,18 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
         {/*<Box>*/}
         {/*  */}
         {/*</Box>*/}
-        {/*{sale?}*/}
         <HStack>
-          <Text
-            as={"s"}
-            fontSize={"18px"}
-            lineHeight={1.4}
-            fontWeight={"normal"}
-            color={"rgb(28, 37, 41)"}
-          >
-            {totalPrice === 0 ? null : "100 Kč"}
-          </Text>
+          {saved > 0 ? (
+            <Text
+              as={"s"}
+              fontSize={"18px"}
+              lineHeight={1.4}
+              fontWeight={"normal"}
+              color={"rgb(28, 37, 41)"}
+            >
+              {totalPrice === 0 ? null : `${priceBeforeSale}Kč`}
+            </Text>
+          ) : null}
           <Text
             fontSize="24px"
             lineHeight="1.4"
