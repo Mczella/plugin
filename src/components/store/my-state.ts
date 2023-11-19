@@ -54,6 +54,7 @@ export interface MyRecipesInCartState {
     unit: string;
     packageAmount: number;
     optimize: boolean;
+    storeId: string;
   }[];
   addIngredientToCart: (
     name: string,
@@ -62,7 +63,9 @@ export interface MyRecipesInCartState {
     unit: string,
     packageAmount: number,
     optimize: boolean,
+    storeId: string,
   ) => void;
+  deleteIngredientFromCart: (ingredient: string) => void;
   addRecipeToCart: (recipe: { id: string; amount: number }) => void;
   deleteRecipeFromCart: (recipe: string) => void;
 }
@@ -191,6 +194,7 @@ export const createRecipesInCartSlice: StateCreator<
     unit: string,
     packageAmount: number,
     optimize: boolean,
+    storeId: string,
   ) => {
     set((state) => {
       const existingIngredient = state.ingredientsInCart.find(
@@ -198,10 +202,20 @@ export const createRecipesInCartSlice: StateCreator<
       );
 
       if (existingIngredient) {
+        const newAmount = existingIngredient.amount + amount;
+
+        if (newAmount <= 0) {
+          return {
+            ingredientsInCart: state.ingredientsInCart.filter(
+              (ingredient) => ingredient.id !== id,
+            ),
+          };
+        }
+
         return {
           ingredientsInCart: state.ingredientsInCart.map((ingredient) =>
             ingredient.id === id
-              ? { ...ingredient, amount: ingredient.amount + amount }
+              ? { ...ingredient, amount: newAmount }
               : ingredient,
           ),
         };
@@ -209,11 +223,18 @@ export const createRecipesInCartSlice: StateCreator<
         return {
           ingredientsInCart: [
             ...state.ingredientsInCart,
-            { name, id, amount, unit, packageAmount, optimize },
+            { name, id, amount, unit, packageAmount, optimize, storeId },
           ],
         };
       }
     });
+  },
+  deleteIngredientFromCart: (ingredient: string) => {
+    set((state) => ({
+      ingredientsInCart: state.ingredientsInCart.filter(
+        (item) => item.id !== ingredient,
+      ),
+    }));
   },
   addRecipeToCart: (newRecipe: { id: string; amount: number }) => {
     set((state) => {
