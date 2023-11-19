@@ -211,7 +211,9 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
               fontWeight={"normal"}
               color={"rgb(28, 37, 41)"}
             >
-              {totalPrice === 0 ? null : `${priceBeforeSale}Kč`}
+              {totalPrice === 0
+                ? null
+                : `${Number(priceBeforeSale.toFixed(1))}Kč`}
             </Text>
           ) : null}
           <Text
@@ -220,7 +222,9 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
             fontWeight={"bold"}
             color={discount > 0 ? "rgb(209, 17, 0)" : "rgb(28, 37, 41)"}
           >
-            {totalPrice === 0 ? "Vyprodáno" : `${Math.ceil(totalPrice)} Kč`}
+            {totalPrice === 0
+              ? "Vyprodáno"
+              : `${Number(totalPrice.toFixed(1))} Kč`}
           </Text>
         </HStack>
         {/*: <Text></Text>*/}
@@ -230,7 +234,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
           lineHeight={1.4}
           color={"rgb(93, 103, 108)"}
         >
-          {`${Math.ceil(pricePerPortion)} Kč/porce`}
+          {`${Number(pricePerPortion.toFixed(1))} Kč/porce`}
         </Text>
         {recipesInCart.some((item) => recipe.id === item.id) ? (
           <PlusMinus
