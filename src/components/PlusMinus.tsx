@@ -33,7 +33,13 @@ const PlusMinus: FC<Props> = ({ handleAdd, handleSubtract, amount }) => {
         display={"flex"}
         justifyContent={"center"}
         alignItems={"center"}
-        _hover={{ border: "1px solid rgb(156, 164, 169)" }}
+        bg={amount > 0 ? "rgb(109, 163, 5)" : {}}
+        color={amount > 0 ? "white" : "black"}
+        _hover={
+          amount > 0
+            ? { bg: "rgb(87, 130, 4)" }
+            : { border: "1px solid rgb(156, 164, 169)" }
+        }
         onClick={handleAdd}
       >
         <AddIcon />
