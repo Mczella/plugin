@@ -33,7 +33,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
 
   const getAmount = () => {
     const currentRecipe = recipesInCart.find(
-      (recipeInCart) => recipeInCart.recipe === recipe.id,
+      (recipeInCart) => recipeInCart.id === recipe.id,
     );
 
     if (!currentRecipe) {
@@ -44,18 +44,18 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
   };
 
   const handleAdd = () => {
-    addRecipeToCart({ recipe: recipe.id, amount: 1 });
+    addRecipeToCart({ id: recipe.id, amount: 1 });
   };
 
   const handleSubtract = () => {
     const currentRecipe = recipesInCart.find(
-      (recipeInCart) => recipeInCart.recipe === recipe.id,
+      (recipeInCart) => recipeInCart.id === recipe.id,
     );
 
     if (currentRecipe && currentRecipe.amount === 1) {
       deleteRecipeFromCart(recipe.id);
     } else {
-      addRecipeToCart({ recipe: recipe.id, amount: -1 });
+      addRecipeToCart({ id: recipe.id, amount: -1 });
     }
   };
 
@@ -67,17 +67,20 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
       const filteredNeeded = needed?.find(
         (ingredient) => ingredient.id === item.id,
       );
-      if (filteredIngredient && filteredNeeded && filteredIngredient.optimize) {
+      console.log("needed", needed);
+      console.log({ filteredNeeded });
+      if (filteredIngredient && filteredNeeded) {
         addIngredientToCart(
           filteredNeeded.name,
           filteredNeeded.id,
           filteredNeeded.amount,
           filteredNeeded.unit,
           filteredNeeded.packageAmount,
+          filteredIngredient.optimize,
         );
       }
     });
-    addRecipeToCart({ recipe: recipe.id, amount: 1 });
+    addRecipeToCart({ id: recipe.id, amount: 1 });
   };
 
   return (
@@ -212,7 +215,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
         >
           {`${Math.ceil(pricePerPortion)} Kč/porce`}
         </Text>
-        {recipesInCart.some((item) => recipe.id === item.recipe) ? (
+        {recipesInCart.some((item) => recipe.id === item.id) ? (
           <PlusMinus
             handleAdd={handleAdd}
             handleSubtract={handleSubtract}
