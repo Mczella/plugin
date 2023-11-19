@@ -44,10 +44,12 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
   };
 
   const handleAdd = () => {
+    filterIngredient("add");
     addRecipeToCart({ id: recipe.id, amount: 1 });
   };
 
   const handleSubtract = () => {
+    filterIngredient("subtract");
     const currentRecipe = recipesInCart.find(
       (recipeInCart) => recipeInCart.id === recipe.id,
     );
@@ -59,7 +61,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
     }
   };
 
-  const handleBuy = () => {
+  const filterIngredient = (type: string) => {
     productIds.forEach((item) => {
       const filteredIngredient = ingredients.find(
         (ingredient) => ingredient.id === item.storeId,
@@ -69,7 +71,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
       );
       console.log("needed", needed);
       console.log({ filteredNeeded });
-      if (filteredIngredient && filteredNeeded) {
+      if (filteredIngredient && filteredNeeded && type === "add") {
         addIngredientToCart(
           filteredNeeded.name,
           filteredNeeded.id,
@@ -77,9 +79,24 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
           filteredNeeded.unit,
           filteredNeeded.packageAmount,
           filteredIngredient.optimize,
+          filteredIngredient.id,
+        );
+      } else if (filteredIngredient && filteredNeeded && type === "subtract") {
+        addIngredientToCart(
+          filteredNeeded.name,
+          filteredNeeded.id,
+          -filteredNeeded.amount,
+          filteredNeeded.unit,
+          filteredNeeded.packageAmount,
+          filteredIngredient.optimize,
+          filteredIngredient.id,
         );
       }
     });
+  };
+
+  const handleBuy = () => {
+    filterIngredient("add");
     addRecipeToCart({ id: recipe.id, amount: 1 });
   };
 
