@@ -10,7 +10,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import Add from "../Add.tsx";
-import { useMyStore } from "../store/store.tsx";
+import { useMyStore, usePurgeStorage } from "../store/store.tsx";
 import RecipeComponent from "./RecipeComponent.tsx";
 import { Icon } from "@chakra-ui/icons";
 import BreadcrumbNav from "../BreadcrumbNav.tsx";
@@ -33,7 +33,7 @@ const Recipes = () => {
   const { state } = useLocation();
   console.log("hz", recipes);
   const [filteredRecipes, setFilteredRecipes] = useState<NewRecipe[]>(recipes);
-
+  const purge = usePurgeStorage();
   const handleFilter = (
     ingredient: {
       name: string;
@@ -88,6 +88,7 @@ const Recipes = () => {
       mb={"30px"}
     >
       <BreadcrumbNav type={"recipes"} />
+      <Button onClick={purge}>purge</Button>
       <Flex flexDir={"column"}>
         <Heading
           pt={"12px"}
@@ -161,9 +162,10 @@ const Recipes = () => {
               ).toFixed(1),
             );
 
-            if (remainingAmount !== 0) {
+            if (remainingAmount !== 0 && ingredient.optimize) {
               return (
                 <Button
+                  key={ingredient.id}
                   onClick={() => handleFilter(ingredient, remainingAmount)}
                 >
                   Filtrovat recepty obsahující {remainingAmount}{" "}
