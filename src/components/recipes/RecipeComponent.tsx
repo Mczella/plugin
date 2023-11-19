@@ -31,6 +31,18 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
   const pricePerPortion = totalPrice / recipe.portion;
   const priceBeforeSale = totalPrice + saved;
 
+  const getAmount = () => {
+    const currentRecipe = recipesInCart.find(
+      (recipeInCart) => recipeInCart.recipe === recipe.id,
+    );
+
+    if (!currentRecipe) {
+      return 0;
+    }
+
+    return currentRecipe.amount;
+  };
+
   const handleAdd = () => {
     addRecipeToCart({ recipe: recipe.id, amount: 1 });
   };
@@ -65,7 +77,6 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
         );
       }
     });
-    console.log("asdfghjk", recipe.id);
     addRecipeToCart({ recipe: recipe.id, amount: 1 });
   };
 
@@ -205,7 +216,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
           <PlusMinus
             handleAdd={handleAdd}
             handleSubtract={handleSubtract}
-            recipe={recipe}
+            amount={getAmount()}
           />
         ) : (
           <Button
