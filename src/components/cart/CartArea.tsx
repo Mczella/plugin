@@ -40,7 +40,7 @@ const CartArea = () => {
         Recepty
       </Text>
       {recipesInCart.map((recipe) => (
-        <RecipeInCart key={recipe} recipe={recipe} />
+        <RecipeInCart key={recipe.id} recipe={recipe} />
       ))}
       <CartButton />
     </ShadowDom>
