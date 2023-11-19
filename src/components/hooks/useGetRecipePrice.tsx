@@ -263,5 +263,5 @@ function calculateDiscountPercentage(
   amountSaved: number,
   priceAfterDiscount: number,
 ): number {
-  return (amountSaved / priceAfterDiscount) * 100;
+  return (1 - priceAfterDiscount / (priceAfterDiscount + amountSaved)) * 100;
 }
