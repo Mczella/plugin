@@ -5,16 +5,16 @@ import { FC } from "react";
 import { useMyStore } from "../store/store.tsx";
 
 type Props = {
-  recipe: string;
+  recipe: { id: string; amount: number };
 };
 
 const RecipeInCart: FC<Props> = ({ recipe }) => {
   const { recipes, deleteRecipeFromCart } = useMyStore();
-  const findRecipeById = (recipe: string) =>
-    recipes.find((oneRecipe) => oneRecipe.id === recipe);
+  const findRecipeById = (recipe: { id: string; amount: number }) =>
+    recipes.find((oneRecipe) => oneRecipe.id === recipe.id);
 
   const specificRecipe = findRecipeById(recipe);
-
+  console.log("hej", recipe, specificRecipe);
   if (!specificRecipe) {
     throw new Error("Error");
   }
