@@ -1,6 +1,7 @@
 import {
   Badge,
   Box,
+  Button,
   Flex,
   Image,
   SimpleGrid,
@@ -16,6 +17,7 @@ import { NewIngredient, NewRecipeIngredient } from "../types.ts";
 import IngredientModal from "../ingredients/IngredientModal.tsx";
 import { useGetIngredientPrice } from "../hooks/useGetIngredientPrice.tsx";
 import { useLocation } from "react-router-dom";
+import PlusMinus from "../PlusMinus.tsx";
 
 type Props = {
   ingredient: NewIngredient | NewRecipeIngredient;
@@ -32,6 +34,7 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
     editSortBy,
     editOptimize,
     editAmount,
+    ingredientsInCart,
   } = useMyStore();
 
   if (ingredient == undefined) {
@@ -92,13 +95,35 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
     editSelectedIngredients(updatedIngredients);
   };
   console.log(ingredient, ingredient.unit);
+
+  const getAmountInCart = (ingredient: NewIngredient): number => {
+    return ingredientsInCart.reduce((totalAmount, ingredientInCart) => {
+      const matchingProduct = ingredient.selectedProducts.find(
+        (product) => product.id === ingredientInCart.id,
+      );
+
+      if (matchingProduct) {
+        const amount = Math.ceil(
+          ingredientInCart.amount / ingredientInCart.packageAmount,
+        );
+        return totalAmount + amount;
+      }
+
+      return totalAmount;
+    }, 0);
+  };
+
+  const amount = getAmountInCart(ingredient);
+
   return (
     <Flex
+      mb={"20px"}
       flexDir={"column"}
       onClick={() => {
         handleOpenIngredient();
       }}
       alignSelf={"center"}
+      alignItems={"center"}
     >
       <Flex
         flexDir={"column"}
@@ -212,6 +237,30 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
           >
             {Number(totalPrice.toFixed(1))} Kč
           </Text>
+          {ingredientsInCart.some((item) => ingredient.id === item.storeId) ? (
+            <PlusMinus
+              amount={amount}
+              handleAdd={() => console.log("h")}
+              handleSubtract={() => console.log("h")}
+            />
+          ) : (
+            <Button
+              bg="white"
+              color="black"
+              border="1px solid rgba(0, 0, 0, 0.15)"
+              height="32px"
+              display="flex"
+              rounded={"lg"}
+              alignItems="center"
+              fontSize={"13px"}
+              fontWeight={"bold"}
+              // isDisabled={totalPrice === 0}
+              _hover={{ bg: "rgb(87, 130, 4)", color: "white" }}
+              // onClick={handleBuy}
+            >
+              Do košíku
+            </Button>
+          )}
         </>
       ) : (
         <>
