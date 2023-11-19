@@ -1,22 +1,14 @@
 import { Box, Flex, Text } from "@chakra-ui/react";
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 import { FC } from "react";
-import { NewRecipe } from "./types.ts";
-import { useMyStore } from "./store/store.tsx";
 
 type Props = {
   handleAdd: () => void;
   handleSubtract: () => void;
-  recipe: NewRecipe;
+  amount: number;
 };
 
-const PlusMinus: FC<Props> = ({ handleAdd, handleSubtract, recipe }) => {
-  const { recipesInCart } = useMyStore();
-  const currentRecipe = recipesInCart.find(
-    (recipeInCart) => recipeInCart.recipe === recipe.id,
-  );
-
-  const recipeAmount = currentRecipe?.amount;
+const PlusMinus: FC<Props> = ({ handleAdd, handleSubtract, amount }) => {
   return (
     <Flex flexDir={"row"} alignItems={"center"} gap={"13px"}>
       <Box
@@ -31,7 +23,7 @@ const PlusMinus: FC<Props> = ({ handleAdd, handleSubtract, recipe }) => {
       >
         <MinusIcon onClick={handleSubtract} />
       </Box>
-      <Text fontWeight={"bold"}>{recipeAmount}</Text>
+      <Text fontWeight={"bold"}>{amount}</Text>
       <Box
         h={"32px"}
         w={"32px"}
