@@ -1,8 +1,6 @@
 import {
+  Badge,
   Box,
-  Editable,
-  EditableInput,
-  EditablePreview,
   Flex,
   Image,
   SimpleGrid,
@@ -17,6 +15,7 @@ import { FC, useRef } from "react";
 import { NewIngredient, NewRecipeIngredient } from "../types.ts";
 import IngredientModal from "../ingredients/IngredientModal.tsx";
 import { useGetIngredientPrice } from "../hooks/useGetIngredientPrice.tsx";
+import { useLocation } from "react-router-dom";
 
 type Props = {
   ingredient: NewIngredient | NewRecipeIngredient;
@@ -38,6 +37,7 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
   if (ingredient == undefined) {
     throw new Error("No selected ingredient.");
   }
+  const location = useLocation();
   const { totalPrice } = useGetIngredientPrice(ingredient);
   const {
     isOpen: isEditInRecipeOpen,
@@ -91,19 +91,21 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
     );
     editSelectedIngredients(updatedIngredients);
   };
-
+  console.log(ingredient, ingredient.unit);
   return (
     <Flex
       flexDir={"column"}
       onClick={() => {
         handleOpenIngredient();
       }}
+      alignSelf={"center"}
     >
       <Flex
         flexDir={"column"}
         justify={"flex-start"}
         cursor={"pointer"}
         rounded={"3xl"}
+        alignSelf={"center"}
         boxShadow={
           "rgba(0, 0, 0, 0.01) 0px 0px 12px, rgba(0, 0, 0, 0.06) 0px 0px 10px, rgba(0, 0, 0, 0.1) 0px 2px 4px -1px;"
         }
@@ -182,34 +184,72 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
           )}
         </SimpleGrid>
       </Flex>
-      <Text
-        px={"4px"}
-        as={"b"}
-        color={"rgb(28, 37, 41)"}
-        fontSize={"14px"}
-        lineHeight={"22px"}
-        casing={"capitalize"}
-      >
-        {ingredient.name}
-      </Text>
-      <Text
-        px={"4px"}
-        color={"rgb(28, 37, 41)"}
-        fontSize={"14px"}
-        lineHeight={"22px"}
-      >
-        {totalPrice}
-      </Text>
-      <Editable
-        px={"4px"}
-        defaultValue="Množství"
-        color={"rgb(93, 103, 108)"}
-        fontSize={"13px"}
-        lineHeight={"22px"}
-      >
-        <EditablePreview />
-        <EditableInput />
-      </Editable>
+      {location.pathname === "/produkty" ? (
+        <>
+          <Text
+            cursor={"pointer"}
+            pt={"10px"}
+            textAlign={"center"}
+            h={"30px"}
+            casing={"capitalize"}
+            display={"-webkit-box"}
+            fontSize={"13px"}
+            lineHeight={1.4}
+            noOfLines={1}
+            maxW={"165px"}
+            textOverflow={"ellipsis"}
+            sx={{ "-webkit-line-clamp": "1" }}
+          >
+            {ingredient.name}
+          </Text>
+          <Text
+            my={"10px"}
+            textAlign={"center"}
+            fontSize="24px"
+            lineHeight="1.4"
+            fontWeight={"bold"}
+            color={"rgb(28, 37, 41)"}
+          >
+            {Math.ceil(totalPrice)} Kč
+          </Text>
+        </>
+      ) : (
+        <>
+          <Badge
+            alignSelf={"center"}
+            bg={"rgba(0, 0, 0, 0.5)"}
+            color={"white"}
+            fontSize={"12px"}
+            fontWeight={600}
+            py={"2px"}
+            px={"7px"}
+            rounded={"2xl"}
+          >
+            {ingredient.unit}
+          </Badge>
+          <Text
+            px={"4px"}
+            as={"b"}
+            color={"rgb(28, 37, 41)"}
+            fontSize={"14px"}
+            lineHeight={"22px"}
+            casing={"capitalize"}
+            noOfLines={1}
+            sx={{ "-webkit-line-clamp": "1" }}
+          >
+            {ingredient.name}
+          </Text>
+          <Text
+            textAlign={"center"}
+            px={"4px"}
+            color={"rgb(28, 37, 41)"}
+            fontSize={"14px"}
+            lineHeight={"22px"}
+          >
+            {totalPrice} Kč
+          </Text>
+        </>
+      )}
       <IngredientModal
         id={ingredient.id}
         focusRef={focusRef}
