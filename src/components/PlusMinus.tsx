@@ -20,8 +20,9 @@ const PlusMinus: FC<Props> = ({ handleAdd, handleSubtract, amount }) => {
         justifyContent={"center"}
         alignItems={"center"}
         _hover={{ border: "1px solid rgb(156, 164, 169)" }}
+        onClick={handleSubtract}
       >
-        <MinusIcon onClick={handleSubtract} />
+        <MinusIcon />
       </Box>
       <Text fontWeight={"bold"}>{amount}</Text>
       <Box
@@ -33,8 +34,9 @@ const PlusMinus: FC<Props> = ({ handleAdd, handleSubtract, amount }) => {
         justifyContent={"center"}
         alignItems={"center"}
         _hover={{ border: "1px solid rgb(156, 164, 169)" }}
+        onClick={handleAdd}
       >
-        <AddIcon onClick={handleAdd} />
+        <AddIcon />
       </Box>
     </Flex>
   );
