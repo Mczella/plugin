@@ -10,6 +10,7 @@ type Props = {
 
 const RecipeInCart: FC<Props> = ({ recipe }) => {
   const { recipes, deleteRecipeFromCart } = useMyStore();
+
   const findRecipeById = (recipe: { id: string; amount: number }) =>
     recipes.find((oneRecipe) => oneRecipe.id === recipe.id);
 
@@ -19,8 +20,8 @@ const RecipeInCart: FC<Props> = ({ recipe }) => {
     throw new Error("Error");
   }
 
-  const { totalPrice } = useGetRecipePrice(specificRecipe);
-
+  const { totalPrice, saved } = useGetRecipePrice(specificRecipe);
+  const priceBeforeSale = totalPrice + saved;
   const handleDelete = (id: string) => {
     deleteRecipeFromCart(id);
   };
@@ -120,11 +121,11 @@ const RecipeInCart: FC<Props> = ({ recipe }) => {
             color={"rgb(28, 37, 41)"}
             as={"s"}
           >
-            {Math.ceil(totalPrice)} Kč
+            {Number(priceBeforeSale.toFixed(1))} Kč
           </Text>
           <Text textAlign={"right"} fontSize={"12px"} fontWeight={"700"}>
             {/*if sale color={"rgb(209, 17, 0)"}*/}
-            {Math.ceil(totalPrice)}
+            {Number(totalPrice.toFixed(1))} Kč
           </Text>
         </Flex>
       </Flex>
