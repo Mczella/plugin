@@ -46,13 +46,14 @@ export interface MyTemporaryUIState {
 }
 
 export interface MyRecipesInCartState {
-  recipesInCart: { recipe: string; amount: number }[];
+  recipesInCart: { id: string; amount: number }[];
   ingredientsInCart: {
     name: string;
     id: string;
     amount: number;
     unit: string;
     packageAmount: number;
+    optimize: boolean;
   }[];
   addIngredientToCart: (
     name: string,
@@ -60,8 +61,9 @@ export interface MyRecipesInCartState {
     amount: number,
     unit: string,
     packageAmount: number,
+    optimize: boolean,
   ) => void;
-  addRecipeToCart: (recipeInfo: { recipe: string; amount: number }) => void;
+  addRecipeToCart: (recipe: { id: string; amount: number }) => void;
   deleteRecipeFromCart: (recipe: string) => void;
 }
 
@@ -188,6 +190,7 @@ export const createRecipesInCartSlice: StateCreator<
     amount: number,
     unit: string,
     packageAmount: number,
+    optimize: boolean,
   ) => {
     set((state) => {
       const existingIngredient = state.ingredientsInCart.find(
@@ -206,37 +209,35 @@ export const createRecipesInCartSlice: StateCreator<
         return {
           ingredientsInCart: [
             ...state.ingredientsInCart,
-            { name, id, amount, unit, packageAmount },
+            { name, id, amount, unit, packageAmount, optimize },
           ],
         };
       }
     });
   },
-  addRecipeToCart: (recipeInfo: { recipe: string; amount: number }) => {
+  addRecipeToCart: (newRecipe: { id: string; amount: number }) => {
     set((state) => {
       const existingRecipe = state.recipesInCart.some(
-        (recipe) => recipe.recipe === recipeInfo.recipe,
+        (recipe) => recipe.id === newRecipe.id,
       );
       if (existingRecipe) {
         return {
           recipesInCart: state.recipesInCart.map((recipe) =>
-            recipe.recipe === recipeInfo.recipe
-              ? { ...recipe, amount: recipe.amount + recipeInfo.amount }
+            recipe.id === newRecipe.id
+              ? { ...recipe, amount: recipe.amount + newRecipe.amount }
               : recipe,
           ),
         };
       } else {
         return {
-          recipesInCart: [...state.recipesInCart, recipeInfo],
+          recipesInCart: [...state.recipesInCart, newRecipe],
         };
       }
     });
   },
   deleteRecipeFromCart: (recipe: string) => {
     set((state) => ({
-      recipesInCart: state.recipesInCart.filter(
-        (item) => item.recipe !== recipe,
-      ),
+      recipesInCart: state.recipesInCart.filter((item) => item.id !== recipe),
     }));
   },
 });
