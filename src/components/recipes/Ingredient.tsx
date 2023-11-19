@@ -210,7 +210,7 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
             fontWeight={"bold"}
             color={"rgb(28, 37, 41)"}
           >
-            {Math.ceil(totalPrice)} Kč
+            {Number(totalPrice.toFixed(1))} Kč
           </Text>
         </>
       ) : (
@@ -246,7 +246,7 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
             fontSize={"14px"}
             lineHeight={"22px"}
           >
-            {totalPrice} Kč
+            {Number(totalPrice.toFixed(1))} Kč
           </Text>
         </>
       )}
