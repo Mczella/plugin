@@ -1,6 +1,7 @@
 import {
   Badge,
   Box,
+  Button,
   Flex,
   Grid,
   GridItem,
@@ -147,11 +148,32 @@ const Products = () => {
                   key={ingredient.id}
                 >
                   <Ingredient ingredient={ingredient} />
-                  <PlusMinus
-                    amount={amount}
-                    handleAdd={() => console.log("h")}
-                    handleSubtract={() => console.log("h")}
-                  />
+                  {ingredientsInCart.some(
+                    (item) => ingredient.id === item.storeId,
+                  ) ? (
+                    <PlusMinus
+                      amount={amount}
+                      handleAdd={() => console.log("h")}
+                      handleSubtract={() => console.log("h")}
+                    />
+                  ) : (
+                    <Button
+                      bg="white"
+                      color="black"
+                      border="1px solid rgba(0, 0, 0, 0.15)"
+                      height="32px"
+                      display="flex"
+                      rounded={"lg"}
+                      alignItems="center"
+                      fontSize={"13px"}
+                      fontWeight={"bold"}
+                      // isDisabled={totalPrice === 0}
+                      _hover={{ bg: "rgb(87, 130, 4)", color: "white" }}
+                      // onClick={handleBuy}
+                    >
+                      Do košíku
+                    </Button>
+                  )}
                 </Flex>
               );
             })}
