@@ -1,7 +1,6 @@
 import {
   Badge,
   Box,
-  Button,
   Flex,
   Grid,
   GridItem,
@@ -17,34 +16,15 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useRef } from "react";
 import Ingredient from "../recipes/Ingredient.tsx";
 import IngredientModal from "../ingredients/IngredientModal.tsx";
-import PlusMinus from "../PlusMinus.tsx";
-import { NewIngredient } from "../types.ts";
 
 const Products = () => {
-  const { ingredients, ingredientsInCart } = useMyStore();
+  const { ingredients } = useMyStore();
   // const [productArray, setProductArray] = useState<Product["id"][]>([]);
   const { isOpen: isOpen, onOpen: onOpen, onClose: onClose } = useDisclosure();
   const focusRef = useRef<HTMLInputElement>(null);
 
   const { state } = useLocation();
   const navigate = useNavigate();
-
-  const getAmountInCart = (ingredient: NewIngredient): number => {
-    return ingredientsInCart.reduce((totalAmount, ingredientInCart) => {
-      const matchingProduct = ingredient.selectedProducts.find(
-        (product) => product.id === ingredientInCart.id,
-      );
-
-      if (matchingProduct) {
-        const amount = Math.ceil(
-          ingredientInCart.amount / ingredientInCart.packageAmount,
-        );
-        return totalAmount + amount;
-      }
-
-      return totalAmount;
-    }, 0);
-  };
 
   return (
     <>
@@ -137,46 +117,9 @@ const Products = () => {
           {/*  </Stack>*/}
           {/*</RadioGroup>*/}
           <Grid templateColumns="repeat(5, 1fr)" gap="10px">
-            {ingredients.map((ingredient) => {
-              const amount = getAmountInCart(ingredient);
-
-              return (
-                <Flex
-                  flexDir={"column"}
-                  alignItems={"center"}
-                  mb={"20px"}
-                  key={ingredient.id}
-                >
-                  <Ingredient ingredient={ingredient} />
-                  {ingredientsInCart.some(
-                    (item) => ingredient.id === item.storeId,
-                  ) ? (
-                    <PlusMinus
-                      amount={amount}
-                      handleAdd={() => console.log("h")}
-                      handleSubtract={() => console.log("h")}
-                    />
-                  ) : (
-                    <Button
-                      bg="white"
-                      color="black"
-                      border="1px solid rgba(0, 0, 0, 0.15)"
-                      height="32px"
-                      display="flex"
-                      rounded={"lg"}
-                      alignItems="center"
-                      fontSize={"13px"}
-                      fontWeight={"bold"}
-                      // isDisabled={totalPrice === 0}
-                      _hover={{ bg: "rgb(87, 130, 4)", color: "white" }}
-                      // onClick={handleBuy}
-                    >
-                      Do košíku
-                    </Button>
-                  )}
-                </Flex>
-              );
-            })}
+            {ingredients.map((ingredient) => (
+              <Ingredient key={ingredient.id} ingredient={ingredient} />
+            ))}
           </Grid>
         </Flex>
         <IngredientModal
