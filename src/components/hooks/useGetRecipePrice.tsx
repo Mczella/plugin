@@ -101,8 +101,7 @@ export const useGetRecipePrice = (recipe: NewRecipe): Result => {
             });
 
             const amountOfProductsToBuy = Math.ceil(neededAmountOfProduct);
-            const salesPrice = selectedProduct.sales[0].price.amount;
-            if (salesPrice) {
+            if (selectedProduct.sales.length > 0) {
               totalPrice +=
                 selectedProduct.sales[0].price.amount * amountOfProductsToBuy;
               saved +=
@@ -152,7 +151,7 @@ export const useGetRecipePrice = (recipe: NewRecipe): Result => {
               });
             }
           }
-          selectedProduct = undefined;
+          // selectedProduct = undefined;
         },
       );
     }
