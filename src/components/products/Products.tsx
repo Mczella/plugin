@@ -37,7 +37,7 @@ const Products = () => {
         minH={"100vh"}
         mb={"30px"}
       >
-        <BreadcrumbNav type={"produkty"} />
+        <BreadcrumbNav>Produkty</BreadcrumbNav>
         <Flex flexDir={"column"}>
           <Heading
             pt={"12px"}

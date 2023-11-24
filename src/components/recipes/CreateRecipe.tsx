@@ -117,7 +117,7 @@ const CreateRecipe = () => {
     >
       <form onSubmit={handleSubmit(onSubmit)}>
         <Box pt={"16px"} pb={"12px"}>
-          <BreadcrumbNav type={"pridat-recept"} />
+          <BreadcrumbNav addRecipe>Recepty</BreadcrumbNav>
           <Flex
             flexDir={"row"}
             justifyContent={"space-between"}

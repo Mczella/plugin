@@ -88,7 +88,7 @@ const Recipes = () => {
       minH={"100vh"}
       mb={"30px"}
     >
-      <BreadcrumbNav type={"recipes"} />
+      <BreadcrumbNav>Recepty</BreadcrumbNav>
       <Button onClick={purge}>purge</Button>
       <Flex flexDir={"column"}>
         <Heading
