@@ -12,3 +12,15 @@ setTimeout(() => {
     </GlobalStateProvider>
   );
 }, 1000);
+
+// Inject script into the page
+function injectScript(file: string, node: string) {
+  console.log("script injected");
+  const th = document.getElementsByTagName(node)[0];
+  const s = document.createElement("script");
+  s.setAttribute("type", "text/javascript");
+  s.setAttribute("src", file);
+  th.appendChild(s);
+}
+
+injectScript(chrome.runtime.getURL("/src/web.js"), "body");

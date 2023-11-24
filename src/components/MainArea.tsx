@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState, useRef } from "react";
 import { ShadowDom } from "./ShadowDom.tsx";
 import CreateRecipe from "./recipes/CreateRecipe.tsx";
 import Recipes from "./recipes/Recipes.tsx";
@@ -31,14 +31,38 @@ const MainArea = () => {
     });
 
     if (body) {
-      observer.observe(body, { childList: true, subtree: true });
+      observer.observe(body, {
+        childList: true,
+        subtree: true,
+      });
     }
 
     return () => observer.disconnect();
   }, [navigate]);
 
+  useEffect(() => {
+    const goToNonExistingPage = () => {
+      console.log("zmen url na /");
+      navigate("/");
+    };
+
+    const links = document.querySelectorAll(".sectionsLink");
+    if (links) {
+      Array.from(links).forEach((link) => {
+        link.addEventListener("click", goToNonExistingPage);
+      });
+    }
+
+    () => {
+      if (links) {
+        Array.from(links).forEach((link) => {
+          link.removeEventListener("click", goToNonExistingPage);
+        });
+      }
+    };
+  }, [navigate]);
+
   useLayoutEffect(() => {
-    // Google Analytics
     if (!parentElement) {
       return;
     }
