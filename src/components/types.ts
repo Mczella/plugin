@@ -1,4 +1,10 @@
-export interface Price {
+export interface RohlikProduct {
+  id: string;
+  name: string;
+  unit: string;
+  textualAmount: string;
+  badges: string;
+  image: string;
   pricePerUnit: {
     amount: number;
     currency: string;
@@ -8,22 +14,6 @@ export interface Price {
     amount: number;
     currency: string;
   };
-}
-
-export interface Preferred {
-  preferred?: boolean;
-}
-
-export interface Product {
-  id: string;
-  name: string;
-  unit: string;
-  textualAmount: string;
-  badges: string;
-  image: string;
-}
-
-export interface Stock {
   packageInfo: {
     amount: number;
     unit: string;
@@ -31,6 +21,7 @@ export interface Stock {
   inStock: boolean;
   tooltips: Tooltips;
   maxBasketAmount: number;
+  preferred?: boolean;
 }
 
 export type Tooltips =
@@ -71,15 +62,15 @@ export type Sales = {
 
 export type IngredientData = null | {
   productsByStoreId: {
-    [storeId: string]: (Stock & Price & Preferred & Product)[];
+    [storeId: string]: RohlikProduct[];
   };
   ingredientIds: {
-    [storeId: string]: string[];
+    [storeId: string]: RohlikProduct["id"][];
   };
 };
 
 export type SimpleIngredient = {
-  id: string;
+  id: RohlikProduct["id"];
   preferred?: boolean;
 };
 

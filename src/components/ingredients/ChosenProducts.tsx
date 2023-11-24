@@ -1,15 +1,15 @@
-import { Badge, Box, Button, Flex, Grid, Image, Text } from "@chakra-ui/react";
-import { Preferred, Price, Product, Stock } from "../types.ts";
+import { Badge, Box, Button, Grid, Image, Text } from "@chakra-ui/react";
 import { SmallCloseIcon } from "@chakra-ui/icons";
 import { useMyStore } from "../store/store.tsx";
+import {RohlikProduct} from "../types.ts";
 
 const ChosenProducts = () => {
   const { selectedProducts, editSelectedProducts, deleteSelectedProduct } =
     useMyStore();
   console.log("selected", selectedProducts);
-  const handleClick = (product: Product & Stock & Price & Preferred) => {
+  const handleClick = (product: RohlikProduct) => {
     const updatedProducts = selectedProducts.map(
-      (existingProduct: Product & Stock & Price & Preferred) => {
+      (existingProduct: RohlikProduct) => {
         if (existingProduct.id === product.id) {
           return { ...existingProduct, preferred: true };
         }
@@ -90,21 +90,21 @@ const ChosenProducts = () => {
           <Text fontSize="16px" lineHeight="1.4" fontWeight={"bold"}>
             {Number(product.price?.amount.toFixed(1))} Kč
           </Text>
-          {/*<Button*/}
-          {/*  mt="10px"*/}
-          {/*  bg="white"*/}
-          {/*  color="black"*/}
-          {/*  border="1px solid rgba(0, 0, 0, 0.15)"*/}
-          {/*  height="32px"*/}
-          {/*  display="flex"*/}
-          {/*  alignItems="center"*/}
-          {/*  isDisabled={selectedProducts.some((product) => product.preferred)}*/}
-          {/*  _hover={{ bg: "rgb(109, 163, 5)", color: "white" }}*/}
-          {/*  onClick={() => handleClick(product)}*/}
-          {/*>*/}
-          {/*  /!*change to a star or whatever in the corner of the box*!/*/}
-          {/*  {product.preferred ? "Preferovaná" : "Označit za preferovanou"}*/}
-          {/*</Button>*/}
+          <Button
+            mt="10px"
+            bg="white"
+            color="black"
+            border="1px solid rgba(0, 0, 0, 0.15)"
+            height="32px"
+            display="flex"
+            alignItems="center"
+            isDisabled={selectedProducts.some((product) => product.preferred)}
+            _hover={{ bg: "rgb(109, 163, 5)", color: "white" }}
+            onClick={() => handleClick(product)}
+          >
+            {/*change to a star or whatever in the corner of the box*/}
+            {product.preferred ? "Preferovaná" : "Označit za preferovanou"}
+          </Button>
         </Box>
       ))}
     </Grid>

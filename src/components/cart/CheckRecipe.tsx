@@ -2,12 +2,12 @@ import { Flex, Image, Text } from "@chakra-ui/react";
 import { SmallCloseIcon } from "@chakra-ui/icons";
 import { FC } from "react";
 import { useMyStore } from "../store/store.tsx";
-import { IngredientData, Preferred, Price, Product, Stock } from "../types.ts";
+import {IngredientData, RohlikProduct} from "../types.ts";
 import { useGetRecipePrice } from "../hooks/useGetRecipePrice.tsx";
 import PlusMinus from "../PlusMinus.tsx";
 
 type Props = {
-  recipeInCart: string;
+  recipeInCart: { id: string; amount: number };
 };
 
 const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
@@ -15,7 +15,7 @@ const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
   const findRecipeById = (recipeInCart: string) =>
     recipes.find((oneRecipe) => oneRecipe.id === recipeInCart);
 
-  const specificRecipe = findRecipeById(recipeInCart);
+  const specificRecipe = findRecipeById(recipeInCart.id);
 
   if (!specificRecipe) {
     throw new Error("error");
@@ -29,15 +29,17 @@ const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
   ) => {
     console.log({ ingredientData });
     console.log({ productIds });
-    const products: { [p: string]: (Stock & Price & Preferred & Product)[] } =
+    const products: { [p: string]: (RohlikProduct)[] } =
       {};
     if (ingredientData) {
+      console.log({ ingredientData });
       Object.keys(ingredientData.productsByStoreId).forEach((storeId) => {
         products[storeId] = ingredientData.productsByStoreId[storeId].filter(
-          (product: Product) =>
+          (product: RohlikProduct) =>
             productIds.some(
               (productId) =>
                 productId.id === product.id && productId.storeId === storeId,
+              console.log({ product }),
             ),
         );
       });

@@ -39,7 +39,9 @@ const CheckRecipes = () => {
           Přehled objednávky receptů
         </Text>
         {recipesInCart.map((recipeInCart) => {
-          return <CheckRecipe key={recipeInCart} recipeInCart={recipeInCart} />;
+          return (
+            <CheckRecipe key={recipeInCart.id} recipeInCart={recipeInCart} />
+          );
         })}
       </Flex>
       <Box width={"100%"} position={"fixed"} bottom={0} bg={"black"} h={"80px"}>

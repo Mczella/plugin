@@ -1,4 +1,4 @@
-import { Product } from "../types.ts";
+import { RohlikProduct } from "../types.ts";
 
 export const fetchData = async (searchQuery: string) => {
   const url = `https://www.rohlik.cz/services/frontend-service/autocomplete?search=${searchQuery}&referer=whisperer&companyId=1&limit=20`;
@@ -101,6 +101,8 @@ export const fetchAll = async (query: string) => {
         sales: prices[index].sales,
         packageInfo: stock[index].packageInfo,
         inStock: stock[index].inStock,
+        tooltips: stock[index].tooltips,
+        maxBasketAmount: stock[index].maxBasketAmount,
       },
     ]),
   );
@@ -108,7 +110,7 @@ export const fetchAll = async (query: string) => {
   return { productsByIds, productIds };
 };
 
-export const fetchProductsDetails = async (productIds: Product["id"][]) => {
+export const fetchProductsDetails = async (productIds: RohlikProduct["id"][]) => {
   const [products, prices, stock] = await Promise.all([
     fetchProducts(productIds),
     fetchPrices(productIds),

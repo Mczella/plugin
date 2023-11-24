@@ -1,10 +1,6 @@
 import {
   IngredientData,
-  NewIngredient,
-  Preferred,
-  Price,
-  Product,
-  Stock,
+  NewIngredient, RohlikProduct,
 } from "../types.ts";
 import { useGetIngredientIds } from "./useGetIngredientsIds.tsx";
 
@@ -13,8 +9,8 @@ export const useGetIngredientPrice = (ingredient: NewIngredient) => {
   console.log({ ingredientData });
   let totalPrice = 0;
   const productIds: { id: string; storeId: string }[] = [];
-  let overallCheapestProduct: (Stock & Price & Preferred & Product) | undefined;
-  let selectedProduct: (Stock & Price & Preferred & Product) | undefined;
+  let overallCheapestProduct: (RohlikProduct) | undefined;
+  let selectedProduct: (RohlikProduct) | undefined;
   try {
     if (ingredientData != null && ingredient) {
       const ingredientId = ingredient.id;
@@ -86,7 +82,7 @@ export const useGetIngredientPrice = (ingredient: NewIngredient) => {
 };
 
 const findPreferredProduct = (
-  products: (Stock & Price & Preferred & Product)[],
+  products: (RohlikProduct)[],
 ) => {
   const preferredProducts = products.filter(
     (product) => product.preferred && product.inStock,
@@ -95,19 +91,19 @@ const findPreferredProduct = (
 };
 
 const filterProductsWithSales = (
-  products: (Stock & Price & Preferred & Product)[],
+  products: (RohlikProduct)[],
 ) => {
   return products.filter((product) => product.sales.length > 0);
 };
 
 const filterProductsWithoutSales = (
-  products: (Stock & Price & Preferred & Product)[],
+  products: (RohlikProduct)[],
 ) => {
   return products.filter((product) => product.sales.length === 0);
 };
 
 const findCheapestNormalProduct = (
-  products: (Stock & Price & Preferred & Product)[],
+  products: (RohlikProduct)[],
   key: "price" | "pricePerUnit",
 ) => {
   if (products.length > 0) {
@@ -121,7 +117,7 @@ const findCheapestNormalProduct = (
 };
 
 const findCheapestSalesProduct = (
-  products: (Stock & Price & Preferred & Product)[],
+  products: (RohlikProduct)[],
   key: "price" | "pricePerUnit",
 ) => {
   if (products.length > 0) {
@@ -135,8 +131,8 @@ const findCheapestSalesProduct = (
 };
 
 const getOverallCheapestProduct = (
-  withSales: (Stock & Price & Preferred & Product) | undefined,
-  withoutSales: (Stock & Price & Preferred & Product) | undefined,
+  withSales: (RohlikProduct) | undefined,
+  withoutSales: (RohlikProduct) | undefined,
   key: "price" | "pricePerUnit",
 ) => {
   if (withSales && withoutSales) {
