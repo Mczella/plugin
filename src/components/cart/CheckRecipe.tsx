@@ -2,7 +2,7 @@ import { Flex, Image, Text } from "@chakra-ui/react";
 import { SmallCloseIcon } from "@chakra-ui/icons";
 import { FC } from "react";
 import { useMyStore } from "../store/store.tsx";
-import {IngredientData, RohlikProduct} from "../types.ts";
+import { IngredientData, RohlikProduct } from "../types.ts";
 import { useGetRecipePrice } from "../hooks/useGetRecipePrice.tsx";
 import PlusMinus from "../PlusMinus.tsx";
 
@@ -29,23 +29,19 @@ const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
   ) => {
     console.log({ ingredientData });
     console.log({ productIds });
-    const products: { [p: string]: (RohlikProduct)[] } =
-      {};
+    const products: { [p: string]: RohlikProduct[] } = {};
     if (ingredientData) {
-      console.log({ ingredientData });
       Object.keys(ingredientData.productsByStoreId).forEach((storeId) => {
         products[storeId] = ingredientData.productsByStoreId[storeId].filter(
           (product: RohlikProduct) =>
             productIds.some(
               (productId) =>
                 productId.id === product.id && productId.storeId === storeId,
-              console.log({ product }),
             ),
         );
       });
     }
 
-    console.log("jjjj", products);
     return {
       productsByStoreId: products,
     };
