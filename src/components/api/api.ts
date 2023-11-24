@@ -1,3 +1,5 @@
+import { Product } from "../types.ts";
+
 export const fetchData = async (searchQuery: string) => {
   const url = `https://www.rohlik.cz/services/frontend-service/autocomplete?search=${searchQuery}&referer=whisperer&companyId=1&limit=20`;
 
@@ -78,8 +80,6 @@ export const fetchPrices = async (productIds: string[]) => {
 export const fetchAll = async (query: string) => {
   const productIds = await fetchData(query);
 
-  console.log(productIds);
-
   const [products, prices, stock] = await Promise.all([
     fetchProducts(productIds),
     fetchPrices(productIds),
@@ -87,7 +87,7 @@ export const fetchAll = async (query: string) => {
   ]);
 
   const productsByIds = Object.fromEntries(
-    productIds.map((id: number, index: number) => [
+    productIds.map((id: string, index: number) => [
       id,
       {
         id: products[index].id,
@@ -108,14 +108,46 @@ export const fetchAll = async (query: string) => {
   return { productsByIds, productIds };
 };
 
+export const fetchProductsDetails = async (productIds: Product["id"][]) => {
+  const [products, prices, stock] = await Promise.all([
+    fetchProducts(productIds),
+    fetchPrices(productIds),
+    fetchStock(productIds),
+  ]);
+
+  const productsByIds = Object.fromEntries(
+    productIds.map((id: string, index: number) => [
+      id,
+      {
+        id: products[index].id,
+        name: products[index].name,
+        unit: products[index].unit,
+        textualAmount: products[index].textualAmount,
+        badges: products[index].badges,
+        image: products[index].images[0],
+        price: prices[index].price,
+        pricePerUnit: prices[index].pricePerUnit,
+        sales: prices[index].sales,
+        packageInfo: stock[index].packageInfo,
+        inStock: stock[index].inStock,
+        tooltips: stock[index].tooltips,
+        maxBasketAmount: stock[index].maxBasketAmount,
+      },
+    ]),
+  );
+
+  return { productsByIds, productIds };
+};
+
 export const fetchPriceAndStock = async (ingredientIds: {
   [key: string]: string[];
 }) => {
   const promises = Object.entries(ingredientIds).map(
     async ([storeId, productIds]) => {
-      const [prices, stock] = await Promise.all([
+      const [prices, stock, products] = await Promise.all([
         fetchPrices(productIds),
         fetchStock(productIds),
+        fetchProducts(productIds),
       ]);
 
       const productsForStoreId = productIds.map((productId, index) => ({
@@ -125,6 +157,13 @@ export const fetchPriceAndStock = async (ingredientIds: {
         sales: prices[index].sales,
         packageInfo: stock[index].packageInfo,
         inStock: stock[index].inStock,
+        name: products[index].name,
+        unit: products[index].unit,
+        textualAmount: products[index].textualAmount,
+        badges: products[index].badges,
+        image: products[index].images[0],
+        tooltips: stock[index].tooltips,
+        maxBasketAmount: stock[index].maxBasketAmount,
       }));
 
       return {

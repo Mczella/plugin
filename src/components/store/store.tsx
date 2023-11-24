@@ -12,10 +12,12 @@ import {
   createIngredientsSlice,
   createRecipesInCartSlice,
   createRecipesSlice,
+  createTemporaryUISlice,
   MyIngredientsState,
   MyRecipesInCartState,
   MyRecipesState,
-} from "./my-state";
+  MyTemporaryUIState,
+} from "./my-state.ts";
 
 const storage: StateStorage = {
   getItem: async (name: string): Promise<string | null> => {
@@ -37,18 +39,22 @@ const storage: StateStorage = {
 // type State = MyState;
 
 export const store = createStore<
-  MyIngredientsState & MyRecipesState & MyRecipesInCartState
+  MyIngredientsState &
+    MyRecipesState &
+    MyRecipesInCartState &
+    MyTemporaryUIState
 >()(
   persist(
     (...a) => ({
       ...createIngredientsSlice(...a),
       ...createRecipesSlice(...a),
       ...createRecipesInCartSlice(...a),
+      ...createTemporaryUISlice(...a),
     }),
     {
       name: "rohlik-storage",
       storage: createJSONStorage(() => storage),
-      skipHydration: true, // we have own hydration logic in StoreProvider
+      skipHydration: false,
       onRehydrateStorage: () => {
         console.log("hydration starts");
 
@@ -89,7 +95,17 @@ export function useBytesInUse() {
 export function usePurgeStorage() {
   return useCallback(() => {
     store.persist.clearStorage();
-    store.setState({ ingredients: [], recipes: [], recipesInCart: [] });
+    store.setState({
+      ingredients: [],
+      recipes: [],
+      recipesInCart: [],
+      name: null,
+      amount: 0,
+      selectedIngredients: [],
+      selectedProducts: [],
+      selectedIngredient: null,
+      ingredientsInCart: [],
+    });
   }, []);
 }
 

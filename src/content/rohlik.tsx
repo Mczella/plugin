@@ -1,12 +1,14 @@
 import { Rohlik } from "../components/Rohlik";
-import { GlobalStateProvider } from "../components/StoreProvider";
+import { GlobalStateProvider } from "../components/store/StoreProvider.tsx";
 import { render } from "./render";
 import { HashRouter as Router } from "react-router-dom";
 
-render(
+setTimeout(() => {
+  render(
     <GlobalStateProvider>
-        <Router>
-            <Rohlik />
-        </Router>
+      <Router>
+        <Rohlik />
+      </Router>
     </GlobalStateProvider>
-);
+  );
+}, 1000);

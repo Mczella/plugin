@@ -1,22 +1,26 @@
 import { useEffect, useState } from "react";
-import { ShadowDom } from "./ShadowDom.tsx";
+import { ShadowDom } from "../ShadowDom.tsx";
 import { Button, Link } from "@chakra-ui/react";
+import { useMyStore } from "../store/store.tsx";
 
 const CartButton = () => {
   const [parentElement] = useState(() =>
-    document.querySelector(".sc-41450383-11.gYxQOr"),
+    document.querySelector('[class*="Cart__footer"]'),
+  );
+
+  const { recipesInCart } = useMyStore();
+
+  const submitButton = document.querySelector(
+    '[data-test="cart-redirectToCart"]',
   );
 
   useEffect(() => {
-    const submitButton = document.querySelector(".sc-d51222c7-0.hlPRUh");
-    // if (submitButton && recipesInCart.length > 0)
-    if (submitButton) {
+    if (submitButton && recipesInCart.length > 0) {
       submitButton.remove();
     }
-  }, []);
+  }, [recipesInCart, submitButton]);
 
-  return parentElement ? (
-    // parentElement && recipesInCart.length > 0 ?
+  return parentElement && recipesInCart.length > 0 ? (
     <ShadowDom parentElement={parentElement}>
       <Link
         style={{ all: "unset" }}

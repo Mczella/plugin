@@ -1,42 +1,27 @@
-import { NewRecipe, NewIngredient } from "./types.ts";
-import { useMyStore } from "./store.tsx";
-import { fetchPriceAndStock } from "./Api";
+import { NewRecipe, NewIngredient, IngredientData } from "../types.ts";
+import { useMyStore } from "../store/store.tsx";
+import { fetchPriceAndStock } from "../api/api.ts";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
-type Product = {
-  id: number;
-  preferred?: boolean | undefined;
-  price: {
-    amount: number;
-  };
-  inStock: boolean;
-};
-
-type IngredientData = null | {
-  productsByStoreId: {
-    [storeId: string]: Product[];
-  };
-  ingredientIds: {
-    [storeId: string]: string[];
-  };
-};
-
-export const useGetIngredientIds = (recipe: NewRecipe) => {
+export const useGetIngredientIds = (product: NewRecipe | NewIngredient) => {
   const { ingredients } = useMyStore();
-  const ingredientIds = getIngredientIds(recipe, ingredients);
+  const ingredientIds =
+    "ingredients" in product
+      ? getRecipeIngredientIds(product, ingredients)
+      : getIngredientIds(product);
+
   const [ingredientData, setIngredientData] = useState<IngredientData | null>(
     null,
   );
 
-  const { data } = useQuery(["data", recipe.id], () =>
+  const { data } = useQuery(["data", product.id], () =>
     fetchPriceAndStock(ingredientIds),
   );
 
   useEffect(() => {
     if (data !== undefined) {
       const updatedIngredientData = { ...data };
-      console.log(updatedIngredientData);
 
       let selectedProductPreferences: {
         [key: string]: { [key: string]: boolean | undefined };
@@ -67,29 +52,39 @@ export const useGetIngredientIds = (recipe: NewRecipe) => {
       setIngredientData(updatedIngredientData);
     }
   }, [data]);
-
+  console.log({ ingredientData });
   return ingredientData;
 };
 
-const getIngredientIds = (
+const getRecipeIngredientIds = (
   recipe: NewRecipe,
   storeIngredients: NewIngredient[],
 ) => {
   const ingredientIds: { [key: string]: string[] } = {};
 
-  recipe.ingredients.forEach((ingredientId) => {
+  recipe.ingredients.forEach((ingredient) => {
     const productIds: string[] = [];
 
-    storeIngredients.forEach((storeIngredient: NewIngredient) => {
-      if (storeIngredient.id === ingredientId) {
+    storeIngredients.forEach((storeIngredient) => {
+      if (storeIngredient.id === ingredient.id) {
         storeIngredient.selectedProducts.forEach((product) => {
           productIds.push(product.id);
         });
       }
     });
 
-    ingredientIds[ingredientId] = productIds;
+    ingredientIds[ingredient.id] = productIds;
   });
+
+  return ingredientIds;
+};
+
+const getIngredientIds = (ingredient: NewIngredient) => {
+  const ingredientIds: { [key: string]: string[] } = {};
+
+  ingredientIds[ingredient.id] = ingredient.selectedProducts.map(
+    (product) => product.id,
+  );
 
   return ingredientIds;
 };
