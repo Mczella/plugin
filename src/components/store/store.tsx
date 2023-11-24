@@ -104,6 +104,7 @@ export function usePurgeStorage() {
       selectedIngredients: [],
       selectedProducts: [],
       selectedIngredient: null,
+      ingredientsInCart: [],
     });
   }, []);
 }

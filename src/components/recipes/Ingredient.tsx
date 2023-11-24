@@ -1,8 +1,7 @@
 import {
+  Badge,
   Box,
-  Editable,
-  EditableInput,
-  EditablePreview,
+  Button,
   Flex,
   Image,
   SimpleGrid,
@@ -14,21 +13,14 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchProductsDetails } from "../api/api.ts";
 import { useMyStore } from "../store/store.tsx";
 import { FC, useRef } from "react";
-import { NewIngredient } from "../types.ts";
+import { NewIngredient, NewRecipeIngredient } from "../types.ts";
 import IngredientModal from "../ingredients/IngredientModal.tsx";
+import { useGetIngredientPrice } from "../hooks/useGetIngredientPrice.tsx";
 import { useLocation } from "react-router-dom";
-
-// type SimpleProduct = {
-//   id: string;
-//   name: string;
-//   images: string[];
-//   unit: string;
-//   textualAmount: string;
-//   mainCategoryId: number;
-// };
+import PlusMinus from "../PlusMinus.tsx";
 
 type Props = {
-  ingredient: NewIngredient;
+  ingredient: NewIngredient | NewRecipeIngredient;
 };
 
 const Ingredient: FC<Props> = ({ ingredient }) => {
@@ -39,12 +31,17 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
     editName,
     editIngredients,
     ingredients,
+    editSortBy,
+    editOptimize,
+    editAmount,
+    ingredientsInCart,
   } = useMyStore();
 
   if (ingredient == undefined) {
     throw new Error("No selected ingredient.");
   }
-
+  const location = useLocation();
+  const { totalPrice } = useGetIngredientPrice(ingredient);
   const {
     isOpen: isEditInRecipeOpen,
     onOpen: onEditInRecipeOpen,
@@ -60,11 +57,9 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
   const arrayOfAllProductIds = ingredient.selectedProducts.map(
     (product) => product.id,
   );
-  const location = useLocation();
   const { data, isError } = useQuery(["data", arrayOfAllProductIds], () =>
     fetchProductsDetails(arrayOfAllProductIds),
   );
-  console.log(location);
 
   if (isError) {
     return <div>Error.</div>;
@@ -81,9 +76,15 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
       });
 
       editName(ingredient.name);
+      editSortBy(ingredient.sortBy);
+      editOptimize(ingredient.optimize);
 
-      //if not /produkty, it's the ingredient inside createRecipe and I want to add amount
-      location.pathname === "/produkty" ? onEditOpen() : onEditInRecipeOpen();
+      if ("amount" in ingredient) {
+        editAmount(ingredient.amount);
+        onEditInRecipeOpen();
+      } else {
+        onEditOpen();
+      }
     }
   };
 
@@ -93,20 +94,43 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
     );
     editSelectedIngredients(updatedIngredients);
   };
+  console.log(ingredient, ingredient.unit);
+
+  const getAmountInCart = (ingredient: NewIngredient): number => {
+    return ingredientsInCart.reduce((totalAmount, ingredientInCart) => {
+      const matchingProduct = ingredient.selectedProducts.find(
+        (product) => product.id === ingredientInCart.id,
+      );
+
+      if (matchingProduct) {
+        const amount = Math.ceil(
+          ingredientInCart.amount / ingredientInCart.packageAmount,
+        );
+        return totalAmount + amount;
+      }
+
+      return totalAmount;
+    }, 0);
+  };
+
+  const amount = getAmountInCart(ingredient);
 
   return (
     <Flex
+      mb={"20px"}
       flexDir={"column"}
       onClick={() => {
-        console.log("hej");
         handleOpenIngredient();
       }}
+      alignSelf={"center"}
+      alignItems={"center"}
     >
       <Flex
         flexDir={"column"}
         justify={"flex-start"}
         cursor={"pointer"}
         rounded={"3xl"}
+        alignSelf={"center"}
         boxShadow={
           "rgba(0, 0, 0, 0.01) 0px 0px 12px, rgba(0, 0, 0, 0.06) 0px 0px 10px, rgba(0, 0, 0, 0.1) 0px 2px 4px -1px;"
         }
@@ -123,19 +147,20 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
           top={"5px"}
           color={"rgb(218, 222, 224)"}
           _hover={{ color: "rgb(87, 130, 4)" }}
+          //TODO: remove in createRecipe
           //TODO: might have to delete the recipe too
           onClick={
-            location.pathname === "/produkty"
+            "amount" in ingredient
               ? (e) => {
+                  e.stopPropagation();
+                  handleDelete(ingredient.id);
+                }
+              : (e) => {
                   e.stopPropagation();
                   const updatedIngredients = ingredients.filter(
                     (ing) => ing.id !== ingredient.id,
                   );
                   editIngredients(updatedIngredients);
-                }
-              : (e) => {
-                  e.stopPropagation();
-                  handleDelete(ingredient.id);
                 }
           }
         />
@@ -184,26 +209,96 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
           )}
         </SimpleGrid>
       </Flex>
-      <Text
-        px={"4px"}
-        as={"b"}
-        color={"rgb(28, 37, 41)"}
-        fontSize={"14px"}
-        lineHeight={"22px"}
-        casing={"capitalize"}
-      >
-        {ingredient.name}
-      </Text>
-      <Editable
-        px={"4px"}
-        defaultValue="Množství"
-        color={"rgb(93, 103, 108)"}
-        fontSize={"13px"}
-        lineHeight={"22px"}
-      >
-        <EditablePreview />
-        <EditableInput />
-      </Editable>
+      {location.pathname === "/produkty" ? (
+        <>
+          <Text
+            cursor={"pointer"}
+            pt={"10px"}
+            textAlign={"center"}
+            h={"30px"}
+            casing={"capitalize"}
+            display={"-webkit-box"}
+            fontSize={"13px"}
+            lineHeight={1.4}
+            noOfLines={1}
+            maxW={"165px"}
+            textOverflow={"ellipsis"}
+            sx={{ "-webkit-line-clamp": "1" }}
+          >
+            {ingredient.name}
+          </Text>
+          <Text
+            my={"10px"}
+            textAlign={"center"}
+            fontSize="24px"
+            lineHeight="1.4"
+            fontWeight={"bold"}
+            color={"rgb(28, 37, 41)"}
+          >
+            {Number(totalPrice.toFixed(1))} Kč
+          </Text>
+          {ingredientsInCart.some((item) => ingredient.id === item.storeId) ? (
+            <PlusMinus
+              amount={amount}
+              handleAdd={() => console.log("h")}
+              handleSubtract={() => console.log("h")}
+            />
+          ) : (
+            <Button
+              bg="white"
+              color="black"
+              border="1px solid rgba(0, 0, 0, 0.15)"
+              height="32px"
+              display="flex"
+              rounded={"lg"}
+              alignItems="center"
+              fontSize={"13px"}
+              fontWeight={"bold"}
+              // isDisabled={totalPrice === 0}
+              _hover={{ bg: "rgb(87, 130, 4)", color: "white" }}
+              // onClick={handleBuy}
+            >
+              Do košíku
+            </Button>
+          )}
+        </>
+      ) : (
+        <>
+          <Badge
+            alignSelf={"center"}
+            bg={"rgba(0, 0, 0, 0.5)"}
+            color={"white"}
+            fontSize={"12px"}
+            fontWeight={600}
+            py={"2px"}
+            px={"7px"}
+            rounded={"2xl"}
+          >
+            {ingredient.unit}
+          </Badge>
+          <Text
+            px={"4px"}
+            as={"b"}
+            color={"rgb(28, 37, 41)"}
+            fontSize={"14px"}
+            lineHeight={"22px"}
+            casing={"capitalize"}
+            noOfLines={1}
+            sx={{ "-webkit-line-clamp": "1" }}
+          >
+            {ingredient.name}
+          </Text>
+          <Text
+            textAlign={"center"}
+            px={"4px"}
+            color={"rgb(28, 37, 41)"}
+            fontSize={"14px"}
+            lineHeight={"22px"}
+          >
+            {Number(totalPrice.toFixed(1))} Kč
+          </Text>
+        </>
+      )}
       <IngredientModal
         id={ingredient.id}
         focusRef={focusRef}

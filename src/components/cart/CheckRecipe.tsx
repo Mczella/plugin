@@ -1,21 +1,13 @@
-import { Box, Flex, Image, Text } from "@chakra-ui/react";
-import { AddIcon, MinusIcon, SmallCloseIcon } from "@chakra-ui/icons";
+import { Flex, Image, Text } from "@chakra-ui/react";
+import { SmallCloseIcon } from "@chakra-ui/icons";
 import { FC } from "react";
 import { useMyStore } from "../store/store.tsx";
-import { NewRecipe, Product } from "../types.ts";
+import { IngredientData, Preferred, Price, Product, Stock } from "../types.ts";
 import { useGetRecipePrice } from "../hooks/useGetRecipePrice.tsx";
+import PlusMinus from "../PlusMinus.tsx";
 
 type Props = {
   recipeInCart: string;
-};
-
-type IngredientData = null | {
-  productsByStoreId: {
-    [storeId: string]: Product[];
-  };
-  ingredientIds: {
-    [storeId: string]: string[];
-  };
 };
 
 const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
@@ -23,30 +15,42 @@ const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
   const findRecipeById = (recipeInCart: string) =>
     recipes.find((oneRecipe) => oneRecipe.id === recipeInCart);
 
-  // @ts-ignore
-  const specificRecipe: NewRecipe = findRecipeById(recipeInCart);
-  const { productIds, ingredientData } = useGetRecipePrice(specificRecipe);
+  const specificRecipe = findRecipeById(recipeInCart);
 
+  if (!specificRecipe) {
+    throw new Error("error");
+  }
+
+  const { productIds, ingredientData } = useGetRecipePrice(specificRecipe);
+  console.log({ specificRecipe });
   const getFilteredIngredientData = (
-    productIds: string[],
+    productIds: { id: string; storeId: string }[],
     ingredientData: IngredientData | undefined,
   ) => {
-    const products: { [p: string]: Product[] } = {};
+    console.log({ ingredientData });
+    console.log({ productIds });
+    const products: { [p: string]: (Stock & Price & Preferred & Product)[] } =
+      {};
     if (ingredientData) {
       Object.keys(ingredientData.productsByStoreId).forEach((storeId) => {
         products[storeId] = ingredientData.productsByStoreId[storeId].filter(
-          (product: Product) => productIds.includes(product.id),
+          (product: Product) =>
+            productIds.some(
+              (productId) =>
+                productId.id === product.id && productId.storeId === storeId,
+            ),
         );
       });
     }
 
+    console.log("jjjj", products);
     return {
       productsByStoreId: products,
     };
   };
 
   const ingredients = getFilteredIngredientData(productIds, ingredientData);
-
+  console.log({ ingredients });
   return (
     <>
       <Text
@@ -83,33 +87,7 @@ const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
               <Text pl={"4"}>{product.textualAmount}</Text>
             </Flex>
             <Flex flexDir={"row"} alignItems={"center"}>
-              <Flex flexDir={"row"} alignItems={"center"} gap={"15px"}>
-                <Box
-                  h={"32px"}
-                  w={"32px"}
-                  border={"1px solid rgba(0, 0, 0, 0.15)"}
-                  rounded={"md"}
-                  display={"flex"}
-                  justifyContent={"center"}
-                  alignItems={"center"}
-                  _hover={{ border: "1px solid rgb(156, 164, 169)" }}
-                >
-                  <MinusIcon />
-                </Box>
-                <Text fontWeight={"bold"}>1</Text>
-                <Box
-                  h={"32px"}
-                  w={"32px"}
-                  border={"1px solid rgba(0, 0, 0, 0.15)"}
-                  rounded={"md"}
-                  display={"flex"}
-                  justifyContent={"center"}
-                  alignItems={"center"}
-                  _hover={{ border: "1px solid rgb(156, 164, 169)" }}
-                >
-                  <AddIcon />
-                </Box>
-              </Flex>
+              <PlusMinus />
               <Text
                 textAlign={"right"}
                 color={"rgb(28, 37, 41)"}

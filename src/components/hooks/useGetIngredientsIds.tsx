@@ -4,14 +4,18 @@ import { fetchPriceAndStock } from "../api/api.ts";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
-export const useGetIngredientIds = (recipe: NewRecipe) => {
+export const useGetIngredientIds = (product: NewRecipe | NewIngredient) => {
   const { ingredients } = useMyStore();
-  const ingredientIds = getIngredientIds(recipe, ingredients);
+  const ingredientIds =
+    "ingredients" in product
+      ? getRecipeIngredientIds(product, ingredients)
+      : getIngredientIds(product);
+
   const [ingredientData, setIngredientData] = useState<IngredientData | null>(
     null,
   );
 
-  const { data } = useQuery(["data", recipe.id], () =>
+  const { data } = useQuery(["data", product.id], () =>
     fetchPriceAndStock(ingredientIds),
   );
 
@@ -48,11 +52,11 @@ export const useGetIngredientIds = (recipe: NewRecipe) => {
       setIngredientData(updatedIngredientData);
     }
   }, [data]);
-
+  console.log({ ingredientData });
   return ingredientData;
 };
 
-const getIngredientIds = (
+const getRecipeIngredientIds = (
   recipe: NewRecipe,
   storeIngredients: NewIngredient[],
 ) => {
@@ -71,6 +75,16 @@ const getIngredientIds = (
 
     ingredientIds[ingredient.id] = productIds;
   });
+
+  return ingredientIds;
+};
+
+const getIngredientIds = (ingredient: NewIngredient) => {
+  const ingredientIds: { [key: string]: string[] } = {};
+
+  ingredientIds[ingredient.id] = ingredient.selectedProducts.map(
+    (product) => product.id,
+  );
 
   return ingredientIds;
 };

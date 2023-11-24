@@ -74,6 +74,7 @@ const AddRecipeModal: FC<Props> = ({ isOpen, onClose, focusRef }) => {
               >
                 <FormControl>
                   <Input
+                    autoComplete={"off"}
                     width={"770px"}
                     height={"40px"}
                     rounded={"xl"}

@@ -1,34 +1,50 @@
-export interface Product {
-  id: string;
-  name?: string;
-  price: {
-    amount: number;
-    currency: string;
-  };
-  unit?: string;
-  textualAmount?: string;
-  badges?: string;
-  image?: string;
-  preferred?: boolean;
-  pricePerUnit?: {
+export interface Price {
+  pricePerUnit: {
     amount: number;
     currency: string;
   };
   sales: Sales | [];
-  packageInfo?: string;
-  inStock?: boolean;
-  tooltips: [
-    {
-      type: string; //"PARTLY_SOLD_OUT",
-      closable: boolean;
-      triggerAmount: number;
-      size: null;
-      message: string;
-      actionable: boolean;
-    },
-  ];
+  price: {
+    amount: number;
+    currency: string;
+  };
+}
+
+export interface Preferred {
+  preferred?: boolean;
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  unit: string;
+  textualAmount: string;
+  badges: string;
+  image: string;
+}
+
+export interface Stock {
+  packageInfo: {
+    amount: number;
+    unit: string;
+  };
+  inStock: boolean;
+  tooltips: Tooltips;
   maxBasketAmount: number;
 }
+
+export type Tooltips =
+  | []
+  | [
+      {
+        type: string; //"PARTLY_SOLD_OUT",
+        closable: boolean;
+        triggerAmount: number | null;
+        size: null;
+        message: string;
+        actionable: boolean;
+      },
+    ];
 
 export type Sales = {
   price: {
@@ -55,7 +71,7 @@ export type Sales = {
 
 export type IngredientData = null | {
   productsByStoreId: {
-    [storeId: string]: Product[];
+    [storeId: string]: (Stock & Price & Preferred & Product)[];
   };
   ingredientIds: {
     [storeId: string]: string[];
@@ -71,12 +87,19 @@ export type NewIngredient = {
   name: string;
   selectedProducts: SimpleIngredient[];
   id: string;
-  amount?: number;
+  unit: string;
+  optimize: boolean;
+  sortBy: "price" | "pricePerUnit";
 };
 
-export type NewRecipeIngredient = {
-  id: NewIngredient["id"];
-  amount: NewIngredient["amount"];
+export type NewRecipeIngredient = NewIngredient & {
+  amount: number;
+};
+
+export type RecipeIngredient = {
+  id: NewRecipeIngredient["id"];
+  amount: NewRecipeIngredient["amount"];
+  unit?: NewRecipeIngredient["unit"];
 }[];
 
 export type NewRecipe = {
@@ -84,6 +107,6 @@ export type NewRecipe = {
   portion: number;
   description?: string;
   image?: string;
-  ingredients: NewRecipeIngredient;
+  ingredients: NewRecipeIngredient[];
   id: string;
 };

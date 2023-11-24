@@ -24,7 +24,7 @@ import Add from "../Add.tsx";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import IngredientModal from "../ingredients/IngredientModal.tsx";
 import Ingredient from "./Ingredient.tsx";
-import { NewRecipeIngredient } from "../types.ts";
+import { RecipeIngredient } from "../types.ts";
 import { useMyStore } from "../store/store.tsx";
 import { Controller, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -81,7 +81,7 @@ const CreateRecipe = () => {
 
   const onSubmit = (data: any) => {
     if (selectedIngredients.length > 0) {
-      const updatedSelectedIngredients: NewRecipeIngredient =
+      const updatedSelectedIngredients: RecipeIngredient =
         selectedIngredients.map((ingredient) => ({
           id: ingredient.id,
           amount: ingredient.amount,

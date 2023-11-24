@@ -8,20 +8,97 @@ import {
   Image,
   Text,
 } from "@chakra-ui/react";
-import { AddIcon } from "@chakra-ui/icons";
 import { useMyStore } from "../store/store.tsx";
 import { NewRecipe } from "../types.ts";
 import { useGetRecipePrice } from "../hooks/useGetRecipePrice.tsx";
 import { FC } from "react";
+import PlusMinus from "../PlusMinus.tsx";
 
 type Props = {
   recipe: NewRecipe;
 };
 
 const RecipeComponent: FC<Props> = ({ recipe }) => {
-  const { recipesInCart, addRecipeToCart } = useMyStore();
-  const { totalPrice } = useGetRecipePrice(recipe);
+  const {
+    recipesInCart,
+    deleteRecipeFromCart,
+    addRecipeToCart,
+    addIngredientToCart,
+    ingredients,
+  } = useMyStore();
+  const { totalPrice, needed, productIds, saved, discount } =
+    useGetRecipePrice(recipe);
   const pricePerPortion = totalPrice / recipe.portion;
+  const priceBeforeSale = totalPrice + saved;
+
+  const getAmount = () => {
+    const currentRecipe = recipesInCart.find(
+      (recipeInCart) => recipeInCart.id === recipe.id,
+    );
+
+    if (!currentRecipe) {
+      return 0;
+    }
+
+    return currentRecipe.amount;
+  };
+
+  const handleAdd = () => {
+    filterIngredient("add");
+    addRecipeToCart({ id: recipe.id, amount: 1 });
+  };
+
+  const handleSubtract = () => {
+    filterIngredient("subtract");
+    const currentRecipe = recipesInCart.find(
+      (recipeInCart) => recipeInCart.id === recipe.id,
+    );
+
+    if (currentRecipe && currentRecipe.amount === 1) {
+      deleteRecipeFromCart(recipe.id);
+    } else {
+      addRecipeToCart({ id: recipe.id, amount: -1 });
+    }
+  };
+
+  const filterIngredient = (type: string) => {
+    productIds.forEach((item) => {
+      const filteredIngredient = ingredients.find(
+        (ingredient) => ingredient.id === item.storeId,
+      );
+      const filteredNeeded = needed?.find(
+        (ingredient) => ingredient.id === item.id,
+      );
+      console.log("needed", needed);
+      console.log({ filteredNeeded });
+      if (filteredIngredient && filteredNeeded && type === "add") {
+        addIngredientToCart(
+          filteredNeeded.name,
+          filteredNeeded.id,
+          filteredNeeded.amount,
+          filteredNeeded.unit,
+          filteredNeeded.packageAmount,
+          filteredIngredient.optimize,
+          filteredIngredient.id,
+        );
+      } else if (filteredIngredient && filteredNeeded && type === "subtract") {
+        addIngredientToCart(
+          filteredNeeded.name,
+          filteredNeeded.id,
+          -filteredNeeded.amount,
+          filteredNeeded.unit,
+          filteredNeeded.packageAmount,
+          filteredIngredient.optimize,
+          filteredIngredient.id,
+        );
+      }
+    });
+  };
+
+  const handleBuy = () => {
+    filterIngredient("add");
+    addRecipeToCart({ id: recipe.id, amount: 1 });
+  };
 
   return (
     <GridItem display="flex" flexDir="column" alignItems="center">
@@ -57,17 +134,19 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
                 "https://www.rohlik.cz/img/icons/icon-favorite-active.svg?v3"
               }
             />
-            <Text
-              alignSelf={"center"}
-              py={"5px"}
-              bg={"rgba(209, 17, 0, 0.9)"}
-              color={"white"}
-              fontSize={"16px"}
-              fontWeight={"bold"}
-              px={"5px"}
-            >
-              -30 %
-            </Text>
+            {discount > 0 ? (
+              <Text
+                alignSelf={"center"}
+                py={"5px"}
+                bg={"rgba(209, 17, 0, 0.9)"}
+                color={"white"}
+                fontSize={"16px"}
+                fontWeight={"bold"}
+                px={"5px"}
+              >
+                {`-${Math.ceil(discount)} %`}
+              </Text>
+            ) : null}
           </Flex>
           <Image
             src={recipe.image}
@@ -117,41 +196,54 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
           fontWeight={600}
           lineHeight={"22px"}
         >
-          ušetříte 30 %
+          {discount > 0 ? ` ušetříte ${Math.ceil(discount)} %` : null}
         </Text>
         {/*:*/}
         {/*<Box>*/}
         {/*  */}
         {/*</Box>*/}
-        {/*{sale?}*/}
         <HStack>
-          <Text
-            as={"s"}
-            fontSize={"18px"}
-            lineHeight={1.4}
-            fontWeight={"normal"}
-            color={"rgb(28, 37, 41)"}
-          >
-            100 Kč
-          </Text>
+          {discount > 0 ? (
+            <Text
+              as={"s"}
+              fontSize={"18px"}
+              lineHeight={1.4}
+              fontWeight={"normal"}
+              color={"rgb(28, 37, 41)"}
+            >
+              {totalPrice === 0
+                ? null
+                : `${Number(priceBeforeSale.toFixed(1))}Kč`}
+            </Text>
+          ) : null}
           <Text
             fontSize="24px"
             lineHeight="1.4"
             fontWeight={"bold"}
-            color={"rgb(209, 17, 0)"}
+            color={discount > 0 ? "rgb(209, 17, 0)" : "rgb(28, 37, 41)"}
           >
-            {totalPrice === 0 ? "Vyprodáno" : `${Math.ceil(totalPrice)} Kč`}
+            {totalPrice === 0
+              ? "Vyprodáno"
+              : `${Number(totalPrice.toFixed(1))} Kč`}
           </Text>
         </HStack>
         {/*: <Text></Text>*/}
-        <Text fontSize="12px" lineHeight={1.4} color={"rgb(93, 103, 108)"}>
-          {`${Math.ceil(pricePerPortion)} Kč/porce`}
+        <Text
+          mb={"10px"}
+          fontSize="12px"
+          lineHeight={1.4}
+          color={"rgb(93, 103, 108)"}
+        >
+          {`${Number(pricePerPortion.toFixed(1))} Kč/porce`}
         </Text>
-        {recipesInCart.includes(recipe.id) ? (
-          <AddIcon />
+        {recipesInCart.some((item) => recipe.id === item.id) ? (
+          <PlusMinus
+            handleAdd={handleAdd}
+            handleSubtract={handleSubtract}
+            amount={getAmount()}
+          />
         ) : (
           <Button
-            mt="10px"
             bg="white"
             color="black"
             border="1px solid rgba(0, 0, 0, 0.15)"
@@ -163,7 +255,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
             fontWeight={"bold"}
             isDisabled={totalPrice === 0}
             _hover={{ bg: "rgb(87, 130, 4)", color: "white" }}
-            onClick={() => addRecipeToCart(recipe.id)}
+            onClick={handleBuy}
           >
             Do košíku
           </Button>

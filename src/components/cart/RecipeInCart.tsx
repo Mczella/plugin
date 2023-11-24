@@ -3,20 +3,25 @@ import { AddIcon, MinusIcon, SmallCloseIcon } from "@chakra-ui/icons";
 import { useGetRecipePrice } from "../hooks/useGetRecipePrice.tsx";
 import { FC } from "react";
 import { useMyStore } from "../store/store.tsx";
-import { NewRecipe } from "../types.ts";
 
 type Props = {
-  recipe: string;
+  recipe: { id: string; amount: number };
 };
 
 const RecipeInCart: FC<Props> = ({ recipe }) => {
   const { recipes, deleteRecipeFromCart } = useMyStore();
-  const findRecipeById = (recipe: string) =>
-    recipes.find((oneRecipe) => oneRecipe.id === recipe);
-  // @ts-ignore
-  const specificRecipe: NewRecipe = findRecipeById(recipe);
-  const { totalPrice } = useGetRecipePrice(specificRecipe);
 
+  const findRecipeById = (recipe: { id: string; amount: number }) =>
+    recipes.find((oneRecipe) => oneRecipe.id === recipe.id);
+
+  const specificRecipe = findRecipeById(recipe);
+  console.log("hej", recipe, specificRecipe);
+  if (!specificRecipe) {
+    throw new Error("Error");
+  }
+
+  const { totalPrice, saved } = useGetRecipePrice(specificRecipe);
+  const priceBeforeSale = totalPrice + saved;
   const handleDelete = (id: string) => {
     deleteRecipeFromCart(id);
   };
@@ -116,11 +121,11 @@ const RecipeInCart: FC<Props> = ({ recipe }) => {
             color={"rgb(28, 37, 41)"}
             as={"s"}
           >
-            {Math.ceil(totalPrice)} Kč
+            {Number(priceBeforeSale.toFixed(1))} Kč
           </Text>
           <Text textAlign={"right"} fontSize={"12px"} fontWeight={"700"}>
             {/*if sale color={"rgb(209, 17, 0)"}*/}
-            {Math.ceil(totalPrice)}
+            {Number(totalPrice.toFixed(1))} Kč
           </Text>
         </Flex>
       </Flex>

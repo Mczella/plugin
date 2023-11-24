@@ -2,7 +2,7 @@ import { Box, Flex, IconButton, Image, Input, Text } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import { useState } from "react";
 import { useOutsideClick } from "../hooks/useOutsideClick.ts";
-import { Product } from "../types.ts";
+import { Preferred, Price, Product, Stock } from "../types.ts";
 import { useDebounce } from "@uidotdev/usehooks";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAll } from "../api/api.ts";
@@ -33,12 +33,18 @@ const CreateIngredientInput = () => {
     setIsDropdownOpen(false);
   });
 
-  const handleAddToIngredient = (product: Product) => {
-    const productWithPreferred: Product = { ...product, preferred: false };
+  const handleAddToIngredient = (
+    product: Product & Stock & Price & Preferred,
+  ) => {
+    const productWithPreferred: Product & Stock & Price & Preferred = {
+      ...product,
+      preferred: false,
+    };
     addToSelectedProducts(productWithPreferred);
   };
 
   return (
+    //TODO: disable enter
     <Flex alignItems={"center"} flexDir={"column"}>
       <Box ref={dropdownRef}>
         <Input

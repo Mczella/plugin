@@ -1,6 +1,7 @@
 import {
   Badge,
   Box,
+  Button,
   Flex,
   Grid,
   GridItem,
@@ -9,16 +10,17 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import Add from "../Add.tsx";
-import { useMyStore } from "../store/store.tsx";
+import { useMyStore, usePurgeStorage } from "../store/store.tsx";
 import RecipeComponent from "./RecipeComponent.tsx";
 import { Icon } from "@chakra-ui/icons";
 import BreadcrumbNav from "../BreadcrumbNav.tsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import AddRecipeModal from "./AddRecipeModal.tsx";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { NewRecipe } from "../types.ts";
 
 const Recipes = () => {
-  const { recipes } = useMyStore();
+  const { recipes, ingredientsInCart, ingredients } = useMyStore();
   const {
     isOpen: isPopupOpen,
     onOpen: onPopupOpen,
@@ -27,8 +29,55 @@ const Recipes = () => {
   const focusRef = useRef<HTMLInputElement>(null);
   // const [value, setValue] = useState("1");
   const navigate = useNavigate();
-
+  console.log(ingredientsInCart);
   const { state } = useLocation();
+  console.log("hz", recipes);
+  const [filteredRecipes, setFilteredRecipes] = useState<NewRecipe[]>(recipes);
+  const purge = usePurgeStorage();
+  const handleFilter = (
+    ingredient: {
+      name: string;
+      id: any;
+      amount: number;
+      unit: string;
+      packageAmount: number;
+    },
+    remainingAmount: number,
+  ) => {
+    const findIngredientById = (ingredientId: string) =>
+      ingredients.find((ingredient) => ingredient.id === ingredientId);
+    const filtered = filteredRecipes.filter((recipe) =>
+      recipe.ingredients.some(
+        (recipeIngredient: { id: string; amount: number }) => {
+          const recipeIngredientId = findIngredientById(recipeIngredient.id);
+          return (
+            recipeIngredientId &&
+            recipeIngredientId.selectedProducts.some(
+              (id) =>
+                id.id === ingredient.id &&
+                recipeIngredient.amount! <= remainingAmount,
+            )
+          );
+        },
+      ),
+    );
+
+    setFilteredRecipes(filtered);
+  };
+
+  const getRemainingAmount = (
+    packageAmount: number,
+    ingredientAmount: number,
+  ): number => {
+    const packageSize = Number(packageAmount.toFixed(1));
+    let remainingAmount = packageSize - ingredientAmount;
+
+    while (remainingAmount < 0) {
+      remainingAmount += packageSize;
+    }
+    return remainingAmount;
+  };
+
   return (
     <Box
       pt={"16px"}
@@ -39,6 +88,7 @@ const Recipes = () => {
       mb={"30px"}
     >
       <BreadcrumbNav type={"recipes"} />
+      <Button onClick={purge}>purge</Button>
       <Flex flexDir={"column"}>
         <Heading
           pt={"12px"}
@@ -103,6 +153,29 @@ const Recipes = () => {
         >
           Vaše recepty
         </Heading>
+        <Flex flexDir={"row"}>
+          {ingredientsInCart.map((ingredient) => {
+            const remainingAmount: number = Number(
+              getRemainingAmount(
+                ingredient.packageAmount,
+                ingredient.amount,
+              ).toFixed(1),
+            );
+
+            if (remainingAmount !== 0 && ingredient.optimize) {
+              return (
+                <Button
+                  key={ingredient.id}
+                  onClick={() => handleFilter(ingredient, remainingAmount)}
+                >
+                  Filtrovat recepty obsahující {remainingAmount}{" "}
+                  {ingredient.unit} produktu {ingredient.name}
+                </Button>
+              );
+            }
+          })}
+        </Flex>
+
         {/*<RadioGroup onChange={setValue} value={value}>*/}
         {/*  <Stack direction="row" gap={"16px"}>*/}
         {/*    <Radio value="1" fontSize={"12px"}>*/}
@@ -120,7 +193,7 @@ const Recipes = () => {
         {/*  </Stack>*/}
         {/*</RadioGroup>*/}
         <Grid templateColumns="repeat(5, 1fr)" gap="10px">
-          {recipes.map((recipe) => (
+          {filteredRecipes.map((recipe) => (
             <RecipeComponent key={recipe.id} recipe={recipe} />
           ))}
         </Grid>
