@@ -147,7 +147,6 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
           top={"5px"}
           color={"rgb(218, 222, 224)"}
           _hover={{ color: "rgb(87, 130, 4)" }}
-          //TODO: remove in createRecipe
           //TODO: might have to delete the recipe too
           onClick={
             "amount" in ingredient
