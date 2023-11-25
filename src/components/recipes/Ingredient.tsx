@@ -1,7 +1,6 @@
 import {
   Badge,
   Box,
-  Button,
   Flex,
   Image,
   SimpleGrid,
@@ -17,7 +16,6 @@ import { NewIngredient, NewRecipeIngredient } from "../types.ts";
 import IngredientModal from "../ingredients/IngredientModal.tsx";
 import { useGetIngredientPrice } from "../hooks/useGetIngredientPrice.tsx";
 import { useLocation } from "react-router-dom";
-import PlusMinus from "../PlusMinus.tsx";
 
 type Props = {
   ingredient: NewIngredient | NewRecipeIngredient;
@@ -34,7 +32,6 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
     editSortBy,
     editOptimize,
     editAmount,
-    ingredientsInCart,
   } = useMyStore();
 
   if (ingredient == undefined) {
@@ -65,8 +62,13 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
     return <div>Error.</div>;
   }
 
+  const isNewRecipeIngredientType = (
+    ingredient: NewIngredient | NewRecipeIngredient,
+  ): ingredient is NewRecipeIngredient => {
+    return (ingredient as NewRecipeIngredient).amount !== undefined;
+  };
+
   const handleOpenIngredient = async () => {
-    console.log({ data });
     if (data) {
       const productsArray = data.productIds.map(
         (productId: string) => data.productsByIds[productId],
@@ -79,7 +81,7 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
       editSortBy(ingredient.sortBy);
       editOptimize(ingredient.optimize);
 
-      if ("amount" in ingredient) {
+      if (isNewRecipeIngredientType(ingredient)) {
         editAmount(ingredient.amount);
         onEditInRecipeOpen();
       } else {
@@ -95,25 +97,6 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
     editSelectedIngredients(updatedIngredients);
   };
   console.log(ingredient, ingredient.unit);
-
-  const getAmountInCart = (ingredient: NewIngredient): number => {
-    return ingredientsInCart.reduce((totalAmount, ingredientInCart) => {
-      const matchingProduct = ingredient.selectedProducts.find(
-        (product) => product.id === ingredientInCart.id,
-      );
-
-      if (matchingProduct) {
-        const amount = Math.ceil(
-          ingredientInCart.amount / ingredientInCart.packageAmount,
-        );
-        return totalAmount + amount;
-      }
-
-      return totalAmount;
-    }, 0);
-  };
-
-  const amount = getAmountInCart(ingredient);
 
   return (
     <Flex
@@ -149,7 +132,7 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
           _hover={{ color: "rgb(87, 130, 4)" }}
           //TODO: might have to delete the recipe too
           onClick={
-            "amount" in ingredient
+            isNewRecipeIngredientType(ingredient)
               ? (e) => {
                   e.stopPropagation();
                   handleDelete(ingredient.id);
@@ -234,32 +217,8 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
             fontWeight={"bold"}
             color={"rgb(28, 37, 41)"}
           >
-            {Number(totalPrice.toFixed(1))} Kč
+            {totalPrice.toFixed(1)} Kč
           </Text>
-          {ingredientsInCart.some((item) => ingredient.id === item.storeId) ? (
-            <PlusMinus
-              amount={amount}
-              handleAdd={() => console.log("h")}
-              handleSubtract={() => console.log("h")}
-            />
-          ) : (
-            <Button
-              bg="white"
-              color="black"
-              border="1px solid rgba(0, 0, 0, 0.15)"
-              height="32px"
-              display="flex"
-              rounded={"lg"}
-              alignItems="center"
-              fontSize={"13px"}
-              fontWeight={"bold"}
-              // isDisabled={totalPrice === 0}
-              _hover={{ bg: "rgb(87, 130, 4)", color: "white" }}
-              // onClick={handleBuy}
-            >
-              Do košíku
-            </Button>
-          )}
         </>
       ) : (
         <>
@@ -294,7 +253,7 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
             fontSize={"14px"}
             lineHeight={"22px"}
           >
-            {Number(totalPrice.toFixed(1))} Kč
+            {totalPrice.toFixed(1)} Kč
           </Text>
         </>
       )}
