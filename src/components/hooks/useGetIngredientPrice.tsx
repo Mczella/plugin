@@ -1,16 +1,18 @@
-import {
-  IngredientData,
-  NewIngredient, RohlikProduct,
-} from "../types.ts";
+import { IngredientData, NewIngredient, RohlikProduct } from "../types.ts";
 import { useGetIngredientIds } from "./useGetIngredientsIds.tsx";
 
 export const useGetIngredientPrice = (ingredient: NewIngredient) => {
   const ingredientData: IngredientData = useGetIngredientIds(ingredient);
   console.log({ ingredientData });
   let totalPrice = 0;
-  const productIds: { id: string; storeId: string }[] = [];
-  let overallCheapestProduct: (RohlikProduct) | undefined;
-  let selectedProduct: (RohlikProduct) | undefined;
+  const productInfo: {
+    id: string;
+    storeId: string;
+    name: string;
+    packageInfo: { amount: number; unit: string };
+  }[] = [];
+  let overallCheapestProduct: RohlikProduct | undefined;
+  let selectedProduct: RohlikProduct | undefined;
   try {
     if (ingredientData != null && ingredient) {
       const ingredientId = ingredient.id;
@@ -54,56 +56,58 @@ export const useGetIngredientPrice = (ingredient: NewIngredient) => {
 
       if (selectedProduct) {
         totalPrice += selectedProduct.price.amount;
-        productIds.push({ id: selectedProduct.id, storeId: ingredientId });
+        productInfo.push({
+          id: selectedProduct.id,
+          storeId: ingredientId,
+          name: selectedProduct.name,
+          packageInfo: selectedProduct.packageInfo,
+        });
       } else if (overallCheapestProduct !== undefined) {
         if (overallCheapestProduct.sales.length > 0) {
           totalPrice += overallCheapestProduct.sales[0].price.amount;
-          productIds.push({
+          productInfo.push({
             id: overallCheapestProduct.id,
             storeId: ingredientId,
+            name: overallCheapestProduct.name,
+            packageInfo: overallCheapestProduct.packageInfo,
           });
         } else {
           totalPrice += overallCheapestProduct.price.amount;
 
-          productIds.push({
+          productInfo.push({
             id: overallCheapestProduct.id,
             storeId: ingredientId,
+            name: overallCheapestProduct.name,
+            packageInfo: overallCheapestProduct.packageInfo,
           });
         }
       }
-      selectedProduct = undefined;
     }
 
-    return { totalPrice };
+    return { totalPrice, productInfo };
   } catch (error) {
     console.error(error);
-    return { totalPrice: 0 };
+    return { totalPrice: 0, productInfo: [] };
   }
 };
 
-const findPreferredProduct = (
-  products: (RohlikProduct)[],
-) => {
+const findPreferredProduct = (products: RohlikProduct[]) => {
   const preferredProducts = products.filter(
     (product) => product.preferred && product.inStock,
   );
   return preferredProducts.length > 0 ? preferredProducts[0] : undefined;
 };
 
-const filterProductsWithSales = (
-  products: (RohlikProduct)[],
-) => {
+const filterProductsWithSales = (products: RohlikProduct[]) => {
   return products.filter((product) => product.sales.length > 0);
 };
 
-const filterProductsWithoutSales = (
-  products: (RohlikProduct)[],
-) => {
+const filterProductsWithoutSales = (products: RohlikProduct[]) => {
   return products.filter((product) => product.sales.length === 0);
 };
 
 const findCheapestNormalProduct = (
-  products: (RohlikProduct)[],
+  products: RohlikProduct[],
   key: "price" | "pricePerUnit",
 ) => {
   if (products.length > 0) {
@@ -117,7 +121,7 @@ const findCheapestNormalProduct = (
 };
 
 const findCheapestSalesProduct = (
-  products: (RohlikProduct)[],
+  products: RohlikProduct[],
   key: "price" | "pricePerUnit",
 ) => {
   if (products.length > 0) {
@@ -131,8 +135,8 @@ const findCheapestSalesProduct = (
 };
 
 const getOverallCheapestProduct = (
-  withSales: (RohlikProduct) | undefined,
-  withoutSales: (RohlikProduct) | undefined,
+  withSales: RohlikProduct | undefined,
+  withoutSales: RohlikProduct | undefined,
   key: "price" | "pricePerUnit",
 ) => {
   if (withSales && withoutSales) {
