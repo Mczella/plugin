@@ -38,7 +38,6 @@ const MainArea = () => {
   }, [navigate]);
 
   useLayoutEffect(() => {
-    // Google Analytics
     if (!parentElement) {
       return;
     }
