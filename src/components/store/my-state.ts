@@ -3,10 +3,7 @@ import {
   NewIngredient,
   NewRecipe,
   NewRecipeIngredient,
-  Preferred,
-  Price,
-  Product,
-  Stock,
+  RohlikProduct,
 } from "../types.ts";
 
 export interface MyIngredientsState {
@@ -31,34 +28,33 @@ export interface MyTemporaryUIState {
   editName: (name: string | null) => void;
   selectedIngredient: NewIngredient | null;
   selectedIngredients: NewRecipeIngredient[];
-  selectedProducts: (Product & Stock & Price & Preferred)[];
+  selectedProducts: RohlikProduct[];
   selectIngredient: (ingredient: NewIngredient | null) => void;
   addToSelectedIngredients: (ingredient: NewRecipeIngredient) => void;
   editSelectedIngredients: (
     ingredients: NewRecipeIngredient[] | undefined,
   ) => void;
-  addToSelectedProducts: (product: Product & Stock & Price & Preferred) => void;
-  editSelectedProducts: (
-    products: (Product & Stock & Price & Preferred)[] | undefined,
-  ) => void;
+  addToSelectedProducts: (product: RohlikProduct) => void;
+  editSelectedProducts: (products: RohlikProduct[] | undefined) => void;
   deleteSelectedIngredient: (ingredient: NewRecipeIngredient) => void;
-  deleteSelectedProduct: (product: Product & Stock & Price & Preferred) => void;
+  deleteSelectedProduct: (product: RohlikProduct) => void;
 }
 
 export interface MyRecipesInCartState {
   recipesInCart: { id: string; amount: number }[];
   ingredientsInCart: {
     name: string;
-    id: string;
+    id: RohlikProduct["id"];
     amount: number;
     unit: string;
     packageAmount: number;
     optimize: boolean;
     storeId: string;
+    amountInCart: number;
   }[];
   addIngredientToCart: (
     name: string,
-    id: string,
+    id: RohlikProduct["id"],
     amount: number,
     unit: string,
     packageAmount: number,
@@ -151,14 +147,12 @@ export const createTemporaryUISlice: StateCreator<
       selectedIngredients: ingredients,
     });
   },
-  addToSelectedProducts: (product: Product & Stock & Price & Preferred) => {
+  addToSelectedProducts: (product: RohlikProduct) => {
     set((state) => ({
       selectedProducts: [...state.selectedProducts, product],
     }));
   },
-  editSelectedProducts: (
-    products: (Product & Stock & Price & Preferred)[] | undefined,
-  ) => {
+  editSelectedProducts: (products: RohlikProduct[] | undefined) => {
     set({
       selectedProducts: products,
     });
@@ -170,7 +164,7 @@ export const createTemporaryUISlice: StateCreator<
       ),
     }));
   },
-  deleteSelectedProduct: (product: Product & Stock & Price & Preferred) => {
+  deleteSelectedProduct: (product: RohlikProduct) => {
     set((state) => ({
       selectedProducts: state.selectedProducts.filter(
         (stateProduct) => stateProduct !== product,
@@ -189,7 +183,7 @@ export const createRecipesInCartSlice: StateCreator<
   ingredientsInCart: [],
   addIngredientToCart: (
     name: string,
-    id: string,
+    id: RohlikProduct["id"],
     amount: number,
     unit: string,
     packageAmount: number,
@@ -200,9 +194,11 @@ export const createRecipesInCartSlice: StateCreator<
       const existingIngredient = state.ingredientsInCart.find(
         (ingredient) => ingredient.id === id,
       );
+      const amountInCart = Math.ceil(amount / packageAmount);
 
       if (existingIngredient) {
         const newAmount = existingIngredient.amount + amount;
+        const calculatedAmount = Math.ceil(newAmount / packageAmount);
 
         if (newAmount <= 0) {
           return {
@@ -215,7 +211,11 @@ export const createRecipesInCartSlice: StateCreator<
         return {
           ingredientsInCart: state.ingredientsInCart.map((ingredient) =>
             ingredient.id === id
-              ? { ...ingredient, amount: newAmount }
+              ? {
+                  ...ingredient,
+                  amount: newAmount,
+                  amountInCart: calculatedAmount,
+                }
               : ingredient,
           ),
         };
@@ -223,7 +223,16 @@ export const createRecipesInCartSlice: StateCreator<
         return {
           ingredientsInCart: [
             ...state.ingredientsInCart,
-            { name, id, amount, unit, packageAmount, optimize, storeId },
+            {
+              name,
+              id,
+              amount,
+              unit,
+              packageAmount,
+              optimize,
+              storeId,
+              amountInCart,
+            },
           ],
         };
       }
