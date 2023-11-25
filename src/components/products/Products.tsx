@@ -1,13 +1,11 @@
 import {
   Badge,
   Box,
-  Button,
   Flex,
   Grid,
   GridItem,
   Heading,
   Image,
-  Stack,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -17,12 +15,11 @@ import { Icon } from "@chakra-ui/icons";
 import BreadcrumbNav from "../BreadcrumbNav.tsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRef } from "react";
-import Ingredient from "../recipes/Ingredient.tsx";
 import IngredientModal from "../ingredients/IngredientModal.tsx";
-import PlusMinus from "../PlusMinus.tsx";
+import Product from "./Product.tsx";
 
 const Products = () => {
-  const { ingredients, ingredientsInCart } = useMyStore();
+  const { ingredients } = useMyStore();
   // const [productArray, setProductArray] = useState<Product["id"][]>([]);
   const { isOpen: isOpen, onOpen: onOpen, onClose: onClose } = useDisclosure();
   const focusRef = useRef<HTMLInputElement>(null);
@@ -146,41 +143,7 @@ const Products = () => {
           {/*</RadioGroup>*/}
           <Grid templateColumns="repeat(5, 1fr)" gap="10px">
             {ingredients.map((ingredient) => (
-              <Stack key={ingredient.id} alignItems={"center"}>
-                <Ingredient ingredient={ingredient} />
-                {ingredientsInCart.map((cartItem) => {
-                  if (ingredient.id === cartItem.storeId) {
-                    return (
-                      <PlusMinus
-                        key={cartItem.id}
-                        amount={cartItem.amountInCart}
-                        handleAdd={() => console.log("h")}
-                        handleSubtract={() => console.log("h")}
-                        size={"32px"}
-                      />
-                    );
-                  } else {
-                    return (
-                      <Button
-                        key={ingredient.id}
-                        bg="white"
-                        color="black"
-                        border="1px solid rgba(0, 0, 0, 0.15)"
-                        height="32px"
-                        display="flex"
-                        rounded={"lg"}
-                        alignItems="center"
-                        fontSize={"13px"}
-                        fontWeight={"bold"}
-                        // isDisabled={totalPrice === 0}
-                        _hover={{ bg: "rgb(87, 130, 4)", color: "white" }}
-                      >
-                        Do košíku
-                      </Button>
-                    );
-                  }
-                })}
-              </Stack>
+              <Product ingredient={ingredient} key={ingredient.id} />
             ))}
           </Grid>
         </Flex>
