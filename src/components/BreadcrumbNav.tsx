@@ -5,7 +5,7 @@ import { useLocation } from "react-router-dom";
 
 type Props = {
   children: ReactNode;
-  addRecipe: boolean;
+  addRecipe?: boolean;
 };
 
 const BreadcrumbNav: FC<Props> = ({ children, addRecipe }) => {
