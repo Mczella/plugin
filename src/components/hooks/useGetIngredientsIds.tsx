@@ -5,10 +5,16 @@ import { useQuery } from "@tanstack/react-query";
 
 export const useGetIngredientIds = (product: NewRecipe | NewIngredient) => {
   const { ingredients } = useMyStore();
-  const ingredientIds =
-    "ingredients" in product
-      ? getRecipeIngredientIds(product, ingredients)
-      : getIngredientIds(product);
+
+  const isNewRecipeType = (
+    product: NewRecipe | NewIngredient,
+  ): product is NewRecipe => {
+    return (product as NewRecipe).ingredients !== undefined;
+  };
+
+  const ingredientIds = isNewRecipeType(product)
+    ? getRecipeIngredientIds(product, ingredients)
+    : getIngredientIds(product);
 
   const { data } = useQuery(["data", product.id], () =>
     fetchPriceAndStock(ingredientIds),
