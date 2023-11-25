@@ -11,9 +11,9 @@ type Props = {
 };
 
 const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
-  const { recipes } = useMyStore();
-  const findRecipeById = (recipeInCart: string) =>
-    recipes.find((oneRecipe) => oneRecipe.id === recipeInCart);
+  const { recipes, ingredientsInCart } = useMyStore();
+  const findRecipeById = (recipeInCartId: string) =>
+    recipes.find((oneRecipe) => oneRecipe.id === recipeInCartId);
 
   const specificRecipe = findRecipeById(recipeInCart.id);
 
@@ -47,6 +47,8 @@ const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
     };
   };
 
+  console.log({ ingredientsInCart });
+
   const ingredients = getFilteredIngredientData(productIds, ingredientData);
   console.log({ ingredients });
   return (
@@ -61,6 +63,7 @@ const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
       >
         {specificRecipe.name}
       </Text>
+
       {Object.keys(ingredients.productsByStoreId).map((storeId) =>
         ingredients.productsByStoreId[storeId].map((product) => (
           <Flex
@@ -85,7 +88,16 @@ const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
               <Text pl={"4"}>{product.textualAmount}</Text>
             </Flex>
             <Flex flexDir={"row"} alignItems={"center"}>
-              <PlusMinus />
+              <PlusMinus
+                size={"32px"}
+                amount={
+                  ingredientsInCart.find(
+                    (ingredientInCart) => ingredientInCart.id === product.id,
+                  )?.amount || 0
+                }
+                handleAdd={() => console.log(product.id)}
+                handleSubtract={() => console.log("h")}
+              />
               <Text
                 textAlign={"right"}
                 color={"rgb(28, 37, 41)"}
