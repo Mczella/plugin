@@ -1,5 +1,4 @@
 import {
-  Badge,
   Box,
   Flex,
   Image,
@@ -222,18 +221,6 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
         </>
       ) : (
         <>
-          <Badge
-            alignSelf={"center"}
-            bg={"rgba(0, 0, 0, 0.5)"}
-            color={"white"}
-            fontSize={"12px"}
-            fontWeight={600}
-            py={"2px"}
-            px={"7px"}
-            rounded={"2xl"}
-          >
-            {ingredient.unit}
-          </Badge>
           <Text
             px={"4px"}
             as={"b"}
