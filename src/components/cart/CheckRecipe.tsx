@@ -2,9 +2,9 @@ import { Flex, Image, Text } from "@chakra-ui/react";
 import { SmallCloseIcon } from "@chakra-ui/icons";
 import { FC } from "react";
 import { useMyStore } from "../store/store.tsx";
-import { IngredientData, RohlikProduct } from "../types.ts";
 import { useGetRecipePrice } from "../hooks/useGetRecipePrice.tsx";
 import PlusMinus from "../PlusMinus.tsx";
+import { getFilteredIngredientData } from "../utils/utils.ts";
 
 type Props = {
   recipeInCart: { id: string; amount: number };
@@ -12,44 +12,18 @@ type Props = {
 
 const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
   const { recipes, ingredientsInCart } = useMyStore();
-  const findRecipeById = (recipeInCartId: string) =>
-    recipes.find((oneRecipe) => oneRecipe.id === recipeInCartId);
+  const findRecipeById = (recipe: { id: string; amount: number }) =>
+    recipes.find((oneRecipe) => oneRecipe.id === recipe.id);
 
-  const specificRecipe = findRecipeById(recipeInCart.id);
+  const specificRecipe = findRecipeById(recipeInCart);
 
   if (!specificRecipe) {
     throw new Error("error");
   }
 
   const { productIds, ingredientData } = useGetRecipePrice(specificRecipe);
-  console.log({ specificRecipe });
-  const getFilteredIngredientData = (
-    productIds: { id: string; storeId: string }[],
-    ingredientData: IngredientData | undefined,
-  ) => {
-    console.log({ ingredientData });
-    console.log({ productIds });
-    const products: { [p: string]: RohlikProduct[] } = {};
-    if (ingredientData) {
-      Object.keys(ingredientData.productsByStoreId).forEach((storeId) => {
-        products[storeId] = ingredientData.productsByStoreId[storeId].filter(
-          (product: RohlikProduct) =>
-            productIds.some(
-              (productId) =>
-                productId.id === product.id && productId.storeId === storeId,
-            ),
-        );
-      });
-    }
-
-    return {
-      productsByStoreId: products,
-    };
-  };
-
-  console.log({ ingredientsInCart });
-
   const ingredients = getFilteredIngredientData(productIds, ingredientData);
+
   console.log({ ingredients });
   return (
     <>
