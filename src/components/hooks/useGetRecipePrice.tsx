@@ -1,9 +1,16 @@
-import {
-  IngredientData,
-  NewRecipe, RohlikProduct,
-} from "../types.ts";
+import { IngredientData, NewRecipe, RohlikProduct } from "../types.ts";
 import { useGetIngredientIds } from "./useGetIngredientsIds.tsx";
 import { useMyStore } from "../store/store.tsx";
+import {
+  calculateDiscountPercentage,
+  filterProductsWithoutSales,
+  filterProductsWithSales,
+  findCheapestNormalProduct,
+  findCheapestSalesProduct,
+  findPreferredProduct,
+  getOverallCheapestProduct,
+  productsInStock,
+} from "../utils/utils.ts";
 
 type NeededProduct = {
   name: string;
@@ -29,8 +36,8 @@ export const useGetRecipePrice = (recipe: NewRecipe): Result => {
   let totalPrice = 0;
   let saved = 0;
   const productIds: { id: string; storeId: string }[] = [];
-  let overallCheapestProduct: (RohlikProduct) | undefined;
-  let selectedProduct: (RohlikProduct) | undefined;
+  let overallCheapestProduct: RohlikProduct | undefined;
+  let selectedProduct: RohlikProduct | undefined;
   const needed: NeededProduct[] = [];
 
   try {
@@ -167,96 +174,3 @@ export const useGetRecipePrice = (recipe: NewRecipe): Result => {
     };
   }
 };
-
-const productsInStock = (
-  product: RohlikProduct,
-  ingredientAmount: number,
-) => {
-  const { tooltips, inStock, packageInfo, maxBasketAmount } = product;
-
-  if (tooltips.length === 0) {
-    return inStock && ingredientAmount / packageInfo.amount < maxBasketAmount;
-  } else if (tooltips[0].triggerAmount) {
-    return (
-      inStock &&
-      ingredientAmount / packageInfo.amount < tooltips[0].triggerAmount &&
-      ingredientAmount / packageInfo.amount < maxBasketAmount
-    );
-  } else {
-    return inStock && ingredientAmount / packageInfo.amount < maxBasketAmount;
-  }
-};
-
-const findPreferredProduct = (
-  products: (RohlikProduct)[],
-) => {
-  const preferredProducts = products.filter(
-    (product) => product.preferred && product.inStock,
-  );
-  return preferredProducts.length > 0 ? preferredProducts[0] : undefined;
-};
-
-const filterProductsWithSales = (
-  products: (RohlikProduct)[],
-) => {
-  return products.filter((product) => product.sales.length > 0);
-};
-
-const filterProductsWithoutSales = (
-  products: (RohlikProduct)[],
-) => {
-  return products.filter((product) => product.sales.length === 0);
-};
-
-const findCheapestNormalProduct = (
-  products: (RohlikProduct)[],
-  key: "price" | "pricePerUnit",
-) => {
-  if (products.length > 0) {
-    return products.reduce((minPriceProduct, product) =>
-      product[key].amount < minPriceProduct[key].amount
-        ? product
-        : minPriceProduct,
-    );
-  }
-  return undefined;
-};
-
-const findCheapestSalesProduct = (
-  products: (RohlikProduct)[],
-  key: "price" | "pricePerUnit",
-) => {
-  if (products.length > 0) {
-    return products.reduce((minPriceProduct, product) =>
-      product.sales[0][key].amount < minPriceProduct.sales[0][key].amount
-        ? product
-        : minPriceProduct,
-    );
-  }
-  return undefined;
-};
-
-const getOverallCheapestProduct = (
-  withSales: (RohlikProduct) | undefined,
-  withoutSales: (RohlikProduct) | undefined,
-  key: "price" | "pricePerUnit",
-) => {
-  if (withSales && withoutSales) {
-    return withSales.sales[0][key].amount < withoutSales[key].amount
-      ? withSales
-      : withoutSales;
-  } else if (withSales) {
-    return withSales;
-  } else if (withoutSales) {
-    return withoutSales;
-  } else {
-    throw new Error("Všechny alternativy vyprodány.");
-  }
-};
-
-function calculateDiscountPercentage(
-  amountSaved: number,
-  priceAfterDiscount: number,
-): number {
-  return (1 - priceAfterDiscount / (priceAfterDiscount + amountSaved)) * 100;
-}
