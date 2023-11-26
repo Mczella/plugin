@@ -12,7 +12,7 @@ type Props = {
 
 const Product: FC<Props> = ({ ingredient }) => {
   const { ingredients, ingredientsInCart, addIngredientToCart } = useMyStore();
-  const { productInfo } = useGetIngredientPrice(ingredient);
+  const { productInfo, totalPrice } = useGetIngredientPrice(ingredient);
   const productDetails = productInfo[0];
 
   return (
@@ -69,7 +69,7 @@ const Product: FC<Props> = ({ ingredient }) => {
               alignItems="center"
               fontSize={"13px"}
               fontWeight={"bold"}
-              // isDisabled={totalPrice === 0}
+              isDisabled={totalPrice === 0}
               _hover={{ bg: "rgb(87, 130, 4)", color: "white" }}
             >
               Do košíku
