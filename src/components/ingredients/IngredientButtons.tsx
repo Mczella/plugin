@@ -1,6 +1,7 @@
 import { Button, ButtonGroup, Text } from "@chakra-ui/react";
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import { useMyStore } from "../store/store.tsx";
+import useIsUnitError from "../hooks/useIsUnitError.ts";
 
 type Props = {
   modalReset: () => void;
@@ -10,20 +11,7 @@ type Props = {
 
 const IngredientButtons: FC<Props> = ({ modalReset, handleSave, id }) => {
   const { selectedProducts } = useMyStore();
-  const [error, setError] = useState(false);
-
-  useEffect(() => {
-    if (
-      selectedProducts.length > 0 &&
-      !selectedProducts.every(
-        (product) => product.unit === selectedProducts[0].unit,
-      )
-    ) {
-      setError(true);
-    } else {
-      setError(false);
-    }
-  }, [selectedProducts]);
+  const error = useIsUnitError();
 
   return (
     <>

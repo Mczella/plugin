@@ -1,7 +1,8 @@
 import { Button, ButtonGroup, Text } from "@chakra-ui/react";
 import { useMyStore } from "../store/store.tsx";
-import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, FC, SetStateAction } from "react";
 import { NewIngredient, NewRecipeIngredient } from "../types.ts";
+import useIsUnitError from "../hooks/useIsUnitError.ts";
 
 type Props = {
   step: number;
@@ -23,8 +24,7 @@ const IngredientInRecipeButtons: FC<Props> = ({
     addToSelectedIngredients,
     amount,
   } = useMyStore();
-  const [error, setError] = useState(false);
-
+  const error = useIsUnitError();
   const handleIngredientClick = (ingredient: NewIngredient) => {
     const newSelectedIngredient: NewRecipeIngredient = {
       ...ingredient,
@@ -33,19 +33,6 @@ const IngredientInRecipeButtons: FC<Props> = ({
     addToSelectedIngredients(newSelectedIngredient);
     modalReset();
   };
-
-  useEffect(() => {
-    if (
-      selectedProducts.length > 0 &&
-      !selectedProducts.every(
-        (product) => product.unit === selectedProducts[0].unit,
-      )
-    ) {
-      setError(true);
-    } else {
-      setError(false);
-    }
-  }, [selectedProducts]);
 
   return step === 1 ? (
     <>
