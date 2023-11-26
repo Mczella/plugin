@@ -15,7 +15,7 @@ const RecipeInCart: FC<Props> = ({ recipe }) => {
     recipes.find((oneRecipe) => oneRecipe.id === recipe.id);
 
   const specificRecipe = findRecipeById(recipe);
-  console.log("hej", recipe, specificRecipe);
+
   if (!specificRecipe) {
     throw new Error("Error");
   }
