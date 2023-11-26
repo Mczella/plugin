@@ -29,11 +29,10 @@ export type Tooltips =
   | [
       {
         type: string; //"PARTLY_SOLD_OUT",
-        closable: boolean;
         triggerAmount: number | null;
-        size: null;
-        message: string;
-        actionable: boolean;
+        // size: null;
+        // message: string;
+        // actionable: boolean;
       },
     ];
 
