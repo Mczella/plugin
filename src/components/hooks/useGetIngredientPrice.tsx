@@ -1,5 +1,13 @@
 import { IngredientData, NewIngredient, RohlikProduct } from "../types.ts";
 import { useGetIngredientIds } from "./useGetIngredientsIds.tsx";
+import {
+  filterProductsWithoutSales,
+  filterProductsWithSales,
+  findCheapestNormalProduct,
+  findCheapestSalesProduct,
+  findPreferredProduct,
+  getOverallCheapestProduct,
+} from "../utils/utils.ts";
 
 export const useGetIngredientPrice = (ingredient: NewIngredient) => {
   const ingredientData: IngredientData = useGetIngredientIds(ingredient);
@@ -88,66 +96,5 @@ export const useGetIngredientPrice = (ingredient: NewIngredient) => {
   } catch (error) {
     console.error(error);
     return { totalPrice: 0, productInfo: [] };
-  }
-};
-
-const findPreferredProduct = (products: RohlikProduct[]) => {
-  const preferredProducts = products.filter(
-    (product) => product.preferred && product.inStock,
-  );
-  return preferredProducts.length > 0 ? preferredProducts[0] : undefined;
-};
-
-const filterProductsWithSales = (products: RohlikProduct[]) => {
-  return products.filter((product) => product.sales.length > 0);
-};
-
-const filterProductsWithoutSales = (products: RohlikProduct[]) => {
-  return products.filter((product) => product.sales.length === 0);
-};
-
-const findCheapestNormalProduct = (
-  products: RohlikProduct[],
-  key: "price" | "pricePerUnit",
-) => {
-  if (products.length > 0) {
-    return products.reduce((minPriceProduct, product) =>
-      product[key].amount < minPriceProduct[key].amount
-        ? product
-        : minPriceProduct,
-    );
-  }
-  return undefined;
-};
-
-const findCheapestSalesProduct = (
-  products: RohlikProduct[],
-  key: "price" | "pricePerUnit",
-) => {
-  if (products.length > 0) {
-    return products.reduce((minPriceProduct, product) =>
-      product.sales[0][key].amount < minPriceProduct.sales[0][key].amount
-        ? product
-        : minPriceProduct,
-    );
-  }
-  return undefined;
-};
-
-const getOverallCheapestProduct = (
-  withSales: RohlikProduct | undefined,
-  withoutSales: RohlikProduct | undefined,
-  key: "price" | "pricePerUnit",
-) => {
-  if (withSales && withoutSales) {
-    return withSales.sales[0][key].amount < withoutSales[key].amount
-      ? withSales
-      : withoutSales;
-  } else if (withSales) {
-    return withSales;
-  } else if (withoutSales) {
-    return withoutSales;
-  } else {
-    throw new Error("Všechny alternativy vyprodány.");
   }
 };
