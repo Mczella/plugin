@@ -33,9 +33,8 @@ const CreateIngredientInput = () => {
     setIsDropdownOpen(false);
   });
 
-  const handleAddToIngredient = (
-    product: RohlikProduct,
-  ) => {
+  const handleAddToIngredient = (product: RohlikProduct) => {
+    console.log({ product });
     const productWithPreferred: RohlikProduct = {
       ...product,
       preferred: false,
