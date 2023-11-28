@@ -27,6 +27,8 @@ const Product: FC<Props> = ({ ingredient }) => {
           if (!matchingIngredient) {
             return;
           }
+          console.log("ahoj", ingredient.name);
+          console.log(cartItem.storeId);
           return (
             <PlusMinus
               key={cartItem.id}
@@ -70,6 +72,17 @@ const Product: FC<Props> = ({ ingredient }) => {
               fontSize={"13px"}
               fontWeight={"bold"}
               isDisabled={totalPrice === 0}
+              onClick={() => {
+                addIngredientToCart(
+                  productDetails.name,
+                  productDetails.id,
+                  productDetails.packageInfo.amount,
+                  productDetails.packageInfo.unit,
+                  productDetails.packageInfo.amount,
+                  ingredient.optimize,
+                  ingredient.id,
+                );
+              }}
               _hover={{ bg: "rgb(87, 130, 4)", color: "white" }}
             >
               Do košíku
