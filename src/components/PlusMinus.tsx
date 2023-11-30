@@ -11,7 +11,7 @@ type Props = {
 
 const PlusMinus: FC<Props> = ({ handleAdd, handleSubtract, amount, size }) => {
   return (
-    <Flex flexDir={"row"} alignItems={"center"} gap={"13px"}>
+    <Flex flexDir={"row"} alignItems={"center"} gap={"13px"} mb={"30px"}>
       <Box
         h={size}
         w={size}
