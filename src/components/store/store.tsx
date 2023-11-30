@@ -63,7 +63,7 @@ export const store = createStore<
           if (error) {
             console.log("an error happened during hydration", error);
           } else {
-            console.log("hydration finished");
+            console.log("hydration finished", _);
           }
         };
       },
