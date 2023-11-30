@@ -10,7 +10,7 @@ type Props = {
   ingredient: NewIngredient;
 };
 
-function getProductFromCart(
+const getProductFromCart = (
   ingredient: NewIngredient,
   ingredients: NewIngredient[],
   ingredientsInCart: {
@@ -24,7 +24,7 @@ function getProductFromCart(
     amountInCart: number;
   }[],
   storeId: string,
-) {
+) => {
   const cartItem = ingredientsInCart.find(
     (cartItem) => ingredient.id === cartItem.storeId,
   );
@@ -45,7 +45,7 @@ function getProductFromCart(
     cartItem,
     matchingIngredient,
   };
-}
+};
 
 const Product: FC<Props> = ({ ingredient }) => {
   const { ingredients, ingredientsInCart, addIngredientToCart } = useMyStore();
