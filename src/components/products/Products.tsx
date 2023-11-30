@@ -17,15 +17,44 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useRef } from "react";
 import IngredientModal from "../ingredients/IngredientModal.tsx";
 import Product from "./Product.tsx";
+import IngredientModalOne from "../ingredients/IngredientModalOne.tsx";
+import IngredientModalTwo from "../ingredients/IngredientModalTwo.tsx";
+import IngredientButtons from "../ingredients/IngredientButtons.tsx";
 
 const Products = () => {
-  const { ingredients } = useMyStore();
   // const [productArray, setProductArray] = useState<Product["id"][]>([]);
-  const { isOpen: isOpen, onOpen: onOpen, onClose: onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const focusRef = useRef<HTMLInputElement>(null);
 
   const { state } = useLocation();
   const navigate = useNavigate();
+  const {
+    addIngredient,
+    selectedProducts,
+    name,
+    ingredients,
+    optimize,
+    sortBy,
+    step,
+  } = useMyStore();
+
+  const handleSave = () => {
+    if (name != null && selectedProducts.length > 0) {
+      const updatedSelectedProducts = selectedProducts.map(
+        ({ id, preferred }) => ({ id, preferred }),
+      );
+      const newIngredientCreate = {
+        name,
+        selectedProducts: updatedSelectedProducts,
+        id: Date.now().toString(36),
+        unit: selectedProducts[0].unit,
+        optimize,
+        sortBy,
+      };
+      addIngredient(newIngredientCreate);
+      onClose();
+    }
+  };
 
   return (
     <>
@@ -151,8 +180,15 @@ const Products = () => {
           focusRef={focusRef}
           isOpen={isOpen}
           onClose={onClose}
-          type={"create"}
-        />
+          create
+        >
+          {step === 1 ? (
+            <IngredientModalOne create heading={"Přidat ingredienci"} />
+          ) : (
+            <IngredientModalTwo />
+          )}
+          <IngredientButtons onClose={onClose} handleSave={handleSave} />
+        </IngredientModal>
       </Box>
     </>
   );

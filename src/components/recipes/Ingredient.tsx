@@ -15,6 +15,10 @@ import { NewIngredient, NewRecipeIngredient } from "../types.ts";
 import IngredientModal from "../ingredients/IngredientModal.tsx";
 import { useGetIngredientPrice } from "../hooks/useGetIngredientPrice.tsx";
 import { useLocation } from "react-router-dom";
+import IngredientInRecipeButtons from "../ingredients/IngredientInRecipeButtons.tsx";
+import IngredientButtons from "../ingredients/IngredientButtons.tsx";
+import IngredientModalOne from "../ingredients/IngredientModalOne.tsx";
+import IngredientModalTwo from "../ingredients/IngredientModalTwo.tsx";
 
 type Props = {
   ingredient: NewIngredient | NewRecipeIngredient;
@@ -22,15 +26,21 @@ type Props = {
 
 const Ingredient: FC<Props> = ({ ingredient }) => {
   const {
-    editSelectedIngredients,
+    selectedProducts,
     selectedIngredients,
-    addToSelectedProducts,
-    editName,
-    editIngredients,
-    ingredients,
-    editSortBy,
-    editOptimize,
+    name,
     editAmount,
+    amount,
+    ingredients,
+    editIngredients,
+    editSelectedIngredients,
+    editName,
+    optimize,
+    editOptimize,
+    sortBy,
+    editSortBy,
+    addToSelectedProducts,
+    step,
   } = useMyStore();
 
   if (ingredient == undefined) {
@@ -67,18 +77,21 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
     return (ingredient as NewRecipeIngredient).amount !== undefined;
   };
 
-  const handleOpenIngredient = async () => {
+  const handleOpenIngredient = () => {
     if (data) {
+      console.log("kill", data);
       const productsArray = data.productIds.map(
         (productId: string) => data.productsByIds[productId],
       );
       productsArray.map((product) => {
         addToSelectedProducts(product);
       });
+      console.log("mee", ingredient.name);
 
       editName(ingredient.name);
       editSortBy(ingredient.sortBy);
       editOptimize(ingredient.optimize);
+      console.log("mee", name);
 
       if (isNewRecipeIngredientType(ingredient)) {
         editAmount(ingredient.amount);
@@ -89,13 +102,71 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
     }
   };
 
+  const handleSave = () => {
+    if (name != null && selectedProducts.length > 0) {
+      const updatedSelectedProducts = selectedProducts.map(
+        ({ id, preferred }) => ({ id, preferred }),
+      );
+      const editedIngredientsEdit = ingredients.map((ing) =>
+        ing.id === ingredient.id
+          ? {
+              ...ing,
+              name,
+              selectedProducts: updatedSelectedProducts,
+              optimize,
+              sortBy,
+            }
+          : ing,
+      );
+
+      editIngredients(editedIngredientsEdit);
+      onEditClose();
+    }
+  };
+
+  const handleRecipeSave = () => {
+    if (name != null && selectedProducts.length > 0) {
+      const updatedSelectedProducts = selectedProducts.map(
+        ({ id, preferred }) => ({ id, preferred }),
+      );
+      const editedIngredientsEditInRecipe = ingredients.map((ing) =>
+        ing.id === ingredient.id
+          ? {
+              ...ing,
+              name,
+              selectedProducts: updatedSelectedProducts,
+              optimize,
+              sortBy,
+            }
+          : ing,
+      );
+
+      editIngredients(editedIngredientsEditInRecipe);
+
+      const editedRecipeIngredientsEdit = selectedIngredients.map((ing) =>
+        ing.id === ingredient.id
+          ? {
+              ...ing,
+              name,
+              selectedProducts: updatedSelectedProducts,
+              amount,
+              optimize,
+              sortBy,
+            }
+          : ing,
+      );
+
+      editSelectedIngredients(editedRecipeIngredientsEdit);
+      onEditInRecipeClose();
+    }
+  };
+
   const handleDelete = (ingredientId: string) => {
     const updatedIngredients = selectedIngredients.filter(
       (ingredient) => ingredient.id !== ingredientId,
     );
     editSelectedIngredients(updatedIngredients);
   };
-  console.log(ingredient, ingredient.unit);
 
   return (
     <Flex
@@ -245,19 +316,37 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
         </>
       )}
       <IngredientModal
-        id={ingredient.id}
         focusRef={focusRef}
         isOpen={isEditInRecipeOpen}
         onClose={onEditInRecipeClose}
-        type={"editInRecipe"}
-      />
+      >
+        {step === 1 ? (
+          <IngredientModalOne heading={"Upravit ingredienci"} />
+        ) : (
+          <IngredientModalTwo />
+        )}
+        <IngredientInRecipeButtons
+          onClose={onEditInRecipeClose}
+          handleSave={handleRecipeSave}
+          id={ingredient.id}
+        />
+      </IngredientModal>
       <IngredientModal
-        id={ingredient.id}
         focusRef={focusRef}
         isOpen={isEditOpen}
         onClose={onEditClose}
-        type={"edit"}
-      />
+      >
+        {step === 1 ? (
+          <IngredientModalOne heading={"Upravit ingredienci"} />
+        ) : (
+          <IngredientModalTwo />
+        )}
+        <IngredientButtons
+          onClose={onEditClose}
+          handleSave={handleSave}
+          id={ingredient.id}
+        />
+      </IngredientModal>
     </Flex>
   );
 };

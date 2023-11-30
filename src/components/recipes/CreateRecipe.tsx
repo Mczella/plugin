@@ -28,6 +28,9 @@ import { RecipeIngredient } from "../types.ts";
 import { useMyStore } from "../store/store.tsx";
 import { Controller, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
+import IngredientModalOne from "../ingredients/IngredientModalOne.tsx";
+import IngredientModalTwo from "../ingredients/IngredientModalTwo.tsx";
+import IngredientInRecipeButtons from "../ingredients/IngredientInRecipeButtons.tsx";
 
 const CreateRecipe = () => {
   const navigate = useNavigate();
@@ -44,12 +47,20 @@ const CreateRecipe = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef<HTMLInputElement>(null);
   const {
+    addIngredient,
+    addToSelectedIngredients,
+    selectedProducts,
+    name,
+    amount,
+    optimize,
+    sortBy,
     addRecipe,
     selectedIngredients,
     editSelectedIngredients,
     editAmount,
     editSelectedProducts,
     selectIngredient,
+    step,
   } = useMyStore();
   const { state } = useLocation();
 
@@ -106,6 +117,36 @@ const CreateRecipe = () => {
       setError(false);
     }
   }, [selectedIngredients]);
+
+  const handleSave = () => {
+    if (name != null && selectedProducts.length > 0) {
+      const updatedSelectedProducts = selectedProducts.map(
+        ({ id, preferred }) => ({ id, preferred }),
+      );
+      const createdIdCreate = Date.now().toString(36);
+      const newIngredientCreateInRecipe = {
+        name,
+        selectedProducts: updatedSelectedProducts,
+        id: createdIdCreate,
+        unit: selectedProducts[0].unit,
+        optimize,
+        sortBy,
+      };
+      addIngredient(newIngredientCreateInRecipe);
+      console.log("ahoj");
+      const newRecipeIngredientCreate = {
+        name,
+        selectedProducts: updatedSelectedProducts,
+        id: createdIdCreate,
+        amount,
+        optimize,
+        sortBy,
+        unit: selectedProducts[0].unit,
+      };
+      addToSelectedIngredients(newRecipeIngredientCreate);
+      onClose();
+    }
+  };
 
   return (
     <Flex
@@ -272,8 +313,18 @@ const CreateRecipe = () => {
           focusRef={cancelRef}
           onClose={onClose}
           isOpen={isOpen}
-          type={"createInRecipe"}
-        />
+          create
+        >
+          {step === 1 ? (
+            <IngredientModalOne create heading={"Přidat ingredienci"} />
+          ) : (
+            <IngredientModalTwo />
+          )}
+          <IngredientInRecipeButtons
+            onClose={onClose}
+            handleSave={handleSave}
+          />
+        </IngredientModal>
       </form>
     </Flex>
   );

@@ -21,10 +21,11 @@ import { useMyStore } from "../store/store.tsx";
 import Ingredient from "../recipes/Ingredient.tsx";
 
 type Props = {
-  type: "create" | "createInRecipe" | "edit" | "editInRecipe";
+  create?: boolean;
+  heading: string;
 };
 
-const IngredientModalOne: FC<Props> = ({ type }) => {
+const IngredientModalOne: FC<Props> = ({ create, heading }) => {
   const {
     ingredients,
     selectedIngredient,
@@ -50,7 +51,7 @@ const IngredientModalOne: FC<Props> = ({ type }) => {
     );
 
     setCurrentIngredients(filteredIngredients);
-  }, [selectedIngredients, selectedIngredient]);
+  }, [selectedIngredients, selectedIngredient, ingredients]);
 
   return (
     <>
@@ -60,7 +61,7 @@ const IngredientModalOne: FC<Props> = ({ type }) => {
         lineHeight={"32px"}
         mb={"24px"}
       >
-        Přidat ingredienci
+        {heading}
       </Heading>
       <FormControl isRequired>
         <AutoComplete
@@ -86,7 +87,7 @@ const IngredientModalOne: FC<Props> = ({ type }) => {
             placeholder={
               name != null
                 ? name
-                : type === "create"
+                : create
                 ? "Vytvořte novou ingredienci..."
                 : "Vyberte z vašich ingrediencí..."
             }
