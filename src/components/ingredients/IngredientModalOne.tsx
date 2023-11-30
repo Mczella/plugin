@@ -121,6 +121,7 @@ const IngredientModalOne: FC<Props> = ({ create, heading }) => {
                 ) : selectedIngredients.some(
                     (selected) => selected.name === value,
                   ) ? (
+                  //TODO disable
                   <Text>Tato ingredience již existuje.</Text>
                 ) : (
                   <Text>
