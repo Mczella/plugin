@@ -4,6 +4,12 @@
   "version": "1.0.0",
   "action": { "default_popup": "index.html" },
   "permissions": ["storage"],
+  "web_accessible_resources": [
+    {
+      "resources": ["src/web.js"],
+      "matches": ["https://www.rohlik.cz/*"]
+    }
+  ],
   "content_scripts": [
     {
       "matches": ["https://www.rohlik.cz/*"],
