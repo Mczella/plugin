@@ -31,6 +31,30 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
   const pricePerPortion = totalPrice / recipe.portion;
   const priceBeforeSale = totalPrice + saved;
 
+  const getPriceBeforeSale = () => {
+    if (totalPrice > 0) {
+      if (totalPrice > 999) {
+        return `${Math.ceil(priceBeforeSale)}Kč`;
+      } else {
+        return `${priceBeforeSale.toFixed(1)}Kč`;
+      }
+    } else {
+      return null;
+    }
+  };
+
+  const getEditedPrice = () => {
+    if (totalPrice > 0) {
+      if (totalPrice > 999) {
+        return `${Math.ceil(totalPrice)} Kč`;
+      } else {
+        return `${totalPrice.toFixed(1)} Kč`;
+      }
+    } else {
+      return "Vyprodáno";
+    }
+  };
+
   const getAmount = () => {
     const currentRecipe = recipesInCart.find(
       (recipeInCart) => recipeInCart.id === recipe.id,
@@ -41,6 +65,14 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
     }
 
     return currentRecipe.amount;
+  };
+
+  const getInflection = () => {
+    if (recipe.portion < 5) {
+      return "porce";
+    } else {
+      return "porcí";
+    }
   };
 
   const handleAdd = () => {
@@ -166,7 +198,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
             px={"7px"}
             rounded={"2xl"}
           >
-            {`${recipe.portion} porce`}
+            {recipe.portion} {getInflection()}
           </Badge>
         </Box>
       </Box>
@@ -211,9 +243,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
               fontWeight={"normal"}
               color={"rgb(28, 37, 41)"}
             >
-              {totalPrice === 0
-                ? null
-                : `${Number(priceBeforeSale.toFixed(1))}Kč`}
+              {getPriceBeforeSale()}
             </Text>
           ) : null}
           <Text
@@ -222,9 +252,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
             fontWeight={"bold"}
             color={discount > 0 ? "rgb(209, 17, 0)" : "rgb(28, 37, 41)"}
           >
-            {totalPrice === 0
-              ? "Vyprodáno"
-              : `${Number(totalPrice.toFixed(1))} Kč`}
+            {getEditedPrice()}
           </Text>
         </HStack>
         {/*: <Text></Text>*/}
@@ -234,13 +262,14 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
           lineHeight={1.4}
           color={"rgb(93, 103, 108)"}
         >
-          {`${Number(pricePerPortion.toFixed(1))} Kč/porce`}
+          {`${pricePerPortion.toFixed(1)} Kč/${getInflection()}`}
         </Text>
         {recipesInCart.some((item) => recipe.id === item.id) ? (
           <PlusMinus
             handleAdd={handleAdd}
             handleSubtract={handleSubtract}
             amount={getAmount()}
+            size={"32px"}
           />
         ) : (
           <Button

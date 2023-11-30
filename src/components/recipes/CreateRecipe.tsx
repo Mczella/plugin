@@ -117,7 +117,7 @@ const CreateRecipe = () => {
     >
       <form onSubmit={handleSubmit(onSubmit)}>
         <Box pt={"16px"} pb={"12px"}>
-          <BreadcrumbNav type={"pridat-recept"} />
+          <BreadcrumbNav addRecipe>Recepty</BreadcrumbNav>
           <Flex
             flexDir={"row"}
             justifyContent={"space-between"}
@@ -248,11 +248,18 @@ const CreateRecipe = () => {
 
           <Heading>Ingredience</Heading>
           <Grid templateColumns="repeat(6, 1fr)" gap={"19px"}>
-            <Add
-              text={"Přidat ingredienci"}
-              type={"pridat-ingredienci-recept"}
-              onOpen={onOpen}
-            />
+            <Add text={"Přidat ingredienci"} action={onOpen}>
+              <Image
+                as={"svg"}
+                height="24px"
+                viewBox="0 0 16 16"
+                width="24px"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="#6DA305"
+              >
+                <path d="M13 9H9V13C9 13.55 8.55 14 8 14C7.45 14 7 13.55 7 13V9H3C2.45 9 2 8.55 2 8C2 7.45 2.45 7 3 7H7V3C7 2.45 7.45 2 8 2C8.55 2 9 2.45 9 3V7H13C13.55 7 14 7.45 14 8C14 8.55 13.55 9 13 9Z"></path>
+              </Image>
+            </Add>
             {selectedIngredients.map((selectedIngredient) => (
               <Ingredient
                 key={selectedIngredient.id}

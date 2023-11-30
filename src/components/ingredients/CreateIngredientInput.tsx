@@ -2,7 +2,7 @@ import { Box, Flex, IconButton, Image, Input, Text } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import { useState } from "react";
 import { useOutsideClick } from "../hooks/useOutsideClick.ts";
-import { Preferred, Price, Product, Stock } from "../types.ts";
+import { RohlikProduct } from "../types.ts";
 import { useDebounce } from "@uidotdev/usehooks";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAll } from "../api/api.ts";
@@ -33,10 +33,9 @@ const CreateIngredientInput = () => {
     setIsDropdownOpen(false);
   });
 
-  const handleAddToIngredient = (
-    product: Product & Stock & Price & Preferred,
-  ) => {
-    const productWithPreferred: Product & Stock & Price & Preferred = {
+  const handleAddToIngredient = (product: RohlikProduct) => {
+    console.log({ product });
+    const productWithPreferred: RohlikProduct = {
       ...product,
       preferred: false,
     };
@@ -84,10 +83,10 @@ const CreateIngredientInput = () => {
           >
             {productIds
               .filter(
-                (productId: Product["id"]) =>
+                (productId: RohlikProduct["id"]) =>
                   !selectedProducts.find((product) => product.id === productId),
               )
-              .map((productId: Product["id"]) => {
+              .map((productId: RohlikProduct["id"]) => {
                 const product = productsByIds[productId];
                 return (
                   <Box

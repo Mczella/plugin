@@ -6,14 +6,15 @@ type Props = {
   handleAdd: () => void;
   handleSubtract: () => void;
   amount: number;
+  size: string;
 };
 
-const PlusMinus: FC<Props> = ({ handleAdd, handleSubtract, amount }) => {
+const PlusMinus: FC<Props> = ({ handleAdd, handleSubtract, amount, size }) => {
   return (
     <Flex flexDir={"row"} alignItems={"center"} gap={"13px"}>
       <Box
-        h={"32px"}
-        w={"32px"}
+        h={size}
+        w={size}
         border={"1px solid rgba(0, 0, 0, 0.15)"}
         rounded={"md"}
         display={"flex"}
@@ -26,8 +27,8 @@ const PlusMinus: FC<Props> = ({ handleAdd, handleSubtract, amount }) => {
       </Box>
       <Text fontWeight={"bold"}>{amount}</Text>
       <Box
-        h={"32px"}
-        w={"32px"}
+        h={size}
+        w={size}
         border={"1px solid rgba(0, 0, 0, 0.15)"}
         rounded={"md"}
         display={"flex"}

@@ -2,18 +2,18 @@ import { Flex, Image, Text } from "@chakra-ui/react";
 import { SmallCloseIcon } from "@chakra-ui/icons";
 import { FC } from "react";
 import { useMyStore } from "../store/store.tsx";
-import { IngredientData, Preferred, Price, Product, Stock } from "../types.ts";
 import { useGetRecipePrice } from "../hooks/useGetRecipePrice.tsx";
 import PlusMinus from "../PlusMinus.tsx";
+import { getFilteredIngredientData } from "../utils/utils.ts";
 
 type Props = {
-  recipeInCart: string;
+  recipeInCart: { id: string; amount: number };
 };
 
 const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
-  const { recipes } = useMyStore();
-  const findRecipeById = (recipeInCart: string) =>
-    recipes.find((oneRecipe) => oneRecipe.id === recipeInCart);
+  const { recipes, ingredientsInCart } = useMyStore();
+  const findRecipeById = (recipe: { id: string; amount: number }) =>
+    recipes.find((oneRecipe) => oneRecipe.id === recipe.id);
 
   const specificRecipe = findRecipeById(recipeInCart);
 
@@ -22,34 +22,8 @@ const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
   }
 
   const { productIds, ingredientData } = useGetRecipePrice(specificRecipe);
-  console.log({ specificRecipe });
-  const getFilteredIngredientData = (
-    productIds: { id: string; storeId: string }[],
-    ingredientData: IngredientData | undefined,
-  ) => {
-    console.log({ ingredientData });
-    console.log({ productIds });
-    const products: { [p: string]: (Stock & Price & Preferred & Product)[] } =
-      {};
-    if (ingredientData) {
-      Object.keys(ingredientData.productsByStoreId).forEach((storeId) => {
-        products[storeId] = ingredientData.productsByStoreId[storeId].filter(
-          (product: Product) =>
-            productIds.some(
-              (productId) =>
-                productId.id === product.id && productId.storeId === storeId,
-            ),
-        );
-      });
-    }
-
-    console.log("jjjj", products);
-    return {
-      productsByStoreId: products,
-    };
-  };
-
   const ingredients = getFilteredIngredientData(productIds, ingredientData);
+
   console.log({ ingredients });
   return (
     <>
@@ -63,6 +37,7 @@ const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
       >
         {specificRecipe.name}
       </Text>
+
       {Object.keys(ingredients.productsByStoreId).map((storeId) =>
         ingredients.productsByStoreId[storeId].map((product) => (
           <Flex
@@ -87,7 +62,16 @@ const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
               <Text pl={"4"}>{product.textualAmount}</Text>
             </Flex>
             <Flex flexDir={"row"} alignItems={"center"}>
-              <PlusMinus />
+              <PlusMinus
+                size={"32px"}
+                amount={
+                  ingredientsInCart.find(
+                    (ingredientInCart) => ingredientInCart.id === product.id,
+                  )?.amount || 0
+                }
+                handleAdd={() => console.log(product.id)}
+                handleSubtract={() => console.log("h")}
+              />
               <Text
                 textAlign={"right"}
                 color={"rgb(28, 37, 41)"}
