@@ -3,18 +3,16 @@ import { AddIcon, MinusIcon, SmallCloseIcon } from "@chakra-ui/icons";
 import { useGetRecipePrice } from "../hooks/useGetRecipePrice.tsx";
 import { FC } from "react";
 import { useMyStore } from "../store/store.tsx";
+import { useFindRecipeById } from "../hooks/useFindRecipeById.ts";
 
 type Props = {
   recipe: { id: string; amount: number };
 };
 
 const RecipeInCart: FC<Props> = ({ recipe }) => {
-  const { recipes, deleteRecipeFromCart } = useMyStore();
+  const { deleteRecipeFromCart } = useMyStore();
 
-  const findRecipeById = (recipe: { id: string; amount: number }) =>
-    recipes.find((oneRecipe) => oneRecipe.id === recipe.id);
-
-  const specificRecipe = findRecipeById(recipe);
+  const specificRecipe = useFindRecipeById(recipe);
 
   if (!specificRecipe) {
     throw new Error("Error");
