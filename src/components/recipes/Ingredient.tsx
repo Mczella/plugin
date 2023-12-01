@@ -319,6 +319,7 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
         focusRef={focusRef}
         isOpen={isEditInRecipeOpen}
         onClose={onEditInRecipeClose}
+        id={ingredient.id}
       >
         {step === 1 ? (
           <IngredientModalOne heading={"Upravit ingredienci"} />
@@ -335,6 +336,7 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
         focusRef={focusRef}
         isOpen={isEditOpen}
         onClose={onEditClose}
+        id={ingredient.id}
       >
         {step === 1 ? (
           <IngredientModalOne heading={"Upravit ingredienci"} />

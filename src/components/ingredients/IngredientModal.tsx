@@ -14,6 +14,7 @@ type Props = {
   focusRef: RefObject<HTMLInputElement>;
   children: ReactNode;
   create?: boolean;
+  id?: string;
 };
 
 const IngredientModal: FC<Props> = ({
@@ -21,6 +22,7 @@ const IngredientModal: FC<Props> = ({
   onClose,
   focusRef,
   children,
+  id,
 }) => {
   const {
     editSelectedProducts,
@@ -43,11 +45,14 @@ const IngredientModal: FC<Props> = ({
     selectIngredient(null);
     editName(null);
   };
+  console.log("iddd", id);
 
   useEffect(() => {
-    modalReset();
+    if (id !== undefined) {
+      modalReset();
+    }
   }, [isOpen]);
-
+  console.log("idd", id);
   return (
     <>
       <div ref={modalContainer}></div>
