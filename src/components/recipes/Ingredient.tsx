@@ -288,7 +288,7 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
             fontWeight={"bold"}
             color={"rgb(28, 37, 41)"}
           >
-            {getEditedPrice(totalPrice)}
+            {getEditedPrice(totalPrice)} Kč
           </Text>
         </>
       ) : (
