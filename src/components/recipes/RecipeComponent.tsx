@@ -270,7 +270,9 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
             handleSubtract={handleSubtract}
             amount={getAmount()}
             size={"32px"}
-          />
+          >
+            <Text fontWeight={"bold"}>{getAmount()}</Text>
+          </PlusMinus>
         ) : (
           <Button
             bg="white"
