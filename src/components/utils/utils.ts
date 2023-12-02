@@ -109,3 +109,15 @@ export const getFilteredIngredientData = (
     productsByStoreId: products,
   };
 };
+
+export const getEditedPrice = (totalPrice: number) => {
+  if (totalPrice > 0) {
+    if (totalPrice > 999) {
+      return `${Math.ceil(totalPrice)} Kč`;
+    } else {
+      return `${totalPrice.toFixed(1)} Kč`;
+    }
+  } else {
+    return "Vyprodáno";
+  }
+};
