@@ -4,9 +4,10 @@ import { FC, ReactNode, useRef } from "react";
 type Props = {
   children: ReactNode;
   label: string;
+  show: boolean;
 };
 
-export const ProductTooltip: FC<Props> = ({ children, label }) => {
+export const ProductNeededTooltip: FC<Props> = ({ children, label, show }) => {
   const modalContainer = useRef(null);
 
   return (
@@ -19,12 +20,13 @@ export const ProductTooltip: FC<Props> = ({ children, label }) => {
         hasArrow
         label={label}
         placement="top"
-        isOpen
+        isOpen={show}
         bg="rgb(209, 17, 0)"
         p={"10px"}
         fontSize={"11px"}
         lineHeight={1.4}
         borderRadius={"4px"}
+        textAlign={"center"}
         boxShadow={"rgba(0, 0, 0, 0.51) 1px 2px 4px 0px"}
         mb={"5px"}
       >
