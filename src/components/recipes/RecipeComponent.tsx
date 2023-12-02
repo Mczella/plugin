@@ -139,8 +139,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
               V košíku máte <br />
               <Text as={"b"}>{getAmount()} ks</Text> za{" "}
               <Text as={"b"}>
-                {Number(getEditedPrice(totalPrice).replace(/\D/g, "")) *
-                  getAmount()}{" "}
+                {parseFloat(getEditedPrice(totalPrice) as string) * getAmount()}{" "}
                 Kč
               </Text>
             </Text>

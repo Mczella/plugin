@@ -113,9 +113,9 @@ export const getFilteredIngredientData = (
 export const getEditedPrice = (totalPrice: number) => {
   if (totalPrice > 0) {
     if (totalPrice > 999) {
-      return `${Math.ceil(totalPrice)} Kč`;
+      return Math.ceil(totalPrice);
     } else {
-      return `${totalPrice.toFixed(1)} Kč`;
+      return totalPrice.toFixed(1);
     }
   } else {
     return "Vyprodáno";
