@@ -1,10 +1,12 @@
-import { Button, Skeleton, Stack } from "@chakra-ui/react";
+import { Button, Skeleton, Stack, Text } from "@chakra-ui/react";
 import Ingredient from "../recipes/Ingredient.tsx";
 import { useGetIngredientPrice } from "../hooks/useGetIngredientPrice.tsx";
 import PlusMinus from "../PlusMinus.tsx";
 import { FC } from "react";
 import { NewIngredient, RohlikProduct } from "../types.ts";
 import { useMyStore } from "../store/store.tsx";
+import { useGetAmountOfIngredientUsedInRecipes } from "../hooks/useGetAmountOfIngredientUsedInRecipes.ts";
+import { ProductTooltip } from "../ProductTooltip.tsx";
 
 type Props = {
   ingredient: NewIngredient;
@@ -51,6 +53,7 @@ const Product: FC<Props> = ({ ingredient }) => {
   const { ingredients, ingredientsInCart, addIngredientToCart } = useMyStore();
   const { productInfo, totalPrice } = useGetIngredientPrice(ingredient);
   const productDetails = productInfo[0];
+  const neededAmount = useGetAmountOfIngredientUsedInRecipes(ingredient);
 
   if (productInfo.length === 0) {
     return;
@@ -62,6 +65,19 @@ const Product: FC<Props> = ({ ingredient }) => {
     ingredientsInCart,
     productDetails.storeId,
   );
+
+  const getInflection = () => {
+    if (neededAmount && neededAmount === 1) {
+      return "kus";
+    } else if (neededAmount && neededAmount < 5) {
+      return "kusy";
+    } else {
+      return "kusů";
+    }
+  };
+
+  const amountOfProduct = getInflection();
+  const label = `Pro recept ve vašem košíku potřebujete ${neededAmount} ${amountOfProduct} tohoto produktu.`;
 
   return (
     <Skeleton isLoaded={productInfo.length !== 0}>
@@ -94,7 +110,51 @@ const Product: FC<Props> = ({ ingredient }) => {
               )
             }
             size={"32px"}
-          />
+          >
+            {neededAmount &&
+            neededAmount > productInCart.cartItem.amountInCart ? (
+              <ProductTooltip label={label}>
+                <Text fontWeight={"bold"}>
+                  {productInCart.cartItem.amountInCart}
+                </Text>
+              </ProductTooltip>
+            ) : (
+              <Text fontWeight={"bold"}>
+                {productInCart.cartItem.amountInCart}
+              </Text>
+            )}
+          </PlusMinus>
+        ) : neededAmount ? (
+          <ProductTooltip label={label}>
+            <Button
+              mb={"30px"}
+              key={ingredient.id}
+              bg="white"
+              color="black"
+              border="1px solid rgba(0, 0, 0, 0.15)"
+              height="32px"
+              display="flex"
+              rounded={"lg"}
+              alignItems="center"
+              fontSize={"13px"}
+              fontWeight={"bold"}
+              isDisabled={totalPrice === 0}
+              onClick={() => {
+                addIngredientToCart(
+                  productDetails.name,
+                  productDetails.id,
+                  productDetails.packageInfo.amount,
+                  productDetails.packageInfo.unit,
+                  productDetails.packageInfo.amount,
+                  ingredient.optimize,
+                  ingredient.id,
+                );
+              }}
+              _hover={{ bg: "rgb(87, 130, 4)", color: "white" }}
+            >
+              Do košíku
+            </Button>
+          </ProductTooltip>
         ) : (
           <Button
             mb={"30px"}
