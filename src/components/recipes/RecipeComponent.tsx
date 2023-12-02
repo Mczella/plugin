@@ -13,6 +13,8 @@ import { NewRecipe } from "../types.ts";
 import { useGetRecipePrice } from "../hooks/useGetRecipePrice.tsx";
 import { FC } from "react";
 import PlusMinus from "../PlusMinus.tsx";
+import { getEditedPrice } from "../utils/utils.ts";
+import { ProductBoughtTooltip } from "../ProductBoughtTooltip.tsx";
 
 type Props = {
   recipe: NewRecipe;
@@ -30,6 +32,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
     useGetRecipePrice(recipe);
   const pricePerPortion = totalPrice / recipe.portion;
   const priceBeforeSale = totalPrice + saved;
+  const show = recipesInCart.some((item) => recipe.id === item.id);
 
   const getPriceBeforeSale = () => {
     if (totalPrice > 0) {
@@ -40,18 +43,6 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
       }
     } else {
       return null;
-    }
-  };
-
-  const getEditedPrice = () => {
-    if (totalPrice > 0) {
-      if (totalPrice > 999) {
-        return `${Math.ceil(totalPrice)} Kč`;
-      } else {
-        return `${totalPrice.toFixed(1)} Kč`;
-      }
-    } else {
-      return "Vyprodáno";
     }
   };
 
@@ -141,66 +132,69 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
         alignItems={"center"}
         cursor={"pointer"}
       >
-        <Box
-          w={"150px"}
-          h={"150px"}
-          position={"relative"}
-          pt={"10px"}
-          mt={"20px"}
-        >
-          <Flex
-            minW={"150"}
-            flexDir={"row"}
-            justifyContent={"space-between"}
-            position={"absolute"}
-            top={0}
-          >
-            <Image
-              w={"24px"}
-              // src={
-              //   favorite
-              //     ? "https://www.rohlik.cz/img/icons/icon-favorite-active.svg?v3"
-              //     : "https://www.rohlik.cz/img/icons/icon-favorite.svg?v3"
-              // }
-              src={
-                "https://www.rohlik.cz/img/icons/icon-favorite-active.svg?v3"
-              }
-            />
-            {discount > 0 ? (
-              <Text
-                alignSelf={"center"}
-                py={"5px"}
-                bg={"rgba(209, 17, 0, 0.9)"}
-                color={"white"}
-                fontSize={"16px"}
-                fontWeight={"bold"}
-                px={"5px"}
-              >
-                {`-${Math.ceil(discount)} %`}
+        <ProductBoughtTooltip
+          show={show}
+          label={
+            <Text>
+              V košíku máte <br />
+              <Text as={"b"}>{getAmount()} ks</Text> za{" "}
+              <Text as={"b"}>
+                {Number(getEditedPrice(totalPrice).replace(/\D/g, "")) *
+                  getAmount()}{" "}
+                Kč
               </Text>
-            ) : null}
-          </Flex>
-          <Image
-            src={recipe.image}
-            fallbackSrc="https://icon-library.com/images/placeholder-image-icon/placeholder-image-icon-7.jpg"
-            alt="panda"
-            width="100%"
-          />
-          <Badge
-            position={"absolute"}
-            left={"25%"}
-            bottom={0}
-            bg={"rgba(0, 0, 0, 0.5)"}
-            color={"white"}
-            fontSize={"12px"}
-            fontWeight={600}
-            py={"2px"}
-            px={"7px"}
-            rounded={"2xl"}
+            </Text>
+          }
+        >
+          <Box
+            w={"150px"}
+            h={"150px"}
+            position={"relative"}
+            pt={"10px"}
+            mt={"20px"}
           >
-            {recipe.portion} {getInflection()}
-          </Badge>
-        </Box>
+            <Flex
+              minW={"171px"}
+              justifyContent={"end"}
+              position={"absolute"}
+              top={show ? 33 : 0}
+            >
+              {discount > 0 ? (
+                <Text
+                  alignSelf={"center"}
+                  py={"5px"}
+                  bg={"rgba(209, 17, 0, 0.9)"}
+                  color={"white"}
+                  fontSize={"16px"}
+                  fontWeight={"bold"}
+                  px={"5px"}
+                >
+                  {`-${Math.ceil(discount)} %`}
+                </Text>
+              ) : null}
+            </Flex>
+            <Image
+              src={recipe.image}
+              fallbackSrc="https://icon-library.com/images/placeholder-image-icon/placeholder-image-icon-7.jpg"
+              alt="panda"
+              width="100%"
+            />
+            <Badge
+              position={"absolute"}
+              left={"25%"}
+              bottom={0}
+              bg={"rgba(0, 0, 0, 0.5)"}
+              color={"white"}
+              fontSize={"12px"}
+              fontWeight={600}
+              py={"2px"}
+              px={"7px"}
+              rounded={"2xl"}
+            >
+              {recipe.portion} {getInflection()}
+            </Badge>
+          </Box>
+        </ProductBoughtTooltip>
       </Box>
       <Box maxW={"165px"} display={"contents"}>
         <Text
@@ -252,7 +246,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
             fontWeight={"bold"}
             color={discount > 0 ? "rgb(209, 17, 0)" : "rgb(28, 37, 41)"}
           >
-            {getEditedPrice()}
+            {getEditedPrice(totalPrice)}
           </Text>
         </HStack>
         {/*: <Text></Text>*/}
