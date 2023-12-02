@@ -19,6 +19,7 @@ import IngredientInRecipeButtons from "../ingredients/IngredientInRecipeButtons.
 import IngredientButtons from "../ingredients/IngredientButtons.tsx";
 import IngredientModalOne from "../ingredients/IngredientModalOne.tsx";
 import IngredientModalTwo from "../ingredients/IngredientModalTwo.tsx";
+import { getEditedPrice } from "../utils/utils.ts";
 
 type Props = {
   ingredient: NewIngredient | NewRecipeIngredient;
@@ -287,7 +288,7 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
             fontWeight={"bold"}
             color={"rgb(28, 37, 41)"}
           >
-            {totalPrice.toFixed(1)} Kč
+            {getEditedPrice(totalPrice)}
           </Text>
         </>
       ) : (
@@ -311,7 +312,7 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
             fontSize={"14px"}
             lineHeight={"22px"}
           >
-            {totalPrice.toFixed(1)} Kč
+            {getEditedPrice(totalPrice)} Kč
           </Text>
         </>
       )}
