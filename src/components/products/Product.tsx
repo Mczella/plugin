@@ -6,7 +6,7 @@ import { FC } from "react";
 import { NewIngredient, RohlikProduct } from "../types.ts";
 import { useMyStore } from "../store/store.tsx";
 import { useGetAmountOfIngredientUsedInRecipes } from "../hooks/useGetAmountOfIngredientUsedInRecipes.ts";
-import { ProductTooltip } from "../ProductTooltip.tsx";
+import { ProductNeededTooltip } from "../ProductNeededTooltip.tsx";
 
 type Props = {
   ingredient: NewIngredient;
@@ -111,21 +111,17 @@ const Product: FC<Props> = ({ ingredient }) => {
             }
             size={"32px"}
           >
-            {neededAmount &&
-            neededAmount > productInCart.cartItem.amountInCart ? (
-              <ProductTooltip label={label}>
-                <Text fontWeight={"bold"}>
-                  {productInCart.cartItem.amountInCart}
-                </Text>
-              </ProductTooltip>
-            ) : (
+            <ProductNeededTooltip
+              label={label}
+              show={neededAmount > productInCart.cartItem.amountInCart}
+            >
               <Text fontWeight={"bold"}>
                 {productInCart.cartItem.amountInCart}
               </Text>
-            )}
+            </ProductNeededTooltip>
           </PlusMinus>
-        ) : neededAmount ? (
-          <ProductTooltip label={label}>
+        ) : (
+          <ProductNeededTooltip label={label} show={neededAmount != 0}>
             <Button
               mb={"30px"}
               key={ingredient.id}
@@ -154,36 +150,7 @@ const Product: FC<Props> = ({ ingredient }) => {
             >
               Do košíku
             </Button>
-          </ProductTooltip>
-        ) : (
-          <Button
-            mb={"30px"}
-            key={ingredient.id}
-            bg="white"
-            color="black"
-            border="1px solid rgba(0, 0, 0, 0.15)"
-            height="32px"
-            display="flex"
-            rounded={"lg"}
-            alignItems="center"
-            fontSize={"13px"}
-            fontWeight={"bold"}
-            isDisabled={totalPrice === 0}
-            onClick={() => {
-              addIngredientToCart(
-                productDetails.name,
-                productDetails.id,
-                productDetails.packageInfo.amount,
-                productDetails.packageInfo.unit,
-                productDetails.packageInfo.amount,
-                ingredient.optimize,
-                ingredient.id,
-              );
-            }}
-            _hover={{ bg: "rgb(87, 130, 4)", color: "white" }}
-          >
-            Do košíku
-          </Button>
+          </ProductNeededTooltip>
         )}
       </Stack>
     </Skeleton>
