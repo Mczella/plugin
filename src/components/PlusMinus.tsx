@@ -1,15 +1,22 @@
-import { Box, Flex, Text } from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react";
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 
 type Props = {
   handleAdd: () => void;
   handleSubtract: () => void;
   amount: number;
   size: string;
+  children: ReactNode;
 };
 
-const PlusMinus: FC<Props> = ({ handleAdd, handleSubtract, amount, size }) => {
+const PlusMinus: FC<Props> = ({
+  handleAdd,
+  handleSubtract,
+  amount,
+  size,
+  children,
+}) => {
   return (
     <Flex flexDir={"row"} alignItems={"center"} gap={"13px"} mb={"30px"}>
       <Box
@@ -25,7 +32,7 @@ const PlusMinus: FC<Props> = ({ handleAdd, handleSubtract, amount, size }) => {
       >
         <MinusIcon />
       </Box>
-      <Text fontWeight={"bold"}>{amount}</Text>
+      {children}
       <Box
         h={size}
         w={size}
