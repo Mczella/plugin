@@ -47,12 +47,11 @@ const IngredientModal: FC<Props> = ({
   };
   console.log("iddd", id);
 
-  useEffect(() => {
-    if (id !== undefined) {
-      modalReset();
-    }
-  }, [isOpen]);
+  // useEffect(() => {
+  //   modalReset();
+  // }, [isOpen]);
   console.log("idd", id);
+  console.log(isOpen, "fuck");
   return (
     <>
       <div ref={modalContainer}></div>
