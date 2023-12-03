@@ -1,12 +1,14 @@
-import { Button, Skeleton, Stack, Text } from "@chakra-ui/react";
+import { Button, Skeleton, Stack, Text, useDisclosure } from "@chakra-ui/react";
 import Ingredient from "../recipes/Ingredient.tsx";
 import { useGetIngredientPrice } from "../hooks/useGetIngredientPrice.tsx";
 import PlusMinus from "../PlusMinus.tsx";
-import { FC } from "react";
+import { FC, useRef } from "react";
 import { NewIngredient, RohlikProduct } from "../types.ts";
 import { useMyStore } from "../store/store.tsx";
 import { useGetAmountOfIngredientUsedInRecipes } from "../hooks/useGetAmountOfIngredientUsedInRecipes.ts";
 import { ProductNeededTooltip } from "../ProductNeededTooltip.tsx";
+import { DeleteIngredientAlertDialog } from "./DeleteIngredientAlertDialog.tsx";
+import { getEditedPrice } from "../utils/utils.ts";
 
 type Props = {
   ingredient: NewIngredient;
@@ -54,17 +56,20 @@ const Product: FC<Props> = ({ ingredient }) => {
   const { productInfo, totalPrice } = useGetIngredientPrice(ingredient);
   const productDetails = productInfo[0];
   const neededAmount = useGetAmountOfIngredientUsedInRecipes(ingredient);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const focusRef = useRef(null);
+  console.log("info", productInfo);
 
   if (productInfo.length === 0) {
     return;
   }
-
   const productInCart = getProductFromCart(
     ingredient,
     ingredients,
     ingredientsInCart,
     productDetails.storeId,
   );
+  console.log(productInCart, "jesus");
 
   const getInflection = () => {
     if (neededAmount && neededAmount === 1) {
@@ -82,7 +87,36 @@ const Product: FC<Props> = ({ ingredient }) => {
   return (
     <Skeleton isLoaded={productInfo.length !== 0}>
       <Stack alignItems={"center"}>
-        <Ingredient ingredient={ingredient} />
+        <Ingredient ingredient={ingredient} handleDelete={onOpen}>
+          <>
+            <Text
+              cursor={"pointer"}
+              pt={"10px"}
+              textAlign={"center"}
+              h={"30px"}
+              casing={"capitalize"}
+              display={"-webkit-box"}
+              fontSize={"13px"}
+              lineHeight={1.4}
+              noOfLines={1}
+              maxW={"165px"}
+              textOverflow={"ellipsis"}
+              sx={{ WebkitLineClamp: "1" }}
+            >
+              {ingredient.name}
+            </Text>
+            <Text
+              my={"10px"}
+              textAlign={"center"}
+              fontSize="24px"
+              lineHeight="1.4"
+              fontWeight={"bold"}
+              color={"rgb(28, 37, 41)"}
+            >
+              {getEditedPrice(totalPrice)} Kč
+            </Text>
+          </>
+        </Ingredient>
         {productInCart ? (
           <PlusMinus
             key={productInCart.cartItem.id}
@@ -111,14 +145,20 @@ const Product: FC<Props> = ({ ingredient }) => {
             }
             size={"32px"}
           >
-            <ProductNeededTooltip
-              label={label}
-              show={neededAmount > productInCart.cartItem.amountInCart}
-            >
+            {neededAmount ? (
+              <ProductNeededTooltip
+                label={label}
+                show={neededAmount > productInCart.cartItem.amountInCart}
+              >
+                <Text fontWeight={"bold"}>
+                  {productInCart.cartItem.amountInCart}
+                </Text>
+              </ProductNeededTooltip>
+            ) : (
               <Text fontWeight={"bold"}>
                 {productInCart.cartItem.amountInCart}
               </Text>
-            </ProductNeededTooltip>
+            )}
           </PlusMinus>
         ) : (
           <ProductNeededTooltip label={label} show={neededAmount != 0}>
@@ -153,6 +193,12 @@ const Product: FC<Props> = ({ ingredient }) => {
           </ProductNeededTooltip>
         )}
       </Stack>
+      <DeleteIngredientAlertDialog
+        isOpen={isOpen}
+        cancelRef={focusRef}
+        onClose={onClose}
+        ingredient={ingredient}
+      />
     </Skeleton>
   );
 };
