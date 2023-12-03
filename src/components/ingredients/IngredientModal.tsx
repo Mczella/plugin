@@ -27,7 +27,6 @@ const IngredientModal: FC<Props> = ({
   const {
     editSelectedProducts,
     selectIngredient,
-    name,
     editAmount,
     editName,
     editOptimize,
@@ -56,7 +55,7 @@ const IngredientModal: FC<Props> = ({
     <>
       <div ref={modalContainer}></div>
       <Modal
-        blockScrollOnMount={!name}
+        blockScrollOnMount={false}
         portalProps={{
           containerRef: modalContainer,
         }}
