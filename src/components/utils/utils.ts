@@ -110,7 +110,7 @@ export const getFilteredIngredientData = (
   };
 };
 
-export const getEditedPrice = (totalPrice: number) => {
+export const getEditedPrice = (totalPrice: number): number | string => {
   if (totalPrice > 0) {
     if (totalPrice > 999) {
       return Math.ceil(totalPrice);
@@ -118,6 +118,6 @@ export const getEditedPrice = (totalPrice: number) => {
       return totalPrice.toFixed(1);
     }
   } else {
-    return "Vyprodáno";
+    return 0;
   }
 };
