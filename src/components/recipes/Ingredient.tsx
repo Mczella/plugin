@@ -10,22 +10,21 @@ import { SmallCloseIcon } from "@chakra-ui/icons";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProductsDetails } from "../api/api.ts";
 import { useMyStore } from "../store/store.tsx";
-import { FC, useRef } from "react";
+import { FC, ReactNode, useRef } from "react";
 import { NewIngredient, NewRecipeIngredient } from "../types.ts";
 import IngredientModal from "../ingredients/IngredientModal.tsx";
-import { useGetIngredientPrice } from "../hooks/useGetIngredientPrice.tsx";
-import { useLocation } from "react-router-dom";
 import IngredientInRecipeButtons from "../ingredients/IngredientInRecipeButtons.tsx";
 import IngredientButtons from "../ingredients/IngredientButtons.tsx";
 import IngredientModalOne from "../ingredients/IngredientModalOne.tsx";
 import IngredientModalTwo from "../ingredients/IngredientModalTwo.tsx";
-import { getEditedPrice } from "../utils/utils.ts";
 
 type Props = {
   ingredient: NewIngredient | NewRecipeIngredient;
+  handleDelete: () => void;
+  children: ReactNode;
 };
 
-const Ingredient: FC<Props> = ({ ingredient }) => {
+const Ingredient: FC<Props> = ({ ingredient, handleDelete, children }) => {
   const {
     selectedProducts,
     selectedIngredients,
@@ -47,8 +46,7 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
   if (ingredient == undefined) {
     throw new Error("No selected ingredient.");
   }
-  const location = useLocation();
-  const { totalPrice } = useGetIngredientPrice(ingredient);
+
   const {
     isOpen: isEditInRecipeOpen,
     onOpen: onEditInRecipeOpen,
@@ -162,13 +160,6 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
     }
   };
 
-  const handleDelete = (ingredientId: string) => {
-    const updatedIngredients = selectedIngredients.filter(
-      (ingredient) => ingredient.id !== ingredientId,
-    );
-    editSelectedIngredients(updatedIngredients);
-  };
-
   return (
     <Flex
       mb={"20px"}
@@ -201,21 +192,10 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
           top={"5px"}
           color={"rgb(218, 222, 224)"}
           _hover={{ color: "rgb(87, 130, 4)" }}
-          //TODO: might have to delete the recipe too
-          onClick={
-            isNewRecipeIngredientType(ingredient)
-              ? (e) => {
-                  e.stopPropagation();
-                  handleDelete(ingredient.id);
-                }
-              : (e) => {
-                  e.stopPropagation();
-                  const updatedIngredients = ingredients.filter(
-                    (ing) => ing.id !== ingredient.id,
-                  );
-                  editIngredients(updatedIngredients);
-                }
-          }
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDelete();
+          }}
         />
         <SimpleGrid
           height={"100%"}
@@ -262,60 +242,7 @@ const Ingredient: FC<Props> = ({ ingredient }) => {
           )}
         </SimpleGrid>
       </Flex>
-      {location.pathname === "/produkty" ? (
-        <>
-          <Text
-            cursor={"pointer"}
-            pt={"10px"}
-            textAlign={"center"}
-            h={"30px"}
-            casing={"capitalize"}
-            display={"-webkit-box"}
-            fontSize={"13px"}
-            lineHeight={1.4}
-            noOfLines={1}
-            maxW={"165px"}
-            textOverflow={"ellipsis"}
-            sx={{ "-webkit-line-clamp": "1" }}
-          >
-            {ingredient.name}
-          </Text>
-          <Text
-            my={"10px"}
-            textAlign={"center"}
-            fontSize="24px"
-            lineHeight="1.4"
-            fontWeight={"bold"}
-            color={"rgb(28, 37, 41)"}
-          >
-            {getEditedPrice(totalPrice)} Kč
-          </Text>
-        </>
-      ) : (
-        <>
-          <Text
-            px={"4px"}
-            as={"b"}
-            color={"rgb(28, 37, 41)"}
-            fontSize={"14px"}
-            lineHeight={"22px"}
-            casing={"capitalize"}
-            noOfLines={1}
-            sx={{ "-webkit-line-clamp": "1" }}
-          >
-            {ingredient.name}
-          </Text>
-          <Text
-            textAlign={"center"}
-            px={"4px"}
-            color={"rgb(28, 37, 41)"}
-            fontSize={"14px"}
-            lineHeight={"22px"}
-          >
-            {getEditedPrice(totalPrice)} Kč
-          </Text>
-        </>
-      )}
+      {children}
       <IngredientModal
         focusRef={focusRef}
         isOpen={isEditInRecipeOpen}
