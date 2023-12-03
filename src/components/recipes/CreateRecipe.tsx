@@ -118,6 +118,12 @@ const CreateRecipe = () => {
     }
   }, [selectedIngredients]);
 
+  const handleDelete = (ingredientId: string) => {
+    const updatedIngredients = selectedIngredients.filter(
+      (ingredient) => ingredient.id !== ingredientId,
+    );
+    editSelectedIngredients(updatedIngredients);
+  };
   const handleSave = () => {
     if (name != null && selectedProducts.length > 0) {
       const updatedSelectedProducts = selectedProducts.map(
@@ -305,7 +311,21 @@ const CreateRecipe = () => {
               <Ingredient
                 key={selectedIngredient.id}
                 ingredient={selectedIngredient}
-              />
+                handleDelete={() => handleDelete(selectedIngredient.id)}
+              >
+                <Text
+                  px={"4px"}
+                  as={"b"}
+                  color={"rgb(28, 37, 41)"}
+                  fontSize={"14px"}
+                  lineHeight={"22px"}
+                  casing={"capitalize"}
+                  noOfLines={1}
+                  sx={{ WebkitLineClamp: "1" }}
+                >
+                  {selectedIngredient.name}
+                </Text>
+              </Ingredient>
             ))}
           </Grid>
         </Flex>
