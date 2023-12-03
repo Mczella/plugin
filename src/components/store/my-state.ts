@@ -31,6 +31,7 @@ export interface MyTemporaryUIState {
   selectedIngredient: NewIngredient | null;
   selectedIngredients: NewRecipeIngredient[];
   selectedProducts: RohlikProduct[];
+  selectedBoughtOften: NewIngredient[];
   selectIngredient: (ingredient: NewIngredient | null) => void;
   addToSelectedIngredients: (ingredient: NewRecipeIngredient) => void;
   editSelectedIngredients: (
@@ -38,8 +39,11 @@ export interface MyTemporaryUIState {
   ) => void;
   addToSelectedProducts: (product: RohlikProduct) => void;
   editSelectedProducts: (products: RohlikProduct[] | undefined) => void;
-  deleteSelectedIngredient: (ingredient: NewRecipeIngredient) => void;
   deleteSelectedProduct: (product: RohlikProduct) => void;
+  addToSelectedBoughtOften: (ingredient: NewIngredient) => void;
+  editSelectedBoughtOften: (ingredients: NewIngredient[]) => void;
+  deleteSelectedBoughtOften: (ingredient: NewIngredient) => void;
+  deleteSelectedIngredient: (ingredient: NewRecipeIngredient) => void;
 }
 
 export interface MyRecipesInCartState {
@@ -115,6 +119,7 @@ export const createTemporaryUISlice: StateCreator<
   selectedIngredient: null,
   selectedIngredients: [],
   selectedProducts: [],
+  selectedBoughtOften: [],
   editStep: (step: 1 | 2) => {
     set({
       step: step,
@@ -164,6 +169,23 @@ export const createTemporaryUISlice: StateCreator<
     set({
       selectedProducts: products,
     });
+  },
+  addToSelectedBoughtOften: (ingredient: NewIngredient) => {
+    set((state) => ({
+      selectedBoughtOften: [...state.selectedBoughtOften, ingredient],
+    }));
+  },
+  editSelectedBoughtOften: (ingredients: NewIngredient[] | undefined) => {
+    set({
+      selectedBoughtOften: ingredients,
+    });
+  },
+  deleteSelectedBoughtOften: (ingredient: NewIngredient) => {
+    set((state) => ({
+      selectedBoughtOften: state.selectedBoughtOften.filter(
+        (stateProduct) => stateProduct !== ingredient,
+      ),
+    }));
   },
   deleteSelectedIngredient: (ingredient: NewRecipeIngredient) => {
     set((state) => ({
