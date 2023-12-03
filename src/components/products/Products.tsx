@@ -18,13 +18,21 @@ import { useRef } from "react";
 import IngredientModal from "../ingredients/IngredientModal.tsx";
 import Product from "./Product.tsx";
 import IngredientModalOne from "../ingredients/IngredientModalOne.tsx";
-import IngredientModalTwo from "../ingredients/IngredientModalTwo.tsx";
 import IngredientButtons from "../ingredients/IngredientButtons.tsx";
+import ChosenBoughtOften from "../ingredients/ChosenBoughtOften.tsx";
+import RepeatedGroceriesModal from "../ingredients/BoughtOftenModal.tsx";
+import { BoughtOftenButtons } from "../ingredients/BoughtOftenButtons.tsx";
 
 const Products = () => {
   // const [productArray, setProductArray] = useState<Product["id"][]>([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const focusRef = useRef<HTMLInputElement>(null);
+  const {
+    isOpen: isIngredientsModalOpen,
+    onOpen: onIngredientsModalOpen,
+    onClose: onIngredientsModalClose,
+  } = useDisclosure();
+  const ingredientsFocusRef = useRef<HTMLInputElement>(null);
 
   const { state } = useLocation();
   const navigate = useNavigate();
@@ -35,7 +43,6 @@ const Products = () => {
     ingredients,
     optimize,
     sortBy,
-    step,
   } = useMyStore();
 
   const handleSave = () => {
@@ -105,7 +112,21 @@ const Products = () => {
           </Text>
           <Grid templateColumns="repeat(7, 1fr)" gap="10px">
             <GridItem display="flex" flexDir="column" alignItems="center">
-              <Add text={"Přidat ingredienci"} action={onOpen}>
+              <Add text={"Přidat produkt"} action={onOpen}>
+                <Image
+                  as={"svg"}
+                  height="24px"
+                  viewBox="0 0 16 16"
+                  width="24px"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="#6DA305"
+                >
+                  <path d="M13 9H9V13C9 13.55 8.55 14 8 14C7.45 14 7 13.55 7 13V9H3C2.45 9 2 8.55 2 8C2 7.45 2.45 7 3 7H7V3C7 2.45 7.45 2 8 2C8.55 2 9 2.45 9 3V7H13C13.55 7 14 7.45 14 8C14 8.55 13.55 9 13 9Z"></path>
+                </Image>
+              </Add>
+            </GridItem>
+            <GridItem display="flex" flexDir="column" alignItems="center">
+              <Add text={"Pravidelné nákupy"} action={onIngredientsModalOpen}>
                 <Image
                   as={"svg"}
                   height="24px"
@@ -182,12 +203,25 @@ const Products = () => {
           onClose={onClose}
           create
         >
-          {step === 1 ? (
-            <IngredientModalOne create heading={"Přidat ingredienci"} />
-          ) : (
-            <IngredientModalTwo />
-          )}
+          <IngredientModalOne create heading={"Přidat ingredienci"} />
+
           <IngredientButtons onClose={onClose} handleSave={handleSave} />
+        </IngredientModal>
+        <IngredientModal
+          focusRef={ingredientsFocusRef}
+          isOpen={isIngredientsModalOpen}
+          onClose={onIngredientsModalClose}
+          create
+        >
+          <RepeatedGroceriesModal
+            create
+            heading={"Opakovaně kupované produkty"}
+          />
+          <ChosenBoughtOften />
+          <BoughtOftenButtons
+            onClose={onIngredientsModalClose}
+            handleSave={() => console.log("dont push me")}
+          />
         </IngredientModal>
       </Box>
     </>
