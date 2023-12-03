@@ -33,13 +33,14 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
   const pricePerPortion = totalPrice / recipe.portion;
   const priceBeforeSale = totalPrice + saved;
   const show = recipesInCart.some((item) => recipe.id === item.id);
+  const editedPrice = getEditedPrice(totalPrice);
 
   const getPriceBeforeSale = () => {
     if (totalPrice > 0) {
       if (totalPrice > 999) {
-        return `${Math.ceil(priceBeforeSale)}Kč`;
+        return `${Math.ceil(priceBeforeSale)} Kč`;
       } else {
-        return `${priceBeforeSale.toFixed(1)}Kč`;
+        return `${priceBeforeSale.toFixed(1)} Kč`;
       }
     } else {
       return null;
@@ -92,6 +93,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
       const filteredNeeded = needed?.find(
         (ingredient) => ingredient.id === item.id,
       );
+
       console.log("needed", needed);
       console.log({ filteredNeeded });
       if (filteredIngredient && filteredNeeded && type === "add") {
@@ -139,8 +141,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
               V košíku máte <br />
               <Text as={"b"}>{getAmount()} ks</Text> za{" "}
               <Text as={"b"}>
-                {parseFloat(getEditedPrice(totalPrice) as string) * getAmount()}{" "}
-                Kč
+                {parseFloat(editedPrice as string) * getAmount()} Kč
               </Text>
             </Text>
           }
@@ -208,7 +209,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
           noOfLines={2}
           maxW={"165px"}
           textOverflow={"ellipsis"}
-          sx={{ "-webkit-line-clamp": "2" }}
+          sx={{ WebkitLineClamp: "2" }}
         >
           {recipe.name}
         </Text>
@@ -245,7 +246,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
             fontWeight={"bold"}
             color={discount > 0 ? "rgb(209, 17, 0)" : "rgb(28, 37, 41)"}
           >
-            {getEditedPrice(totalPrice)}
+            {(editedPrice as number) > 0 ? `${editedPrice} Kč` : "Vyprodáno"}
           </Text>
         </HStack>
         {/*: <Text></Text>*/}
