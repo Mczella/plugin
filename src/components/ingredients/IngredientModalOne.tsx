@@ -106,6 +106,7 @@ const IngredientModalOne: FC<Props> = ({ create, heading }) => {
                 textTransform="capitalize"
                 onClick={() => {
                   selectIngredient(ingredient);
+                  console.log(selectedIngredient);
                   editName(null);
                 }}
               >
@@ -139,7 +140,23 @@ const IngredientModalOne: FC<Props> = ({ create, heading }) => {
           </>
         ) : selectedIngredient ? (
           <Flex justifyContent={"center"}>
-            <Ingredient ingredient={selectedIngredient} />
+            <Ingredient
+              ingredient={selectedIngredient}
+              handleDelete={() => selectIngredient(null)}
+            >
+              <Text
+                px={"4px"}
+                as={"b"}
+                color={"rgb(28, 37, 41)"}
+                fontSize={"14px"}
+                lineHeight={"22px"}
+                casing={"capitalize"}
+                noOfLines={1}
+                sx={{ WebkitLineClamp: "1" }}
+              >
+                {selectedIngredient.name}
+              </Text>
+            </Ingredient>
           </Flex>
         ) : null}
       </FormControl>
