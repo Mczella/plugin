@@ -1,10 +1,51 @@
-import { Box, Button, Flex, Link, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useMyStore } from "../store/store.tsx";
 import CheckRecipe from "./CheckRecipe.tsx";
+import { useMutation } from "@tanstack/react-query";
 
 const CheckRecipes = () => {
-  const { recipesInCart } = useMyStore();
+  const { recipesInCart, ingredientsInCart } = useMyStore();
+
+  const mutation = useMutation(
+    async (data: { quantity: number; productId: string }) => {
+      const response = await fetch(
+        "https://www.rohlik.cz/services/frontend-service/v2/cart",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Error posting to cart");
+      }
+
+      return response.json();
+    },
+    {},
+  );
+
+  const handlePostToCart = async (
+    productsDetails: { productId: string; amount: number }[],
+  ) => {
+    for (const productDetail of productsDetails) {
+      try {
+        await mutation.mutateAsync({
+          quantity: productDetail.amount,
+          productId: productDetail.productId,
+        });
+      } catch (error) {
+        console.log(
+          `An error has occurred with ${productDetail.productId}: `,
+          error,
+        );
+      }
+    }
+  };
 
   useEffect(() => {
     const cartWrapper = document.querySelector('[class*="cartWrapper"]');
@@ -18,6 +59,20 @@ const CheckRecipes = () => {
       chat.remove();
     }
   }, []);
+
+  const getProductsInCartDetails = () => {
+    const productDetails: { productId: string; amount: number }[] = [];
+    ingredientsInCart.map((ingredientInCart) =>
+      productDetails.push({
+        productId: ingredientInCart.id,
+        amount: ingredientInCart.amountInCart,
+      }),
+    );
+    return productDetails;
+  };
+
+  const productsDetails = getProductsInCartDetails();
+  console.log(productsDetails);
 
   return (
     <>
@@ -60,26 +115,26 @@ const CheckRecipes = () => {
           >
             Kč za ingredience k receptům
           </Text>
-          <Link
-            style={{ all: "unset" }}
-            href={`https://www.rohlik.cz/objednavka/prehled-kosiku`}
+          <Button
+            h={"40px"}
+            bg={"rgb(109, 163, 5)"}
+            color={"white"}
+            fontSize={"14px"}
+            fontWeight={"600"}
+            lineHeight={"1"}
+            mx={"16px"}
+            my={"12px"}
+            rounded={"xl"}
+            _hover={{ bg: "rgb(87, 130, 4)" }}
+            onClick={async () => {
+              await handlePostToCart(productsDetails);
+              window.location.href =
+                "https://www.rohlik.cz/objednavka/prehled-kosiku";
+            }}
+            disabled={mutation.isLoading}
           >
-            <Button
-              h={"40px"}
-              bg={"rgb(109, 163, 5)"}
-              color={"white"}
-              fontSize={"14px"}
-              fontWeight={"600"}
-              lineHeight={"1"}
-              mx={"16px"}
-              my={"12px"}
-              rounded={"xl"}
-              _hover={{ bg: "rgb(87, 130, 4)" }}
-              // onClick={nahazet veci do kosiku}
-            >
-              Pokračovat k objednávce
-            </Button>
-          </Link>
+            Pokračovat k objednávce
+          </Button>
         </Flex>
       </Box>
     </>
