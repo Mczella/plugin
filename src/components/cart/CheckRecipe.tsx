@@ -43,6 +43,10 @@ const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
             ingredientsInCart.find(
               (ingredientInCart) => ingredientInCart.id === product.id,
             )?.amount || 0;
+          const amountInCart =
+            ingredientsInCart.find(
+              (ingredientInCart) => ingredientInCart.id === product.id,
+            )?.amountInCart || 0;
           return (
             <Flex
               p={"4px 32px 4px 48px"}
@@ -54,7 +58,12 @@ const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
               key={product.id}
             >
               <Flex flexDir={"row"} w={"720px"} alignItems={"center"}>
-                <Image width={"64px"} src={product.image} />
+                <Image
+                  width={"64px"}
+                  maxHeight={"64px"}
+                  objectFit={"contain"}
+                  src={product.image}
+                />
                 <Text
                   color={"rgb(28, 37, 41)"}
                   fontSize={" 14px"}
@@ -71,7 +80,9 @@ const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
                   amount={amount}
                   handleAdd={() => console.log(product.id)}
                   handleSubtract={() => console.log("h")}
-                />
+                >
+                  <Text fontWeight={"bold"}>{amountInCart}</Text>
+                </PlusMinus>
                 <Text
                   textAlign={"right"}
                   color={"rgb(28, 37, 41)"}
@@ -80,8 +91,12 @@ const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
                   minW={"210px"}
                 >
                   {product.sales.length > 0
-                    ? `${product.sales[0].price.amount} ${product.price.currency}`
-                    : `${product.price.amount} ${product.price.currency}`}
+                    ? `${product.sales[0].price.amount * amountInCart} ${
+                        product.price.currency
+                      }`
+                    : `${product.price.amount * amountInCart} ${
+                        product.price.currency
+                      }`}
                 </Text>
                 <SmallCloseIcon
                   ml={"40px"}
