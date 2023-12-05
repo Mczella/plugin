@@ -4,11 +4,16 @@ import { useMyStore } from "../store/store.tsx";
 
 type Props = {
   onClose: () => void;
-  handleSave: () => void;
+  disable: boolean;
 };
 
-export const BoughtOftenButtons: FC<Props> = ({ onClose, handleSave }) => {
-  const { selectedBoughtOften } = useMyStore();
+export const BoughtOftenButtons: FC<Props> = ({ onClose, disable }) => {
+  const {
+    selectedBoughtOften,
+    editIngredientsBoughtOften,
+    editSelectedBoughtOften,
+    ingredientsBoughtOften,
+  } = useMyStore();
 
   return (
     <ButtonGroup
@@ -27,7 +32,10 @@ export const BoughtOftenButtons: FC<Props> = ({ onClose, handleSave }) => {
         display="flex"
         alignItems="center"
         rounded={"xl"}
-        onClick={onClose}
+        onClick={() => {
+          editSelectedBoughtOften(ingredientsBoughtOften);
+          onClose();
+        }}
       >
         Zrušit
       </Button>
@@ -40,9 +48,12 @@ export const BoughtOftenButtons: FC<Props> = ({ onClose, handleSave }) => {
         rounded={"xl"}
         boxShadow={"md"}
         color={"white"}
-        isDisabled={selectedBoughtOften.length === 0}
+        isDisabled={selectedBoughtOften.length === 0 || disable}
         _hover={{ bg: "rgb(87, 130, 4)" }}
-        onClick={handleSave}
+        onClick={() => {
+          editIngredientsBoughtOften(selectedBoughtOften);
+          onClose();
+        }}
       >
         Uložit
       </Button>
