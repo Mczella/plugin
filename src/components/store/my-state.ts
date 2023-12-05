@@ -10,6 +10,18 @@ export interface MyIngredientsState {
   ingredients: NewIngredient[];
   addIngredient: (ingredient: NewIngredient) => void;
   editIngredients: (ingredients: NewIngredient[]) => void;
+  ingredientsBoughtOften: {
+    id: NewIngredient["id"];
+    amount: number;
+    frequency: number;
+  }[];
+  editIngredientsBoughtOften: (
+    ingredients: {
+      id: NewIngredient["id"];
+      amount: number;
+      frequency: number;
+    }[],
+  ) => void;
 }
 
 export interface MyRecipesState {
@@ -31,7 +43,11 @@ export interface MyTemporaryUIState {
   selectedIngredient: NewIngredient | null;
   selectedIngredients: NewRecipeIngredient[];
   selectedProducts: RohlikProduct[];
-  selectedBoughtOften: NewIngredient[];
+  selectedBoughtOften: {
+    id: NewIngredient["id"];
+    amount: number;
+    frequency: number;
+  }[];
   selectIngredient: (ingredient: NewIngredient | null) => void;
   addToSelectedIngredients: (ingredient: NewRecipeIngredient) => void;
   editSelectedIngredients: (
@@ -40,9 +56,18 @@ export interface MyTemporaryUIState {
   addToSelectedProducts: (product: RohlikProduct) => void;
   editSelectedProducts: (products: RohlikProduct[] | undefined) => void;
   deleteSelectedProduct: (product: RohlikProduct) => void;
-  addToSelectedBoughtOften: (ingredient: NewIngredient) => void;
-  editSelectedBoughtOften: (ingredients: NewIngredient[]) => void;
-  deleteSelectedBoughtOften: (ingredient: NewIngredient) => void;
+  addToSelectedBoughtOften: (ingredient: {
+    id: NewIngredient["id"];
+    amount: number;
+    frequency: number;
+  }) => void;
+  editSelectedBoughtOften: (
+    ingredients: {
+      id: NewIngredient["id"];
+      amount: number;
+      frequency: number;
+    }[],
+  ) => void;
   deleteSelectedIngredient: (ingredient: NewRecipeIngredient) => void;
 }
 
@@ -79,6 +104,7 @@ export const createIngredientsSlice: StateCreator<
   MyIngredientsState
 > = (set) => ({
   ingredients: [],
+  ingredientsBoughtOften: [],
   addIngredient: (ingredient: NewIngredient) => {
     set((state) => ({
       ingredients: [...state.ingredients, ingredient],
@@ -87,6 +113,15 @@ export const createIngredientsSlice: StateCreator<
   editIngredients: (ingredients: NewIngredient[]) => {
     set({
       ingredients: ingredients,
+    });
+  },
+  editIngredientsBoughtOften: (
+    ingredients:
+      | { id: NewIngredient["id"]; amount: number; frequency: number }[]
+      | undefined,
+  ) => {
+    set({
+      ingredientsBoughtOften: ingredients,
     });
   },
 });
@@ -170,22 +205,23 @@ export const createTemporaryUISlice: StateCreator<
       selectedProducts: products,
     });
   },
-  addToSelectedBoughtOften: (ingredient: NewIngredient) => {
+  addToSelectedBoughtOften: (ingredient: {
+    id: NewIngredient["id"];
+    amount: number;
+    frequency: number;
+  }) => {
     set((state) => ({
       selectedBoughtOften: [...state.selectedBoughtOften, ingredient],
     }));
   },
-  editSelectedBoughtOften: (ingredients: NewIngredient[] | undefined) => {
+  editSelectedBoughtOften: (
+    ingredients:
+      | { id: NewIngredient["id"]; amount: number; frequency: number }[]
+      | undefined,
+  ) => {
     set({
       selectedBoughtOften: ingredients,
     });
-  },
-  deleteSelectedBoughtOften: (ingredient: NewIngredient) => {
-    set((state) => ({
-      selectedBoughtOften: state.selectedBoughtOften.filter(
-        (stateProduct) => stateProduct !== ingredient,
-      ),
-    }));
   },
   deleteSelectedIngredient: (ingredient: NewRecipeIngredient) => {
     set((state) => ({
