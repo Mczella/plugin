@@ -14,18 +14,20 @@ import { useMyStore } from "../store/store.tsx";
 import { Icon } from "@chakra-ui/icons";
 import BreadcrumbNav from "../BreadcrumbNav.tsx";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import IngredientModal from "../ingredients/IngredientModal.tsx";
 import Product from "./Product.tsx";
 import IngredientModalOne from "../ingredients/IngredientModalOne.tsx";
 import IngredientButtons from "../ingredients/IngredientButtons.tsx";
 import ChosenBoughtOften from "../ingredients/ChosenBoughtOften.tsx";
-import RepeatedGroceriesModal from "../ingredients/BoughtOftenModal.tsx";
+import BoughtOftenModal from "../ingredients/BoughtOftenModal.tsx";
 import { BoughtOftenButtons } from "../ingredients/BoughtOftenButtons.tsx";
+import { BoughtOftenSuggestion } from "./BoughtOftenSuggestion.tsx";
 
 const Products = () => {
   // const [productArray, setProductArray] = useState<Product["id"][]>([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [disable, setDisable] = useState(false);
   const focusRef = useRef<HTMLInputElement>(null);
   const {
     isOpen: isIngredientsModalOpen,
@@ -43,6 +45,7 @@ const Products = () => {
     ingredients,
     optimize,
     sortBy,
+    ingredientsBoughtOften,
   } = useMyStore();
 
   const handleSave = () => {
@@ -167,6 +170,24 @@ const Products = () => {
               {state.error}
             </Text>
           )}
+          <Heading mt={"24px"} mb={"16px"} fontSize={"20px"} fontWeight={900}>
+            Nepotřebujete doplnit zásoby?
+          </Heading>
+          <Grid
+            templateColumns="repeat(5, 1fr)"
+            gap="10px"
+            border={"1px solid rgb(242, 244, 244)"}
+            borderRadius={"4px"}
+            py={"20px"}
+          >
+            {ingredientsBoughtOften.map((ingredient) => (
+              <BoughtOftenSuggestion
+                key={ingredient.id}
+                ingredient={ingredient}
+              />
+            ))}
+          </Grid>
+
           <Heading
             mt={"24px"}
             mb={"24px"}
@@ -213,14 +234,11 @@ const Products = () => {
           onClose={onIngredientsModalClose}
           create
         >
-          <RepeatedGroceriesModal
-            create
-            heading={"Opakovaně kupované produkty"}
-          />
-          <ChosenBoughtOften />
+          <BoughtOftenModal create heading={"Opakovaně kupované produkty"} />
+          <ChosenBoughtOften setDisable={setDisable} />
           <BoughtOftenButtons
+            disable={disable}
             onClose={onIngredientsModalClose}
-            handleSave={() => console.log("dont push me")}
           />
         </IngredientModal>
       </Box>
