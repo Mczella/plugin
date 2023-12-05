@@ -30,8 +30,9 @@ export const BoughtOftenSuggestion: FC<Props> = ({ ingredient }) => {
       !foundPurchase ||
       (foundPurchase &&
         foundPurchase.matchingItem &&
-        foundPurchase.matchingItem.amount -
-          dailyNeed * foundPurchase.daysDifference <=
+        (foundPurchase.matchingItem.amount -
+          dailyNeed * foundPurchase.daysDifference) /
+          dailyNeed <=
           2)
     );
   };
