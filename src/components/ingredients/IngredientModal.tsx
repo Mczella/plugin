@@ -46,11 +46,11 @@ const IngredientModal: FC<Props> = ({
   };
   console.log("iddd", id);
 
-  // useEffect(() => {
-  //   modalReset();
-  // }, [isOpen]);
+  useEffect(() => {
+    return () => modalReset();
+  }, [isOpen]);
   console.log("idd", id);
-  console.log(isOpen, "fuck");
+
   return (
     <>
       <div ref={modalContainer}></div>
