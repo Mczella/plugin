@@ -18,7 +18,7 @@ const PlusMinus: FC<Props> = ({
   children,
 }) => {
   return (
-    <Flex flexDir={"row"} alignItems={"center"} gap={"13px"} mb={"30px"}>
+    <Flex flexDir={"row"} alignItems={"center"} gap={"13px"}>
       <Box
         h={size}
         w={size}
