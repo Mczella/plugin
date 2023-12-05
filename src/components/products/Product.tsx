@@ -12,6 +12,7 @@ import { getEditedPrice } from "../utils/utils.ts";
 
 type Props = {
   ingredient: NewIngredient;
+  boughtOften?: boolean;
 };
 
 const getProductFromCart = (
@@ -51,7 +52,7 @@ const getProductFromCart = (
   };
 };
 
-const Product: FC<Props> = ({ ingredient }) => {
+const Product: FC<Props> = ({ ingredient, boughtOften }) => {
   const { ingredients, ingredientsInCart, addIngredientToCart } = useMyStore();
   const { productInfo, totalPrice } = useGetIngredientPrice(ingredient);
   const productDetails = productInfo[0];
@@ -63,6 +64,8 @@ const Product: FC<Props> = ({ ingredient }) => {
   if (productInfo.length === 0) {
     return;
   }
+
+  console.log(totalPrice, "total");
   const productInCart = getProductFromCart(
     ingredient,
     ingredients,
@@ -86,7 +89,7 @@ const Product: FC<Props> = ({ ingredient }) => {
 
   return (
     <Skeleton isLoaded={productInfo.length !== 0}>
-      <Stack alignItems={"center"}>
+      <Stack alignItems={"center"} mb={boughtOften ? 0 : "30px"}>
         <Ingredient ingredient={ingredient} handleDelete={onOpen}>
           <>
             <Text
@@ -163,7 +166,7 @@ const Product: FC<Props> = ({ ingredient }) => {
         ) : (
           <ProductNeededTooltip label={label} show={neededAmount != 0}>
             <Button
-              mb={"30px"}
+              mb={boughtOften ? 0 : "30px"}
               key={ingredient.id}
               bg="white"
               color="black"
