@@ -38,7 +38,6 @@ export const fetchProducts = async (productIds: string[]) => {
   return response.json();
 };
 
-// DO NOT FETCH, only needed when getting ingredients for a specific recipe before checkout
 export const fetchStock = async (productIds: string[]) => {
   const url = `https://www.rohlik.cz/api/v1/products/stock?products=${productIds.join(
     "&products=",
@@ -110,7 +109,9 @@ export const fetchAll = async (query: string) => {
   return { productsByIds, productIds };
 };
 
-export const fetchProductsDetails = async (productIds: RohlikProduct["id"][]) => {
+export const fetchProductsDetails = async (
+  productIds: RohlikProduct["id"][],
+) => {
   const [products, prices, stock] = await Promise.all([
     fetchProducts(productIds),
     fetchPrices(productIds),
@@ -183,3 +184,51 @@ export const fetchPriceAndStock = async (ingredientIds: {
 
 // Nutricni hodnoty
 // https://www.rohlik.cz/api/v1/products/1317317/composition
+
+export const fetchDeliveredIds = async () => {
+  const url = `https://www.rohlik.cz/api/v3/orders/delivered?offset=0&limit=30`;
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Error");
+  }
+
+  return await response.json();
+};
+
+export const fetchDeliveredProduct = async (id: number) => {
+  const url = `https://www.rohlik.cz/api/v3/orders/${id}`;
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Error");
+  }
+
+  return await response.json();
+};
+
+export const fetchDelivered = async () => {
+  const ids: { id: number }[] = await fetchDeliveredIds();
+
+  const deliveredProducts = ids.map((product) =>
+    fetchDeliveredProduct(product.id),
+  );
+
+  try {
+    return await Promise.all(deliveredProducts);
+  } catch (error) {
+    console.log("An error has occured: ", error);
+  }
+};
