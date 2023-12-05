@@ -185,8 +185,8 @@ export const fetchPriceAndStock = async (ingredientIds: {
 // Nutricni hodnoty
 // https://www.rohlik.cz/api/v1/products/1317317/composition
 
-export const fetchDeliveredIds = async () => {
-  const url = `https://www.rohlik.cz/api/v3/orders/delivered?offset=0&limit=30`;
+export const fetchDeliveredIds = async (limit: number) => {
+  const url = `https://www.rohlik.cz/api/v3/orders/delivered?offset=0&limit=${limit}`;
 
   const response = await fetch(url, {
     method: "GET",
@@ -220,7 +220,7 @@ export const fetchDeliveredProduct = async (id: number) => {
 };
 
 export const fetchDelivered = async () => {
-  const ids: { id: number }[] = await fetchDeliveredIds();
+  const ids: { id: number }[] = await fetchDeliveredIds(30);
 
   const deliveredProducts = ids.map((product) =>
     fetchDeliveredProduct(product.id),
