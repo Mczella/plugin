@@ -14,7 +14,7 @@ type Props = {
   heading: string;
 };
 
-const RepeatedGroceries: FC<Props> = ({ heading }) => {
+const BoughtOftenModal: FC<Props> = ({ heading }) => {
   const { ingredients, selectedBoughtOften, addToSelectedBoughtOften } =
     useMyStore();
   const [currentIngredients, setCurrentIngredients] =
@@ -72,7 +72,11 @@ const RepeatedGroceries: FC<Props> = ({ heading }) => {
                 textTransform="capitalize"
                 onClick={() => {
                   console.log(selectedBoughtOften, "cau");
-                  addToSelectedBoughtOften(ingredient);
+                  addToSelectedBoughtOften({
+                    id: ingredient.id,
+                    amount: 1,
+                    frequency: 0,
+                  });
                 }}
               >
                 {ingredient.name}
@@ -85,4 +89,4 @@ const RepeatedGroceries: FC<Props> = ({ heading }) => {
   );
 };
 
-export default RepeatedGroceries;
+export default BoughtOftenModal;
