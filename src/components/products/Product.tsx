@@ -1,4 +1,4 @@
-import { Button, Skeleton, Stack, Text, useDisclosure } from "@chakra-ui/react";
+import { Button, Flex, Stack, Text, useDisclosure } from "@chakra-ui/react";
 import Ingredient from "../recipes/Ingredient.tsx";
 import { useGetIngredientPrice } from "../hooks/useGetIngredientPrice.tsx";
 import PlusMinus from "../PlusMinus.tsx";
@@ -88,8 +88,13 @@ const Product: FC<Props> = ({ ingredient, boughtOften }) => {
   const label = `Pro recept ve vašem košíku potřebujete ${neededAmount} ${amountOfProduct} tohoto produktu.`;
 
   return (
-    <Skeleton isLoaded={productInfo.length !== 0}>
-      <Stack alignItems={"center"} mb={boughtOften ? 0 : "30px"}>
+    <Flex justifyContent={"center"} sx={{ scrollSnapAlign: "start" }}>
+      <Stack
+        alignItems={"center"}
+        mb={boughtOften ? 0 : "30px"}
+        flexBasis={"20%"}
+        w={"165px"}
+      >
         <Ingredient ingredient={ingredient} handleDelete={onOpen}>
           <>
             <Text
@@ -202,7 +207,7 @@ const Product: FC<Props> = ({ ingredient, boughtOften }) => {
         onClose={onClose}
         ingredient={ingredient}
       />
-    </Skeleton>
+    </Flex>
   );
 };
 

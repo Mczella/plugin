@@ -173,9 +173,19 @@ const Products = () => {
           <Heading mt={"24px"} mb={"16px"} fontSize={"20px"} fontWeight={900}>
             Nepotřebujete doplnit zásoby?
           </Heading>
-          <Grid
-            templateColumns="repeat(5, 1fr)"
-            gap="10px"
+          <Flex
+            w="full"
+            overflow="auto"
+            scrollBehavior={"smooth"}
+            pos="relative"
+            sx={{
+              overflowX: "scroll",
+              scrollSnapType: "x mandatory",
+              "::-webkit-scrollbar": {
+                width: 0,
+                height: 0,
+              },
+            }}
             border={"1px solid rgb(242, 244, 244)"}
             borderRadius={"4px"}
             py={"20px"}
@@ -186,7 +196,7 @@ const Products = () => {
                 ingredient={ingredient}
               />
             ))}
-          </Grid>
+          </Flex>
 
           <Heading
             mt={"24px"}
@@ -212,11 +222,11 @@ const Products = () => {
           {/*    </Radio>*/}
           {/*  </Stack>*/}
           {/*</RadioGroup>*/}
-          <Grid templateColumns="repeat(5, 1fr)" gap="10px">
+          <Flex flexDir={"row"} flexWrap={"wrap"} w={"full"}>
             {ingredients.map((ingredient) => (
               <Product ingredient={ingredient} key={ingredient.id} />
             ))}
-          </Grid>
+          </Flex>
         </Flex>
         <IngredientModal
           focusRef={focusRef}
