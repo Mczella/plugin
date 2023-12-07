@@ -109,3 +109,15 @@ export const getFilteredIngredientData = (
     productsByStoreId: products,
   };
 };
+
+export const getEditedPrice = (totalPrice: number): number | string => {
+  if (totalPrice > 0) {
+    if (totalPrice > 999) {
+      return Math.ceil(totalPrice);
+    } else {
+      return totalPrice.toFixed(1);
+    }
+  } else {
+    return 0;
+  }
+};

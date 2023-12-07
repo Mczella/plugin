@@ -21,10 +21,11 @@ import { useMyStore } from "../store/store.tsx";
 import Ingredient from "../recipes/Ingredient.tsx";
 
 type Props = {
-  type: "create" | "createInRecipe" | "edit" | "editInRecipe";
+  create?: boolean;
+  heading: string;
 };
 
-const IngredientModalOne: FC<Props> = ({ type }) => {
+const IngredientModalOne: FC<Props> = ({ create, heading }) => {
   const {
     ingredients,
     selectedIngredient,
@@ -50,7 +51,7 @@ const IngredientModalOne: FC<Props> = ({ type }) => {
     );
 
     setCurrentIngredients(filteredIngredients);
-  }, [selectedIngredients, selectedIngredient]);
+  }, [selectedIngredients, selectedIngredient, ingredients]);
 
   return (
     <>
@@ -60,7 +61,7 @@ const IngredientModalOne: FC<Props> = ({ type }) => {
         lineHeight={"32px"}
         mb={"24px"}
       >
-        Přidat ingredienci
+        {heading}
       </Heading>
       <FormControl isRequired>
         <AutoComplete
@@ -86,7 +87,7 @@ const IngredientModalOne: FC<Props> = ({ type }) => {
             placeholder={
               name != null
                 ? name
-                : type === "create"
+                : create
                 ? "Vytvořte novou ingredienci..."
                 : "Vyberte z vašich ingrediencí..."
             }
@@ -105,6 +106,7 @@ const IngredientModalOne: FC<Props> = ({ type }) => {
                 textTransform="capitalize"
                 onClick={() => {
                   selectIngredient(ingredient);
+                  console.log(selectedIngredient);
                   editName(null);
                 }}
               >
@@ -120,6 +122,7 @@ const IngredientModalOne: FC<Props> = ({ type }) => {
                 ) : selectedIngredients.some(
                     (selected) => selected.name === value,
                   ) ? (
+                  //TODO disable
                   <Text>Tato ingredience již existuje.</Text>
                 ) : (
                   <Text>
@@ -137,7 +140,23 @@ const IngredientModalOne: FC<Props> = ({ type }) => {
           </>
         ) : selectedIngredient ? (
           <Flex justifyContent={"center"}>
-            <Ingredient ingredient={selectedIngredient} />
+            <Ingredient
+              ingredient={selectedIngredient}
+              handleDelete={() => selectIngredient(null)}
+            >
+              <Text
+                px={"4px"}
+                as={"b"}
+                color={"rgb(28, 37, 41)"}
+                fontSize={"14px"}
+                lineHeight={"22px"}
+                casing={"capitalize"}
+                noOfLines={1}
+                sx={{ WebkitLineClamp: "1" }}
+              >
+                {selectedIngredient.name}
+              </Text>
+            </Ingredient>
           </Flex>
         ) : null}
       </FormControl>

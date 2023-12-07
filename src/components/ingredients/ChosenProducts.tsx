@@ -1,7 +1,7 @@
 import { Badge, Box, Button, Grid, Image, Text } from "@chakra-ui/react";
 import { SmallCloseIcon } from "@chakra-ui/icons";
 import { useMyStore } from "../store/store.tsx";
-import {RohlikProduct} from "../types.ts";
+import { RohlikProduct } from "../types.ts";
 
 const ChosenProducts = () => {
   const { selectedProducts, editSelectedProducts, deleteSelectedProduct } =
@@ -83,7 +83,7 @@ const ChosenProducts = () => {
             noOfLines={2}
             maxW={"165px"}
             textOverflow={"ellipsis"}
-            sx={{ "-webkit-line-clamp": "2" }}
+            sx={{ WebkitLineClamp: "2" }}
           >
             {product.name}
           </Text>

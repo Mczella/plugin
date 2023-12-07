@@ -21,6 +21,10 @@ const CreateIngredientInput = () => {
     productsByIds: {},
   };
 
+  const dropdownRef = useOutsideClick(() => {
+    setIsDropdownOpen(false);
+  });
+
   if (isError) {
     return <div>Error</div>;
   }
@@ -28,10 +32,6 @@ const CreateIngredientInput = () => {
   const handleFocus = (): void => {
     setIsDropdownOpen(true);
   };
-
-  const dropdownRef = useOutsideClick(() => {
-    setIsDropdownOpen(false);
-  });
 
   const handleAddToIngredient = (product: RohlikProduct) => {
     console.log({ product });

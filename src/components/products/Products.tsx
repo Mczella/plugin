@@ -14,18 +14,57 @@ import { useMyStore } from "../store/store.tsx";
 import { Icon } from "@chakra-ui/icons";
 import BreadcrumbNav from "../BreadcrumbNav.tsx";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import IngredientModal from "../ingredients/IngredientModal.tsx";
 import Product from "./Product.tsx";
+import IngredientModalOne from "../ingredients/IngredientModalOne.tsx";
+import IngredientButtons from "../ingredients/IngredientButtons.tsx";
+import ChosenBoughtOften from "../ingredients/ChosenBoughtOften.tsx";
+import BoughtOftenModal from "../ingredients/BoughtOftenModal.tsx";
+import { BoughtOftenButtons } from "../ingredients/BoughtOftenButtons.tsx";
+import { BoughtOftenSuggestion } from "./BoughtOftenSuggestion.tsx";
 
 const Products = () => {
-  const { ingredients } = useMyStore();
   // const [productArray, setProductArray] = useState<Product["id"][]>([]);
-  const { isOpen: isOpen, onOpen: onOpen, onClose: onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [disable, setDisable] = useState(false);
   const focusRef = useRef<HTMLInputElement>(null);
+  const {
+    isOpen: isIngredientsModalOpen,
+    onOpen: onIngredientsModalOpen,
+    onClose: onIngredientsModalClose,
+  } = useDisclosure();
+  const ingredientsFocusRef = useRef<HTMLInputElement>(null);
 
   const { state } = useLocation();
   const navigate = useNavigate();
+  const {
+    addIngredient,
+    selectedProducts,
+    name,
+    ingredients,
+    optimize,
+    sortBy,
+    ingredientsBoughtOften,
+  } = useMyStore();
+
+  const handleSave = () => {
+    if (name != null && selectedProducts.length > 0) {
+      const updatedSelectedProducts = selectedProducts.map(
+        ({ id, preferred }) => ({ id, preferred }),
+      );
+      const newIngredientCreate = {
+        name,
+        selectedProducts: updatedSelectedProducts,
+        id: Date.now().toString(36),
+        unit: selectedProducts[0].unit,
+        optimize,
+        sortBy,
+      };
+      addIngredient(newIngredientCreate);
+      onClose();
+    }
+  };
 
   return (
     <>
@@ -76,7 +115,21 @@ const Products = () => {
           </Text>
           <Grid templateColumns="repeat(7, 1fr)" gap="10px">
             <GridItem display="flex" flexDir="column" alignItems="center">
-              <Add text={"Přidat ingredienci"} action={onOpen}>
+              <Add text={"Přidat produkt"} action={onOpen}>
+                <Image
+                  as={"svg"}
+                  height="24px"
+                  viewBox="0 0 16 16"
+                  width="24px"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="#6DA305"
+                >
+                  <path d="M13 9H9V13C9 13.55 8.55 14 8 14C7.45 14 7 13.55 7 13V9H3C2.45 9 2 8.55 2 8C2 7.45 2.45 7 3 7H7V3C7 2.45 7.45 2 8 2C8.55 2 9 2.45 9 3V7H13C13.55 7 14 7.45 14 8C14 8.55 13.55 9 13 9Z"></path>
+                </Image>
+              </Add>
+            </GridItem>
+            <GridItem display="flex" flexDir="column" alignItems="center">
+              <Add text={"Pravidelné nákupy"} action={onIngredientsModalOpen}>
                 <Image
                   as={"svg"}
                   height="24px"
@@ -117,6 +170,34 @@ const Products = () => {
               {state.error}
             </Text>
           )}
+          <Heading mt={"24px"} mb={"16px"} fontSize={"20px"} fontWeight={900}>
+            Nepotřebujete doplnit zásoby?
+          </Heading>
+          <Flex
+            w="full"
+            overflow="auto"
+            scrollBehavior={"smooth"}
+            pos="relative"
+            sx={{
+              overflowX: "scroll",
+              scrollSnapType: "x mandatory",
+              "::-webkit-scrollbar": {
+                width: 0,
+                height: 0,
+              },
+            }}
+            border={"1px solid rgb(242, 244, 244)"}
+            borderRadius={"4px"}
+            py={"20px"}
+          >
+            {ingredientsBoughtOften.map((ingredient) => (
+              <BoughtOftenSuggestion
+                key={ingredient.id}
+                ingredient={ingredient}
+              />
+            ))}
+          </Flex>
+
           <Heading
             mt={"24px"}
             mb={"24px"}
@@ -141,18 +222,35 @@ const Products = () => {
           {/*    </Radio>*/}
           {/*  </Stack>*/}
           {/*</RadioGroup>*/}
-          <Grid templateColumns="repeat(5, 1fr)" gap="10px">
+          <Flex flexDir={"row"} flexWrap={"wrap"} w={"full"}>
             {ingredients.map((ingredient) => (
               <Product ingredient={ingredient} key={ingredient.id} />
             ))}
-          </Grid>
+          </Flex>
         </Flex>
         <IngredientModal
           focusRef={focusRef}
           isOpen={isOpen}
           onClose={onClose}
-          type={"create"}
-        />
+          create
+        >
+          <IngredientModalOne create heading={"Přidat ingredienci"} />
+
+          <IngredientButtons onClose={onClose} handleSave={handleSave} />
+        </IngredientModal>
+        <IngredientModal
+          focusRef={ingredientsFocusRef}
+          isOpen={isIngredientsModalOpen}
+          onClose={onIngredientsModalClose}
+          create
+        >
+          <BoughtOftenModal create heading={"Opakovaně kupované produkty"} />
+          <ChosenBoughtOften setDisable={setDisable} />
+          <BoughtOftenButtons
+            disable={disable}
+            onClose={onIngredientsModalClose}
+          />
+        </IngredientModal>
       </Box>
     </>
   );

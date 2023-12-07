@@ -1,28 +1,22 @@
 import { Button, ButtonGroup, Text } from "@chakra-ui/react";
 import { useMyStore } from "../store/store.tsx";
-import { Dispatch, FC, SetStateAction } from "react";
+import { FC } from "react";
 import { NewIngredient, NewRecipeIngredient } from "../types.ts";
 import useIsUnitError from "../hooks/useIsUnitError.ts";
 
 type Props = {
-  step: number;
-  setStep: Dispatch<SetStateAction<number>>;
-  modalReset: () => void;
+  onClose: () => void;
   handleSave: () => void;
-  id: string | undefined;
+  id?: string;
 };
-const IngredientInRecipeButtons: FC<Props> = ({
-  step,
-  setStep,
-  modalReset,
-  handleSave,
-  id,
-}) => {
+const IngredientInRecipeButtons: FC<Props> = ({ onClose, handleSave, id }) => {
   const {
     selectedProducts,
     selectedIngredient,
     addToSelectedIngredients,
     amount,
+    step,
+    editStep,
   } = useMyStore();
   const error = useIsUnitError();
   const handleIngredientClick = (ingredient: NewIngredient) => {
@@ -31,7 +25,7 @@ const IngredientInRecipeButtons: FC<Props> = ({
       amount: amount,
     };
     addToSelectedIngredients(newSelectedIngredient);
-    modalReset();
+    onClose();
   };
 
   return step === 1 ? (
@@ -59,7 +53,7 @@ const IngredientInRecipeButtons: FC<Props> = ({
           alignItems="center"
           rounded={"xl"}
           onClick={() => {
-            modalReset();
+            onClose();
           }}
         >
           Zrušit
@@ -91,7 +85,7 @@ const IngredientInRecipeButtons: FC<Props> = ({
             (!selectedIngredient && selectedProducts.length === 0) || error
           }
           _hover={{ bg: "rgb(87, 130, 4)" }}
-          onClick={() => setStep(2)}
+          onClick={() => editStep(2)}
         >
           Pokračovat
         </Button>
@@ -114,7 +108,7 @@ const IngredientInRecipeButtons: FC<Props> = ({
         display="flex"
         alignItems="center"
         rounded={"xl"}
-        onClick={() => modalReset()}
+        onClick={() => onClose()}
       >
         Zrušit
       </Button>
@@ -128,7 +122,7 @@ const IngredientInRecipeButtons: FC<Props> = ({
         display="flex"
         alignItems="center"
         rounded={"xl"}
-        onClick={() => setStep(1)}
+        onClick={() => editStep(1)}
       >
         Zpět
       </Button>

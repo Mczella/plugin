@@ -4,12 +4,12 @@ import { useMyStore } from "../store/store.tsx";
 import useIsUnitError from "../hooks/useIsUnitError.ts";
 
 type Props = {
-  modalReset: () => void;
+  onClose: () => void;
   handleSave: () => void;
-  id: string | undefined;
+  id?: string;
 };
 
-const IngredientButtons: FC<Props> = ({ modalReset, handleSave, id }) => {
+const IngredientButtons: FC<Props> = ({ onClose, handleSave, id }) => {
   const { selectedProducts } = useMyStore();
   const error = useIsUnitError();
 
@@ -38,7 +38,7 @@ const IngredientButtons: FC<Props> = ({ modalReset, handleSave, id }) => {
           alignItems="center"
           rounded={"xl"}
           onClick={() => {
-            modalReset();
+            onClose();
           }}
         >
           Zrušit
