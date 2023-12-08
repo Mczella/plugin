@@ -20,7 +20,7 @@ type Props = {
   recipe: NewRecipe;
 };
 
-const selector = (state: Store) => {
+const selector = (state: State) => {
   return {
     recipesInCart: state.recipesInCart,
     deleteRecipeFromCart: state.deleteRecipeFromCart,
