@@ -8,7 +8,7 @@ import {
   Image,
   Text,
 } from "@chakra-ui/react";
-import { useMyStore } from "../store/store.tsx";
+import { Store, useMyStore } from "../store/store.tsx";
 import { NewRecipe } from "../types.ts";
 import { useGetRecipePrice } from "../hooks/useGetRecipePrice.tsx";
 import { FC } from "react";
@@ -20,14 +20,25 @@ type Props = {
   recipe: NewRecipe;
 };
 
+const selector = (state: Store) => {
+  return {
+    recipesInCart: state.recipesInCart,
+    deleteRecipeFromCart: state.deleteRecipeFromCart,
+    addRecipeToCart: state.addRecipeToCart,
+    addIngredientToCart: state.addIngredientToCart,
+    ingredients: state.ingredients,
+  };
+};
+
 const RecipeComponent: FC<Props> = ({ recipe }) => {
+  // extracted selector
   const {
     recipesInCart,
     deleteRecipeFromCart,
     addRecipeToCart,
     addIngredientToCart,
     ingredients,
-  } = useMyStore();
+  } = useMyStore(selector);
   const { totalPrice, needed, productIds, saved, discount } =
     useGetRecipePrice(recipe);
   const pricePerPortion = totalPrice / recipe.portion;
@@ -49,7 +60,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
 
   const getAmount = () => {
     const currentRecipe = recipesInCart.find(
-      (recipeInCart) => recipeInCart.id === recipe.id,
+      (recipeInCart) => recipeInCart.id === recipe.id
     );
 
     if (!currentRecipe) {
@@ -75,7 +86,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
   const handleSubtract = () => {
     filterIngredient("subtract");
     const currentRecipe = recipesInCart.find(
-      (recipeInCart) => recipeInCart.id === recipe.id,
+      (recipeInCart) => recipeInCart.id === recipe.id
     );
 
     if (currentRecipe && currentRecipe.amount === 1) {
@@ -88,10 +99,10 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
   const filterIngredient = (type: string) => {
     productIds.forEach((item) => {
       const filteredIngredient = ingredients.find(
-        (ingredient) => ingredient.id === item.storeId,
+        (ingredient) => ingredient.id === item.storeId
       );
       const filteredNeeded = needed?.find(
-        (ingredient) => ingredient.id === item.id,
+        (ingredient) => ingredient.id === item.id
       );
 
       console.log("needed", needed);
@@ -104,7 +115,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
           filteredNeeded.unit,
           filteredNeeded.packageAmount,
           filteredIngredient.optimize,
-          filteredIngredient.id,
+          filteredIngredient.id
         );
       } else if (filteredIngredient && filteredNeeded && type === "subtract") {
         addIngredientToCart(
@@ -114,7 +125,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
           filteredNeeded.unit,
           filteredNeeded.packageAmount,
           filteredIngredient.optimize,
-          filteredIngredient.id,
+          filteredIngredient.id
         );
       }
     });

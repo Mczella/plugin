@@ -22,6 +22,7 @@ import { useRef, useState } from "react";
 import { NewRecipe } from "../types.ts";
 
 const Recipes = () => {
+  // inlined selector
   const { recipes, ingredientsInCart, ingredients } = useMyStore((state) => ({
     recipes: state.recipes,
     ingredientsInCart: state.ingredientsInCart,

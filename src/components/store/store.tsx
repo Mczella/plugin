@@ -67,9 +67,10 @@ export const createMyStore = () =>
     )
   );
 
-type Store = ReturnType<typeof createMyStore>;
+type StoreInstance = ReturnType<typeof createMyStore>;
+export type Store = ExtractState<StoreInstance>;
 
-export const StoreContext = createContext<Store | null>(null);
+export const StoreContext = createContext<StoreInstance | null>(null);
 
 // Types inspired by https://github.com/arvinxx/zustand-utils/tree/master
 // If I recall correctly the main reason for this jugglery is to trying to please Vite
@@ -82,17 +83,12 @@ export type UseContextStore<S extends StoreApi<unknown>> = {
 
 type ExtractState<S> = S extends { getState: () => infer T } ? T : never;
 
-export const useMyStore: UseContextStore<Store> = <
-  StateSlice = ExtractState<Store>,
->(
-  selector?: (state: ExtractState<Store>) => StateSlice
+export const useMyStore: UseContextStore<StoreInstance> = (
+  selector?: (state: Store) => Store
 ) => {
   const store = useContext(StoreContext);
 
   if (!store) throw new Error("useMyStore must be used within a StoreProvider");
 
-  return useStore(
-    store,
-    selector as (state: ExtractState<Store>) => StateSlice
-  );
+  return useStore(store, selector as (state: Store) => Store);
 };
