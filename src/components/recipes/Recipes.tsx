@@ -11,7 +11,8 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import Add from "../Add.tsx";
-import { useMyStore, usePurgeStorage } from "../store/store.tsx";
+import { useMyStore } from "../store/store.tsx";
+import { usePurgeStorage } from "../store/hooks.ts";
 import RecipeComponent from "./RecipeComponent.tsx";
 import { Icon } from "@chakra-ui/icons";
 import BreadcrumbNav from "../BreadcrumbNav.tsx";
@@ -21,7 +22,11 @@ import { useRef, useState } from "react";
 import { NewRecipe } from "../types.ts";
 
 const Recipes = () => {
-  const { recipes, ingredientsInCart, ingredients } = useMyStore();
+  const { recipes, ingredientsInCart, ingredients } = useMyStore((state) => ({
+    recipes: state.recipes,
+    ingredientsInCart: state.ingredientsInCart,
+    ingredients: state.ingredients,
+  }));
   const {
     isOpen: isPopupOpen,
     onOpen: onPopupOpen,
@@ -43,7 +48,7 @@ const Recipes = () => {
       unit: string;
       packageAmount: number;
     },
-    remainingAmount: number,
+    remainingAmount: number
   ) => {
     const findIngredientById = (ingredientId: string) =>
       ingredients.find((ingredient) => ingredient.id === ingredientId);
@@ -56,11 +61,11 @@ const Recipes = () => {
             recipeIngredientId.selectedProducts.some(
               (id) =>
                 id.id === ingredient.id &&
-                recipeIngredient.amount! <= remainingAmount,
+                recipeIngredient.amount! <= remainingAmount
             )
           );
-        },
-      ),
+        }
+      )
     );
 
     setFilteredRecipes(filtered);
@@ -68,7 +73,7 @@ const Recipes = () => {
 
   const getRemainingAmount = (
     packageAmount: number,
-    ingredientAmount: number,
+    ingredientAmount: number
   ): number => {
     const packageSize = Number(packageAmount.toFixed(1));
     let remainingAmount = packageSize - ingredientAmount;
@@ -194,8 +199,8 @@ const Recipes = () => {
             const remainingAmount: number = Number(
               getRemainingAmount(
                 ingredient.packageAmount,
-                ingredient.amount,
-              ).toFixed(1),
+                ingredient.amount
+              ).toFixed(1)
             );
 
             if (remainingAmount !== 0 && ingredient.optimize) {

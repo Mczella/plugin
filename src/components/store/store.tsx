@@ -1,23 +1,20 @@
-import {
-  useEffect,
-  useState,
-  useCallback,
-  createContext,
-  useContext,
-} from "react";
-import { createStore, useStore } from "zustand";
+import { createContext, useContext } from "react";
+import { StateCreator, StoreApi, createStore, useStore } from "zustand";
 import { StateStorage, persist, createJSONStorage } from "zustand/middleware";
 import {
-  // MyState,
-  createIngredientsSlice,
   createRecipesInCartSlice,
   createRecipesSlice,
   createTemporaryUISlice,
-  MyIngredientsState,
   MyRecipesInCartState,
   MyRecipesState,
   MyTemporaryUIState,
 } from "./my-state.ts";
+import { createIngredientsSlice } from "./ingredients.ts";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ExtractSliceState<T> = T extends StateCreator<any, [], [], infer R>
+  ? R
+  : never;
 
 const storage: StateStorage = {
   getItem: async (name: string): Promise<string | null> => {
@@ -36,82 +33,66 @@ const storage: StateStorage = {
   },
 };
 
-// type State = MyState;
+export const createMyStore = () =>
+  createStore<
+    ExtractSliceState<typeof createIngredientsSlice> &
+      MyRecipesState &
+      MyRecipesInCartState &
+      MyTemporaryUIState
+  >()(
+    persist(
+      (...a) => ({
+        ...createIngredientsSlice(...a),
+        ...createRecipesSlice(...a),
+        ...createRecipesInCartSlice(...a),
+        ...createTemporaryUISlice(...a),
+      }),
+      {
+        name: "rohlik-storage",
+        storage: createJSONStorage(() => storage),
+        skipHydration: false,
+        onRehydrateStorage: () => {
+          console.log("hydration starts");
 
-export const store = createStore<
-  MyIngredientsState &
-    MyRecipesState &
-    MyRecipesInCartState &
-    MyTemporaryUIState
->()(
-  persist(
-    (...a) => ({
-      ...createIngredientsSlice(...a),
-      ...createRecipesSlice(...a),
-      ...createRecipesInCartSlice(...a),
-      ...createTemporaryUISlice(...a),
-    }),
-    {
-      name: "rohlik-storage",
-      storage: createJSONStorage(() => storage),
-      skipHydration: false,
-      onRehydrateStorage: () => {
-        console.log("hydration starts");
+          // optional
+          return (_, error) => {
+            if (error) {
+              console.log("an error happened during hydration", error);
+            } else {
+              console.log("hydration finished", _);
+            }
+          };
+        },
+      }
+    )
+  );
 
-        // optional
-        return (_, error) => {
-          if (error) {
-            console.log("an error happened during hydration", error);
-          } else {
-            console.log("hydration finished", _);
-          }
-        };
-      },
-    },
-  ),
-);
+type Store = ReturnType<typeof createMyStore>;
 
-export const StoreContext = createContext(store);
+export const StoreContext = createContext<Store | null>(null);
 
-export function useBytesInUse() {
-  const [bytesInUse, setBytesInUse] = useState<number>(0);
+// Types inspired by https://github.com/arvinxx/zustand-utils/tree/master
+// If I recall correctly the main reason for this jugglery is to trying to please Vite
+// to avoid errors where changes in store weren't propagated correctly
+// it might be interesting to revisit this if future because using plain `create` vs `createStore` might be enough
+export type UseContextStore<S extends StoreApi<unknown>> = {
+  (): ExtractState<S>;
+  <U>(selector: (state: ExtractState<S>) => U): U;
+};
 
-  useEffect(() => {
-    chrome.storage.local.onChanged.addListener(getBytesInUse);
+type ExtractState<S> = S extends { getState: () => infer T } ? T : never;
 
-    function getBytesInUse() {
-      chrome.storage.local.getBytesInUse((bytes) => {
-        setBytesInUse(bytes);
-      });
-    }
-
-    return () => {
-      chrome.storage.local.onChanged.removeListener(getBytesInUse);
-    };
-  }, []);
-
-  return bytesInUse;
-}
-export function usePurgeStorage() {
-  return useCallback(() => {
-    store.persist.clearStorage();
-    store.setState({
-      ingredients: [],
-      recipes: [],
-      recipesInCart: [],
-      name: null,
-      amount: 0,
-      selectedIngredients: [],
-      selectedProducts: [],
-      selectedIngredient: null,
-      ingredientsInCart: [],
-      selectedBoughtOften: [],
-      ingredientsBoughtOften: [],
-    });
-  }, []);
-}
-
-export function useMyStore() {
+export const useMyStore: UseContextStore<Store> = <
+  StateSlice = ExtractState<Store>,
+>(
+  selector?: (state: ExtractState<Store>) => StateSlice
+) => {
   const store = useContext(StoreContext);
-  return useStore(store);
-}
+
+  if (!store) throw new Error("useMyStore must be used within a StoreProvider");
+
+  return useStore(
+    store,
+    selector as (state: ExtractState<Store>) => StateSlice
+  );
+};

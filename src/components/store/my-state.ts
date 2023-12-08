@@ -6,24 +6,6 @@ import {
   RohlikProduct,
 } from "../types.ts";
 
-export interface MyIngredientsState {
-  ingredients: NewIngredient[];
-  addIngredient: (ingredient: NewIngredient) => void;
-  editIngredients: (ingredients: NewIngredient[]) => void;
-  ingredientsBoughtOften: {
-    id: NewIngredient["id"];
-    amount: number;
-    frequency: number;
-  }[];
-  editIngredientsBoughtOften: (
-    ingredients: {
-      id: NewIngredient["id"];
-      amount: number;
-      frequency: number;
-    }[],
-  ) => void;
-}
-
 export interface MyRecipesState {
   recipes: NewRecipe[];
   addRecipe: (newRecipe: NewRecipe) => void;
@@ -51,7 +33,7 @@ export interface MyTemporaryUIState {
   selectIngredient: (ingredient: NewIngredient | null) => void;
   addToSelectedIngredients: (ingredient: NewRecipeIngredient) => void;
   editSelectedIngredients: (
-    ingredients: NewRecipeIngredient[] | undefined,
+    ingredients: NewRecipeIngredient[] | undefined
   ) => void;
   addToSelectedProducts: (product: RohlikProduct) => void;
   editSelectedProducts: (products: RohlikProduct[] | undefined) => void;
@@ -66,7 +48,7 @@ export interface MyTemporaryUIState {
       id: NewIngredient["id"];
       amount: number;
       frequency: number;
-    }[],
+    }[]
   ) => void;
   deleteSelectedIngredient: (ingredient: NewRecipeIngredient) => void;
 }
@@ -90,41 +72,12 @@ export interface MyRecipesInCartState {
     unit: string,
     packageAmount: number,
     optimize: boolean,
-    storeId: string,
+    storeId: string
   ) => void;
   deleteIngredientFromCart: (ingredient: string) => void;
   addRecipeToCart: (recipe: { id: string; amount: number }) => void;
   deleteRecipeFromCart: (recipe: string) => void;
 }
-
-export const createIngredientsSlice: StateCreator<
-  MyIngredientsState,
-  [],
-  [],
-  MyIngredientsState
-> = (set) => ({
-  ingredients: [],
-  ingredientsBoughtOften: [],
-  addIngredient: (ingredient: NewIngredient) => {
-    set((state) => ({
-      ingredients: [...state.ingredients, ingredient],
-    }));
-  },
-  editIngredients: (ingredients: NewIngredient[]) => {
-    set({
-      ingredients: ingredients,
-    });
-  },
-  editIngredientsBoughtOften: (
-    ingredients:
-      | { id: NewIngredient["id"]; amount: number; frequency: number }[]
-      | undefined,
-  ) => {
-    set({
-      ingredientsBoughtOften: ingredients,
-    });
-  },
-});
 
 export const createRecipesSlice: StateCreator<
   MyRecipesState,
@@ -217,7 +170,7 @@ export const createTemporaryUISlice: StateCreator<
   editSelectedBoughtOften: (
     ingredients:
       | { id: NewIngredient["id"]; amount: number; frequency: number }[]
-      | undefined,
+      | undefined
   ) => {
     set({
       selectedBoughtOften: ingredients,
@@ -226,14 +179,14 @@ export const createTemporaryUISlice: StateCreator<
   deleteSelectedIngredient: (ingredient: NewRecipeIngredient) => {
     set((state) => ({
       selectedIngredients: state.selectedIngredients.filter(
-        (stateIngredient) => stateIngredient !== ingredient,
+        (stateIngredient) => stateIngredient !== ingredient
       ),
     }));
   },
   deleteSelectedProduct: (product: RohlikProduct) => {
     set((state) => ({
       selectedProducts: state.selectedProducts.filter(
-        (stateProduct) => stateProduct !== product,
+        (stateProduct) => stateProduct !== product
       ),
     }));
   },
@@ -254,11 +207,11 @@ export const createRecipesInCartSlice: StateCreator<
     unit: string,
     packageAmount: number,
     optimize: boolean,
-    storeId: string,
+    storeId: string
   ) => {
     set((state) => {
       const existingIngredient = state.ingredientsInCart.find(
-        (ingredient) => ingredient.id === id,
+        (ingredient) => ingredient.id === id
       );
       const amountInCart = Math.ceil(amount / packageAmount);
 
@@ -269,7 +222,7 @@ export const createRecipesInCartSlice: StateCreator<
         if (newAmount <= 0) {
           return {
             ingredientsInCart: state.ingredientsInCart.filter(
-              (ingredient) => ingredient.id !== id,
+              (ingredient) => ingredient.id !== id
             ),
           };
         }
@@ -282,7 +235,7 @@ export const createRecipesInCartSlice: StateCreator<
                   amount: newAmount,
                   amountInCart: calculatedAmount,
                 }
-              : ingredient,
+              : ingredient
           ),
         };
       } else {
@@ -307,21 +260,21 @@ export const createRecipesInCartSlice: StateCreator<
   deleteIngredientFromCart: (ingredient: string) => {
     set((state) => ({
       ingredientsInCart: state.ingredientsInCart.filter(
-        (item) => item.id !== ingredient,
+        (item) => item.id !== ingredient
       ),
     }));
   },
   addRecipeToCart: (newRecipe: { id: string; amount: number }) => {
     set((state) => {
       const existingRecipe = state.recipesInCart.some(
-        (recipe) => recipe.id === newRecipe.id,
+        (recipe) => recipe.id === newRecipe.id
       );
       if (existingRecipe) {
         return {
           recipesInCart: state.recipesInCart.map((recipe) =>
             recipe.id === newRecipe.id
               ? { ...recipe, amount: recipe.amount + newRecipe.amount }
-              : recipe,
+              : recipe
           ),
         };
       } else {
