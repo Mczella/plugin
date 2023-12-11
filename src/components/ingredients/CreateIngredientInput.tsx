@@ -7,6 +7,7 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAll } from "../api/api.ts";
 import { useMyStore } from "../store/store.tsx";
+import { RohlikModal } from "../RohlikModal.tsx";
 
 const CreateIngredientInput = () => {
   const { addToSelectedProducts, selectedProducts } = useMyStore();
@@ -16,11 +17,11 @@ const CreateIngredientInput = () => {
   const { data, isError } = useQuery(["data", debouncedSearch], () =>
     fetchAll(searchQuery),
   );
+  const [isModalOpen, setIsModalOpen] = useState<string | null>(null);
   const { productsByIds, productIds } = data ?? {
     productIds: [],
     productsByIds: {},
   };
-
   const dropdownRef = useOutsideClick(() => {
     setIsDropdownOpen(false);
   });
@@ -106,8 +107,14 @@ const CreateIngredientInput = () => {
                     //   });
                     //   document.body.dispatchEvent(openModal);
                     // }}
-                    onClick={() => console.log("ahoj")}
+                    onClick={() => setIsModalOpen(productId)}
                   >
+                    <RohlikModal
+                      isModalOpen={isModalOpen}
+                      setIsModalOpen={setIsModalOpen}
+                      rohlikId={productId}
+                      isOpen={isModalOpen === productId}
+                    />
                     <Flex
                       flexDir={"row"}
                       alignItems={"center"}
