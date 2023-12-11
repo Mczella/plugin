@@ -1,15 +1,10 @@
 import { createContext, useContext } from "react";
 import { StateCreator, StoreApi, createStore, useStore } from "zustand";
 import { StateStorage, persist, createJSONStorage } from "zustand/middleware";
-import {
-  createRecipesInCartSlice,
-  createRecipesSlice,
-  createTemporaryUISlice,
-  MyRecipesInCartState,
-  MyRecipesState,
-  MyTemporaryUIState,
-} from "./my-state.ts";
+import { createInCartSlice } from "./inCart.ts";
 import { createIngredientsSlice } from "./ingredients.ts";
+import { createRecipesSlice } from "./recipes.ts";
+import { createTemporaryUISlice } from "./temporaryUI.ts";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ExtractSliceState<T> = T extends StateCreator<any, [], [], infer R>
@@ -36,15 +31,15 @@ const storage: StateStorage = {
 export const createMyStore = () =>
   createStore<
     ExtractSliceState<typeof createIngredientsSlice> &
-      MyRecipesState &
-      MyRecipesInCartState &
-      MyTemporaryUIState
+      ExtractSliceState<typeof createRecipesSlice> &
+      ExtractSliceState<typeof createInCartSlice> &
+      ExtractSliceState<typeof createTemporaryUISlice>
   >()(
     persist(
       (...a) => ({
         ...createIngredientsSlice(...a),
         ...createRecipesSlice(...a),
-        ...createRecipesInCartSlice(...a),
+        ...createInCartSlice(...a),
         ...createTemporaryUISlice(...a),
       }),
       {
@@ -63,8 +58,8 @@ export const createMyStore = () =>
             }
           };
         },
-      }
-    )
+      },
+    ),
   );
 
 type Store = ReturnType<typeof createMyStore>;
@@ -84,7 +79,7 @@ export type UseContextStore<S extends StoreApi<unknown>> = {
 type ExtractState<S> = S extends { getState: () => infer T } ? T : never;
 
 export const useMyStore: UseContextStore<Store> = (
-  selector?: (state: State) => State
+  selector?: (state: State) => State,
 ) => {
   const store = useContext(StoreContext);
 

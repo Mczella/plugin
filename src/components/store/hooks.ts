@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
-import { store } from "./store";
+import { useEffect, useState } from "react";
+// import { store } from "./store";
 
 export function useBytesInUse() {
   const [bytesInUse, setBytesInUse] = useState<number>(0);
@@ -20,9 +20,9 @@ export function useBytesInUse() {
 
   return bytesInUse;
 }
-export function usePurgeStorage() {
-  return useCallback(() => {
-    store.persist.clearStorage();
-    window.location.reload();
-  }, []);
-}
+// export function usePurgeStorage() {
+//   return useCallback(() => {
+//     store.persist.clearStorage();
+//     window.location.reload();
+//   }, []);
+// }
