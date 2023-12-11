@@ -7,14 +7,16 @@ import {
   HStack,
   Image,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { Store, useMyStore } from "../store/store.tsx";
+import { State, useMyStore } from "../store/store.tsx";
 import { NewRecipe } from "../types.ts";
 import { useGetRecipePrice } from "../hooks/useGetRecipePrice.tsx";
-import { FC } from "react";
+import { FC, useRef } from "react";
 import PlusMinus from "../PlusMinus.tsx";
 import { getEditedPrice } from "../utils/utils.ts";
 import { ProductBoughtTooltip } from "../ProductBoughtTooltip.tsx";
+import { RecipeModal } from "./RecipeModal.tsx";
 
 type Props = {
   recipe: NewRecipe;
@@ -43,8 +45,12 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
     useGetRecipePrice(recipe);
   const pricePerPortion = totalPrice / recipe.portion;
   const priceBeforeSale = totalPrice + saved;
-  const show = recipesInCart.some((item) => recipe.id === item.id);
+  const show = recipesInCart.some(
+    (item: { id: string }) => recipe.id === item.id,
+  );
   const editedPrice = getEditedPrice(totalPrice);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const cancelRef = useRef<HTMLInputElement>(null);
 
   const getPriceBeforeSale = () => {
     if (totalPrice > 0) {
@@ -60,7 +66,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
 
   const getAmount = () => {
     const currentRecipe = recipesInCart.find(
-      (recipeInCart) => recipeInCart.id === recipe.id
+      (recipeInCart: { id: string }) => recipeInCart.id === recipe.id,
     );
 
     if (!currentRecipe) {
@@ -86,7 +92,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
   const handleSubtract = () => {
     filterIngredient("subtract");
     const currentRecipe = recipesInCart.find(
-      (recipeInCart) => recipeInCart.id === recipe.id
+      (recipeInCart: { id: string }) => recipeInCart.id === recipe.id,
     );
 
     if (currentRecipe && currentRecipe.amount === 1) {
@@ -99,10 +105,10 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
   const filterIngredient = (type: string) => {
     productIds.forEach((item) => {
       const filteredIngredient = ingredients.find(
-        (ingredient) => ingredient.id === item.storeId
+        (ingredient: { id: string }) => ingredient.id === item.storeId,
       );
       const filteredNeeded = needed?.find(
-        (ingredient) => ingredient.id === item.id
+        (ingredient) => ingredient.id === item.id,
       );
 
       console.log("needed", needed);
@@ -115,7 +121,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
           filteredNeeded.unit,
           filteredNeeded.packageAmount,
           filteredIngredient.optimize,
-          filteredIngredient.id
+          filteredIngredient.id,
         );
       } else if (filteredIngredient && filteredNeeded && type === "subtract") {
         addIngredientToCart(
@@ -125,7 +131,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
           filteredNeeded.unit,
           filteredNeeded.packageAmount,
           filteredIngredient.optimize,
-          filteredIngredient.id
+          filteredIngredient.id,
         );
       }
     });
@@ -137,167 +143,172 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
   };
 
   return (
-    <GridItem display="flex" flexDir="column" alignItems="center">
-      <Box
-        maxW={"165px"}
-        display={"flex"}
-        flexDirection={"column"}
-        alignItems={"center"}
-        cursor={"pointer"}
-      >
-        <ProductBoughtTooltip
-          show={show}
-          label={
-            <Text>
-              V košíku máte <br />
-              <Text as={"b"}>{getAmount()} ks</Text> za{" "}
-              <Text as={"b"}>
-                {parseFloat(editedPrice as string) * getAmount()} Kč
-              </Text>
-            </Text>
-          }
-        >
-          <Box
-            w={"150px"}
-            h={"150px"}
-            position={"relative"}
-            pt={"10px"}
-            mt={"20px"}
-          >
-            <Flex
-              minW={"171px"}
-              justifyContent={"end"}
-              position={"absolute"}
-              top={show ? 33 : 0}
-            >
-              {discount > 0 ? (
-                <Text
-                  alignSelf={"center"}
-                  py={"5px"}
-                  bg={"rgba(209, 17, 0, 0.9)"}
-                  color={"white"}
-                  fontSize={"16px"}
-                  fontWeight={"bold"}
-                  px={"5px"}
-                >
-                  {`-${Math.ceil(discount)} %`}
-                </Text>
-              ) : null}
-            </Flex>
-            <Image
-              src={recipe.image}
-              fallbackSrc="https://icon-library.com/images/placeholder-image-icon/placeholder-image-icon-7.jpg"
-              alt="panda"
-              width="100%"
-            />
-            <Badge
-              position={"absolute"}
-              left={"25%"}
-              bottom={0}
-              bg={"rgba(0, 0, 0, 0.5)"}
-              color={"white"}
-              fontSize={"12px"}
-              fontWeight={600}
-              py={"2px"}
-              px={"7px"}
-              rounded={"2xl"}
-            >
-              {recipe.portion} {getInflection()}
-            </Badge>
-          </Box>
-        </ProductBoughtTooltip>
-      </Box>
-      <Box maxW={"165px"} display={"contents"}>
-        <Text
-          cursor={"pointer"}
-          pt={"10px"}
-          textAlign={"center"}
-          h={"60px"}
-          casing={"capitalize"}
-          display={"-webkit-box"}
-          fontSize={"13px"}
-          lineHeight={1.4}
-          noOfLines={2}
+    <>
+      <GridItem display="flex" flexDir="column" alignItems="center">
+        <Box
           maxW={"165px"}
-          textOverflow={"ellipsis"}
-          sx={{ WebkitLineClamp: "2" }}
+          display={"flex"}
+          flexDirection={"column"}
+          alignItems={"center"}
+          cursor={"pointer"}
+          onClick={onOpen}
         >
-          {recipe.name}
-        </Text>
-        {/*{sale? }*/}
-        <Text
-          color={"rgb(209, 17, 0)"}
-          textAlign={"center"}
-          fontSize={"13px"}
-          h={"20px"}
-          fontWeight={600}
-          lineHeight={"22px"}
-        >
-          {discount > 0 ? ` ušetříte ${Math.ceil(discount)} %` : null}
-        </Text>
-        {/*:*/}
-        {/*<Box>*/}
-        {/*  */}
-        {/*</Box>*/}
-        <HStack>
-          {discount > 0 ? (
-            <Text
-              as={"s"}
-              fontSize={"18px"}
-              lineHeight={1.4}
-              fontWeight={"normal"}
-              color={"rgb(28, 37, 41)"}
+          <ProductBoughtTooltip
+            show={show}
+            label={
+              <Text>
+                V košíku máte <br />
+                <Text as={"b"}>{getAmount()} ks</Text> za{" "}
+                <Text as={"b"}>
+                  {parseFloat(editedPrice as string) * getAmount()} Kč
+                </Text>
+              </Text>
+            }
+          >
+            <Box
+              w={"150px"}
+              h={"150px"}
+              position={"relative"}
+              pt={"10px"}
+              mt={"20px"}
             >
-              {getPriceBeforeSale()}
-            </Text>
-          ) : null}
+              <Flex
+                minW={"171px"}
+                justifyContent={"end"}
+                position={"absolute"}
+                top={show ? 33 : 0}
+              >
+                {discount > 0 ? (
+                  <Text
+                    alignSelf={"center"}
+                    py={"5px"}
+                    bg={"rgba(209, 17, 0, 0.9)"}
+                    color={"white"}
+                    fontSize={"16px"}
+                    fontWeight={"bold"}
+                    px={"5px"}
+                  >
+                    {`-${Math.ceil(discount)} %`}
+                  </Text>
+                ) : null}
+              </Flex>
+              <Image
+                src={recipe.image}
+                fallbackSrc="https://icon-library.com/images/placeholder-image-icon/placeholder-image-icon-7.jpg"
+                alt="recipeImage"
+                width="100%"
+              />
+              <Badge
+                position={"absolute"}
+                left={"25%"}
+                bottom={0}
+                bg={"rgba(0, 0, 0, 0.5)"}
+                color={"white"}
+                fontSize={"12px"}
+                fontWeight={600}
+                py={"2px"}
+                px={"7px"}
+                rounded={"2xl"}
+              >
+                {recipe.portion} {getInflection()}
+              </Badge>
+            </Box>
+          </ProductBoughtTooltip>
+        </Box>
+        <Box maxW={"165px"} display={"contents"}>
           <Text
-            fontSize="24px"
-            lineHeight="1.4"
-            fontWeight={"bold"}
-            color={discount > 0 ? "rgb(209, 17, 0)" : "rgb(28, 37, 41)"}
-          >
-            {(editedPrice as number) > 0 ? `${editedPrice} Kč` : "Vyprodáno"}
-          </Text>
-        </HStack>
-        {/*: <Text></Text>*/}
-        <Text
-          mb={"10px"}
-          fontSize="12px"
-          lineHeight={1.4}
-          color={"rgb(93, 103, 108)"}
-        >
-          {`${pricePerPortion.toFixed(1)} Kč/${getInflection()}`}
-        </Text>
-        {recipesInCart.some((item) => recipe.id === item.id) ? (
-          <PlusMinus
-            handleAdd={handleAdd}
-            handleSubtract={handleSubtract}
-            amount={getAmount()}
-            size={"32px"}
-          >
-            <Text fontWeight={"bold"}>{getAmount()}</Text>
-          </PlusMinus>
-        ) : (
-          <Button
-            bg="white"
-            color="black"
-            border="1px solid rgba(0, 0, 0, 0.15)"
-            height="32px"
-            display="flex"
-            rounded={"lg"}
-            alignItems="center"
+            cursor={"pointer"}
+            pt={"10px"}
+            textAlign={"center"}
+            h={"60px"}
+            casing={"capitalize"}
+            display={"-webkit-box"}
             fontSize={"13px"}
-            fontWeight={"bold"}
-            isDisabled={totalPrice === 0}
-            _hover={{ bg: "rgb(87, 130, 4)", color: "white" }}
-            onClick={handleBuy}
+            lineHeight={1.4}
+            noOfLines={2}
+            maxW={"165px"}
+            textOverflow={"ellipsis"}
+            sx={{ WebkitLineClamp: "2" }}
           >
-            Do košíku
-          </Button>
-        )}
-      </Box>
-    </GridItem>
+            {recipe.name}
+          </Text>
+          <Text
+            color={"rgb(209, 17, 0)"}
+            textAlign={"center"}
+            fontSize={"13px"}
+            h={"20px"}
+            fontWeight={600}
+            lineHeight={"22px"}
+          >
+            {discount > 0 ? ` ušetříte ${Math.ceil(discount)} %` : null}
+          </Text>
+          <HStack>
+            {discount > 0 ? (
+              <Text
+                as={"s"}
+                fontSize={"18px"}
+                lineHeight={1.4}
+                fontWeight={"normal"}
+                color={"rgb(28, 37, 41)"}
+              >
+                {getPriceBeforeSale()}
+              </Text>
+            ) : null}
+            <Text
+              fontSize="24px"
+              lineHeight="1.4"
+              fontWeight={"bold"}
+              color={discount > 0 ? "rgb(209, 17, 0)" : "rgb(28, 37, 41)"}
+            >
+              {(editedPrice as number) > 0 ? `${editedPrice} Kč` : "Vyprodáno"}
+            </Text>
+          </HStack>
+          <Text
+            mb={"10px"}
+            fontSize="12px"
+            lineHeight={1.4}
+            color={"rgb(93, 103, 108)"}
+          >
+            {`${pricePerPortion.toFixed(1)} Kč/${getInflection()}`}
+          </Text>
+          {recipesInCart.some(
+            (item: { id: string }) => recipe.id === item.id,
+          ) ? (
+            <PlusMinus
+              handleAdd={handleAdd}
+              handleSubtract={handleSubtract}
+              amount={getAmount()}
+              size={"32px"}
+            >
+              <Text fontWeight={"bold"}>{getAmount()}</Text>
+            </PlusMinus>
+          ) : (
+            <Button
+              bg="white"
+              color="black"
+              border="1px solid rgba(0, 0, 0, 0.15)"
+              height="32px"
+              display="flex"
+              rounded={"lg"}
+              alignItems="center"
+              fontSize={"13px"}
+              fontWeight={"bold"}
+              isDisabled={totalPrice === 0}
+              _hover={{ bg: "rgb(87, 130, 4)", color: "white" }}
+              onClick={handleBuy}
+            >
+              Do košíku
+            </Button>
+          )}
+        </Box>
+      </GridItem>
+      <RecipeModal
+        focusRef={cancelRef}
+        onClose={onClose}
+        isOpen={isOpen}
+        recipe={recipe}
+      />
+    </>
   );
 };
 
