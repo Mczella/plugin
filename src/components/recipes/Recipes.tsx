@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import Add from "../Add.tsx";
 import { useMyStore } from "../store/store.tsx";
-import { usePurgeStorage } from "../store/hooks.ts";
+// import { usePurgeStorage } from "../store/hooks.ts";
 import RecipeComponent from "./RecipeComponent.tsx";
 import { Icon } from "@chakra-ui/icons";
 import BreadcrumbNav from "../BreadcrumbNav.tsx";
@@ -40,7 +40,7 @@ const Recipes = () => {
   const { state } = useLocation();
   console.log("hz", recipes);
   const [filteredRecipes, setFilteredRecipes] = useState<NewRecipe[]>(recipes);
-  const purge = usePurgeStorage();
+  // const purge = usePurgeStorage();
   const handleFilter = (
     ingredient: {
       name: string;
@@ -49,7 +49,7 @@ const Recipes = () => {
       unit: string;
       packageAmount: number;
     },
-    remainingAmount: number
+    remainingAmount: number,
   ) => {
     const findIngredientById = (ingredientId: string) =>
       ingredients.find((ingredient) => ingredient.id === ingredientId);
@@ -62,11 +62,11 @@ const Recipes = () => {
             recipeIngredientId.selectedProducts.some(
               (id) =>
                 id.id === ingredient.id &&
-                recipeIngredient.amount! <= remainingAmount
+                recipeIngredient.amount! <= remainingAmount,
             )
           );
-        }
-      )
+        },
+      ),
     );
 
     setFilteredRecipes(filtered);
@@ -74,7 +74,7 @@ const Recipes = () => {
 
   const getRemainingAmount = (
     packageAmount: number,
-    ingredientAmount: number
+    ingredientAmount: number,
   ): number => {
     const packageSize = Number(packageAmount.toFixed(1));
     let remainingAmount = packageSize - ingredientAmount;
@@ -95,7 +95,7 @@ const Recipes = () => {
       mb={"30px"}
     >
       <BreadcrumbNav>Recepty</BreadcrumbNav>
-      <Button onClick={purge}>purge</Button>
+      {/*<Button onClick={purge}>purge</Button>*/}
       <Button
         onClick={async () => {
           const openModal = new CustomEvent("redux-me", {
@@ -200,8 +200,8 @@ const Recipes = () => {
             const remainingAmount: number = Number(
               getRemainingAmount(
                 ingredient.packageAmount,
-                ingredient.amount
-              ).toFixed(1)
+                ingredient.amount,
+              ).toFixed(1),
             );
 
             if (remainingAmount !== 0 && ingredient.optimize) {
