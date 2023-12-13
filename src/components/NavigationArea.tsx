@@ -1,11 +1,24 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import { ShadowDom } from "./ShadowDom.tsx";
 import { ButtonComponent } from "./ButtonComponent.tsx";
+import { useParentElement } from "./hooks/useParentElement.ts";
 
 const NavigationArea = () => {
-  const [parentElement] = useState(() =>
+  const parentElement = useParentElement(
     document.querySelector(".sectionsItem"),
   );
+
+  const logoElement: HTMLLinkElement | null = document.querySelector("#logo");
+
+  useEffect(() => {
+    if (logoElement) {
+      logoElement.href = "https://www.rohlik.cz/";
+      logoElement.onclick = () => {
+        window.location.href = "https://www.rohlik.cz/";
+      };
+      logoElement.setAttribute("to", "/");
+    }
+  }, [logoElement]);
 
   return parentElement ? (
     <ShadowDom parentElement={parentElement}>

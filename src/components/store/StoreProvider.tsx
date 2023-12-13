@@ -1,16 +1,18 @@
-import { useEffect } from "react";
-import { StoreContext, store } from "./store.tsx";
+import React, { useEffect, useRef } from "react";
+import { StoreContext, createMyStore } from "./store.tsx";
 
 export function GlobalStateProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const store = useRef(createMyStore());
+
   // naive rehydration on visibility change so all tabs have the same state
   useEffect(() => {
     function rehydrate() {
       if (document.visibilityState === "visible") {
-        store.persist.rehydrate();
+        store.current.persist.rehydrate();
       }
     }
 
@@ -22,6 +24,8 @@ export function GlobalStateProvider({
   }, []);
 
   return (
-    <StoreContext.Provider value={store}>{children}</StoreContext.Provider>
+    <StoreContext.Provider value={store.current}>
+      {children}
+    </StoreContext.Provider>
   );
 }

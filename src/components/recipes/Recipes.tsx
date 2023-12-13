@@ -11,7 +11,8 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import Add from "../Add.tsx";
-import { useMyStore, usePurgeStorage } from "../store/store.tsx";
+import { useMyStore } from "../store/store.tsx";
+// import { usePurgeStorage } from "../store/hooks.ts";
 import RecipeComponent from "./RecipeComponent.tsx";
 import { Icon } from "@chakra-ui/icons";
 import BreadcrumbNav from "../BreadcrumbNav.tsx";
@@ -21,7 +22,12 @@ import { useRef, useState } from "react";
 import { NewRecipe } from "../types.ts";
 
 const Recipes = () => {
-  const { recipes, ingredientsInCart, ingredients } = useMyStore();
+  // inlined selector
+  const { recipes, ingredientsInCart, ingredients } = useMyStore((state) => ({
+    recipes: state.recipes,
+    ingredientsInCart: state.ingredientsInCart,
+    ingredients: state.ingredients,
+  }));
   const {
     isOpen: isPopupOpen,
     onOpen: onPopupOpen,
@@ -34,7 +40,7 @@ const Recipes = () => {
   const { state } = useLocation();
   console.log("hz", recipes);
   const [filteredRecipes, setFilteredRecipes] = useState<NewRecipe[]>(recipes);
-  const purge = usePurgeStorage();
+  // const purge = usePurgeStorage();
   const handleFilter = (
     ingredient: {
       name: string;
@@ -89,7 +95,7 @@ const Recipes = () => {
       mb={"30px"}
     >
       <BreadcrumbNav>Recepty</BreadcrumbNav>
-      <Button onClick={purge}>purge</Button>
+      {/*<Button onClick={purge}>purge</Button>*/}
       <Button
         onClick={async () => {
           const openModal = new CustomEvent("redux-me", {

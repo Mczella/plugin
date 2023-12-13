@@ -1,13 +1,11 @@
-import { useState } from "react";
 import { ShadowDom } from "../ShadowDom.tsx";
 import { Flex } from "@chakra-ui/react";
 import { LineChart } from "./LineChart.tsx";
+import { useParentElement } from "../hooks/useParentElement.ts";
 
 export const UserArea = () => {
-  const finishedOrdersElement = document.getElementById("finishedOrders");
-
-  const [parentElement] = useState(
-    () => finishedOrdersElement?.querySelector(".tabs"),
+  const parentElement = useParentElement(
+    document.getElementById("finishedOrders")?.querySelector(".tabs"),
   );
 
   return parentElement ? (
