@@ -4,8 +4,13 @@ import CartButton from "./CartButton.tsx";
 import { useMyStore } from "../store/store.tsx";
 import RecipeInCart from "./RecipeInCart.tsx";
 import { useParentElement } from "../hooks/useParentElement.ts";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 const CartArea = () => {
+  const location = useLocation();
+  console.log(location);
+
   const cart = useParentElement(
     document.querySelector('[data-test*="categoryCart"]'),
   );
@@ -14,6 +19,24 @@ const CartArea = () => {
   );
 
   const parentElement = cart ? cart : empty ? empty : null;
+
+  const cartHeaderElement = document.querySelector('[data-test="cart-header"]');
+  const cartMain = document.querySelector('[data-test="cart"]');
+
+  useEffect(() => {
+    const mouseOverEvent = new MouseEvent("mouseover", {
+      bubbles: true,
+    });
+    if (cartHeaderElement && location.pathname != "/") {
+      cartHeaderElement.dispatchEvent(mouseOverEvent);
+
+      cartMain?.addEventListener("mouseleave", (e) => {
+        if (e.target === cartMain || cartMain.contains(e.target as Node)) {
+          cartHeaderElement.dispatchEvent(mouseOverEvent);
+        }
+      });
+    }
+  }, [cartHeaderElement, cartMain, location]);
 
   const { recipesInCart } = useMyStore();
 
