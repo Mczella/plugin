@@ -41,6 +41,7 @@ const MainArea = () => {
     if (!parentElement) {
       return;
     }
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
 
     parentElement.style.display = location.pathname === "/" ? "block" : "none";
   }, [location, parentElement]);
