@@ -6,25 +6,27 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { SmallCloseIcon } from "@chakra-ui/icons";
+import { EditIcon, SmallCloseIcon } from "@chakra-ui/icons";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProductsDetails } from "../api/api.ts";
 import { useMyStore } from "../store/store.tsx";
-import { FC, ReactNode, useRef } from "react";
+import { FC, ReactNode, useRef, useState } from "react";
 import { NewIngredient, NewRecipeIngredient } from "../types.ts";
 import IngredientModal from "../ingredients/IngredientModal.tsx";
 import IngredientInRecipeButtons from "../ingredients/IngredientInRecipeButtons.tsx";
 import IngredientButtons from "../ingredients/IngredientButtons.tsx";
 import IngredientModalOne from "../ingredients/IngredientModalOne.tsx";
 import IngredientModalTwo from "../ingredients/IngredientModalTwo.tsx";
+import { RohlikModal } from "../RohlikModal.tsx";
 
 type Props = {
   ingredient: NewIngredient | NewRecipeIngredient;
   handleDelete: () => void;
   children: ReactNode;
+  id?: string;
 };
 
-const Ingredient: FC<Props> = ({ ingredient, handleDelete, children }) => {
+const Ingredient: FC<Props> = ({ ingredient, handleDelete, children, id }) => {
   const {
     selectedProducts,
     selectedIngredients,
@@ -62,6 +64,7 @@ const Ingredient: FC<Props> = ({ ingredient, handleDelete, children }) => {
   const arrayOfAllProductIds = ingredient.selectedProducts.map(
     (product) => product.id,
   );
+  const [isModalOpen, setIsModalOpen] = useState<string | null>(null);
   const { data, isError } = useQuery(["data", arrayOfAllProductIds], () =>
     fetchProductsDetails(arrayOfAllProductIds),
   );
@@ -164,12 +167,18 @@ const Ingredient: FC<Props> = ({ ingredient, handleDelete, children }) => {
     <Flex
       mb={"20px"}
       flexDir={"column"}
-      onClick={() => {
-        handleOpenIngredient();
-      }}
+      onClick={id ? () => setIsModalOpen(id) : undefined}
       alignSelf={"center"}
       alignItems={"center"}
     >
+      {id ? (
+        <RohlikModal
+          isModalOpen={isModalOpen}
+          setIsModalOpen={setIsModalOpen}
+          rohlikId={id}
+          isOpen={isModalOpen === id}
+        />
+      ) : null}
       <Flex
         flexDir={"column"}
         justify={"flex-start"}
@@ -185,9 +194,10 @@ const Ingredient: FC<Props> = ({ ingredient, handleDelete, children }) => {
         mb={"8px"}
         p={"10px"}
         alignItems={"center"}
+        position={"relative"}
       >
         <SmallCloseIcon
-          position={"relative"}
+          position={"absolute"}
           alignSelf={"end"}
           top={"5px"}
           color={"rgb(218, 222, 224)"}
@@ -197,6 +207,39 @@ const Ingredient: FC<Props> = ({ ingredient, handleDelete, children }) => {
             handleDelete();
           }}
         />
+        <EditIcon
+          boxSize={19}
+          alignSelf={"flex-start"}
+          m={"5px"}
+          justifyContent={"start"}
+          position={"absolute"}
+          top={"5px"}
+          color={"rgb(218, 222, 224)"}
+          _hover={{ color: "rgb(87, 130, 4)" }}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleOpenIngredient();
+          }}
+        />
+        <Flex
+          minW={"171px"}
+          justifyContent={"end"}
+          position={"absolute"}
+          top={10}
+        >
+          <Text
+            alignSelf={"center"}
+            py={"5px"}
+            bg={"rgba(209, 17, 0, 0.9)"}
+            color={"white"}
+            fontSize={"16px"}
+            fontWeight={"bold"}
+            px={"5px"}
+            mr={"5px"}
+          >
+            {`-77 %`}
+          </Text>
+        </Flex>
         <SimpleGrid
           height={"100%"}
           alignItems={"center"}
