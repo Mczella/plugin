@@ -4,7 +4,6 @@ import {
   Flex,
   Grid,
   Heading,
-  IconButton,
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInput,
@@ -17,7 +16,6 @@ import {
   Image,
   FormControl,
 } from "@chakra-ui/react";
-import { HamburgerIcon } from "@chakra-ui/icons";
 import EditableName from "./EditableName.tsx";
 import BreadcrumbNav from "../BreadcrumbNav.tsx";
 import Add from "../Add.tsx";
@@ -196,15 +194,15 @@ const CreateRecipe = () => {
                 >
                   Uložit recept
                 </Button>
-                <IconButton
-                  aria-label="Select"
-                  boxSize={"40px"}
-                  _hover={{ border: "1px solid rgb(156, 164, 169)" }}
-                  border={"1px solid rgb(218, 222, 224)"}
-                  bg={"white"}
-                  rounded={"2xl"}
-                  icon={<HamburgerIcon boxSize={"18px"} />}
-                />
+                {/*<IconButton*/}
+                {/*  aria-label="Select"*/}
+                {/*  boxSize={"40px"}*/}
+                {/*  _hover={{ border: "1px solid rgb(156, 164, 169)" }}*/}
+                {/*  border={"1px solid rgb(218, 222, 224)"}*/}
+                {/*  bg={"white"}*/}
+                {/*  rounded={"2xl"}*/}
+                {/*  icon={<HamburgerIcon boxSize={"18px"} />}*/}
+                {/*/>*/}
               </Flex>
               {error && (
                 <Text fontSize="12px" color="red">
