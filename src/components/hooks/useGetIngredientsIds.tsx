@@ -26,12 +26,12 @@ export const useGetIngredientIds = (product: NewRecipe | NewIngredient) => {
   const updatedIngredientData: IngredientData = { ...data };
   console.log({ updatedIngredientData });
 
-  let selectedProductPreferences: {
+  const selectedProductPreferences: {
     [key: string]: { [key: string]: boolean | undefined };
   } = {};
 
   ingredients.forEach((ingredientItem) => {
-    let productPreferences: { [key: string]: boolean | undefined } = {};
+    const productPreferences: { [key: string]: boolean | undefined } = {};
 
     ingredientItem.selectedProducts.forEach((product) => {
       productPreferences[product.id] = product.preferred;
