@@ -5,8 +5,7 @@ import {
   ModalContent,
   ModalOverlay,
 } from "@chakra-ui/react";
-import { FC, ReactNode, RefObject, useEffect, useRef } from "react";
-import { useMyStore } from "../store/store.tsx";
+import { FC, ReactNode, RefObject, useRef } from "react";
 
 type Props = {
   isOpen: boolean;
@@ -22,34 +21,8 @@ const IngredientModal: FC<Props> = ({
   onClose,
   focusRef,
   children,
-  id,
 }) => {
-  const {
-    editSelectedProducts,
-    selectIngredient,
-    editAmount,
-    editName,
-    editOptimize,
-    editSortBy,
-    editStep,
-  } = useMyStore();
   const modalContainer = useRef(null);
-
-  const modalReset = () => {
-    editStep(1);
-    editAmount(0);
-    editOptimize(false);
-    editSortBy("price");
-    editSelectedProducts([]);
-    selectIngredient(null);
-    editName(null);
-  };
-  console.log("iddd", id);
-
-  useEffect(() => {
-    return () => modalReset();
-  }, [isOpen]);
-  console.log("idd", id);
 
   return (
     <>
