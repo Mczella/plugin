@@ -95,7 +95,11 @@ const Product: FC<Props> = ({ ingredient, boughtOften }) => {
         flexBasis={"20%"}
         w={"165px"}
       >
-        <Ingredient ingredient={ingredient} handleDelete={onOpen}>
+        <Ingredient
+          ingredient={ingredient}
+          handleDelete={onOpen}
+          id={productDetails.id}
+        >
           <>
             <Text
               cursor={"pointer"}
@@ -125,7 +129,7 @@ const Product: FC<Props> = ({ ingredient, boughtOften }) => {
             </Text>
           </>
         </Ingredient>
-        {productInCart ? (
+        {productInCart && productInCart.cartItem.amountInCart > 0 ? (
           <PlusMinus
             key={productInCart.cartItem.id}
             amount={productInCart.cartItem.amountInCart}
@@ -195,6 +199,7 @@ const Product: FC<Props> = ({ ingredient, boughtOften }) => {
                 );
               }}
               _hover={{ bg: "rgb(87, 130, 4)", color: "white" }}
+              boxShadow={"rgba(0, 0, 0, 0.15) 0px 6px 10px -6px;"}
             >
               Do košíku
             </Button>

@@ -34,8 +34,21 @@ const RecipeInCart: FC<Props> = ({ recipe }) => {
     >
       <Flex>
         <Flex flexDir={"row"}>
-          <Box minW={"45px"} maxW={"45px"} h={"45px"} mr={"5px"}>
-            <Image src={specificRecipe.image} />
+          <Box
+            minW={"45px"}
+            maxW={"45px"}
+            h={"45px"}
+            mr={"5px"}
+            display={"grid"}
+          >
+            <Image
+              justifySelf={"center"}
+              maxH={"45px"}
+              src={specificRecipe.image}
+              fallbackSrc={
+                "https://icon-library.com/images/placeholder-image-icon/placeholder-image-icon-7.jpg"
+              }
+            />
           </Box>
           <Flex flexDir={"column"} justify={"space-between"}>
             <Flex
@@ -81,7 +94,7 @@ const RecipeInCart: FC<Props> = ({ recipe }) => {
                 <MinusIcon boxSize={"4"} />
               </Box>
               <Text fontWeight={"bold"} fontSize={"12px"}>
-                1
+                {recipe.amount}
               </Text>
               <Box
                 h={"20px"}
@@ -110,7 +123,7 @@ const RecipeInCart: FC<Props> = ({ recipe }) => {
           _hover={{ color: "rgb(87, 130, 4)" }}
           onClick={() => handleDelete(specificRecipe.id)}
         />
-        <Flex flexDir={"column"} mb={"10px"} w={"50px"}>
+        <Flex flexDir={"column"} mb={"10px"} w={"70px"}>
           {/*if sale*/}
           <Text
             textAlign={"right"}
@@ -119,11 +132,11 @@ const RecipeInCart: FC<Props> = ({ recipe }) => {
             color={"rgb(28, 37, 41)"}
             as={"s"}
           >
-            {Number(priceBeforeSale.toFixed(1))} Kč
+            {Number(priceBeforeSale.toFixed(1)) * recipe.amount} Kč
           </Text>
           <Text textAlign={"right"} fontSize={"12px"} fontWeight={"700"}>
             {/*if sale color={"rgb(209, 17, 0)"}*/}
-            {Number(totalPrice.toFixed(1))} Kč
+            {Number(totalPrice.toFixed(1)) * recipe.amount} Kč
           </Text>
         </Flex>
       </Flex>

@@ -11,8 +11,9 @@ export const ProductBoughtTooltip: FC<Props> = ({ children, label, show }) => {
   const modalContainer = useRef(null);
 
   return (
-    <div ref={modalContainer}>
+    <div ref={modalContainer} style={{ zIndex: 119 }}>
       <Tooltip
+        sx={{ zIndex: 119 }}
         portalProps={{
           containerRef: modalContainer,
         }}
