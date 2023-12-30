@@ -23,6 +23,7 @@ import ChosenBoughtOften from "../ingredients/ChosenBoughtOften.tsx";
 import BoughtOftenModal from "../ingredients/BoughtOftenModal.tsx";
 import { BoughtOftenButtons } from "../ingredients/BoughtOftenButtons.tsx";
 import { BoughtOftenSuggestion } from "./BoughtOftenSuggestion.tsx";
+import { ShowSuggestion } from "./ShowSuggestion.tsx";
 
 const Products = () => {
   // const [productArray, setProductArray] = useState<Product["id"][]>([]);
@@ -34,10 +35,6 @@ const Products = () => {
     onOpen: onIngredientsModalOpen,
     onClose: onIngredientsModalClose,
   } = useDisclosure();
-  const ingredientsFocusRef = useRef<HTMLInputElement>(null);
-
-  const { state } = useLocation();
-  const navigate = useNavigate();
   const {
     addIngredient,
     selectedProducts,
@@ -46,7 +43,12 @@ const Products = () => {
     optimize,
     sortBy,
     ingredientsBoughtOften,
+    resetModal,
   } = useMyStore();
+  const ingredientsFocusRef = useRef<HTMLInputElement>(null);
+
+  const { state } = useLocation();
+  const navigate = useNavigate();
 
   const handleSave = () => {
     if (name != null && selectedProducts.length > 0) {
@@ -115,7 +117,13 @@ const Products = () => {
           </Text>
           <Grid templateColumns="repeat(7, 1fr)" gap="10px">
             <GridItem display="flex" flexDir="column" alignItems="center">
-              <Add text={"Přidat produkt"} action={onOpen}>
+              <Add
+                text={"Přidat produkt"}
+                action={() => {
+                  resetModal();
+                  onOpen();
+                }}
+              >
                 <Image
                   as={"svg"}
                   height="24px"
@@ -170,34 +178,14 @@ const Products = () => {
               {state.error}
             </Text>
           )}
-          <Heading mt={"24px"} mb={"16px"} fontSize={"20px"} fontWeight={900}>
-            Nepotřebujete doplnit zásoby?
-          </Heading>
-          <Flex
-            w="full"
-            overflow="auto"
-            scrollBehavior={"smooth"}
-            pos="relative"
-            sx={{
-              overflowX: "scroll",
-              scrollSnapType: "x mandatory",
-              "::-webkit-scrollbar": {
-                width: 0,
-                height: 0,
-              },
-            }}
-            border={"1px solid rgb(242, 244, 244)"}
-            borderRadius={"4px"}
-            py={"20px"}
-          >
+          <ShowSuggestion>
             {ingredientsBoughtOften.map((ingredient) => (
               <BoughtOftenSuggestion
                 key={ingredient.id}
                 ingredient={ingredient}
               />
             ))}
-          </Flex>
-
+          </ShowSuggestion>
           <Heading
             mt={"24px"}
             mb={"24px"}
