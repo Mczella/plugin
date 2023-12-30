@@ -13,6 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { useMyStore } from "../store/store.tsx";
 import { NewIngredient } from "../types.ts";
+import { useOutsideClick } from "../hooks/useOutsideClick.ts";
 
 type Props = {
   isOpen: boolean;
@@ -27,8 +28,18 @@ export const DeleteIngredientAlertDialog: FC<Props> = ({
   onClose,
   ingredient,
 }) => {
-  const { editIngredients, ingredients, recipes } = useMyStore();
+  const {
+    editIngredients,
+    ingredients,
+    recipes,
+    selectedBoughtOften,
+    editSelectedBoughtOften,
+    editIngredientsBoughtOften,
+  } = useMyStore();
   const modalContainer = useRef(null);
+  const modalRef = useOutsideClick(() => {
+    onClose();
+  });
 
   const crossCheckWithRecipes = () => {
     const recipesWithIngredient: { name: string; id: string }[] = [];
@@ -56,7 +67,7 @@ export const DeleteIngredientAlertDialog: FC<Props> = ({
         }}
       >
         <AlertDialogOverlay>
-          <AlertDialogContent minW={"850px"} rounded={"xl"}>
+          <AlertDialogContent minW={"850px"} rounded={"xl"} ref={modalRef}>
             <AlertDialogCloseButton />
             <AlertDialogBody pb={6} m={"40px"}>
               <Flex
@@ -110,6 +121,7 @@ export const DeleteIngredientAlertDialog: FC<Props> = ({
                     >
                       <Button
                         bg="white"
+                        w={"60px"}
                         color="black"
                         fontSize={"14px"}
                         fontWeight={"600"}
@@ -134,6 +146,16 @@ export const DeleteIngredientAlertDialog: FC<Props> = ({
                         ml={3}
                         _hover={{ bg: "rgb(87, 130, 4)" }}
                         onClick={() => {
+                          const updatedBoughtOftenIngredients =
+                            selectedBoughtOften.filter(
+                              (ing) => ing.id !== ingredient.id,
+                            );
+                          editSelectedBoughtOften(
+                            updatedBoughtOftenIngredients,
+                          );
+                          editIngredientsBoughtOften(
+                            updatedBoughtOftenIngredients,
+                          );
                           const updatedIngredients = ingredients.filter(
                             (ing) => ing.id !== ingredient.id,
                           );
