@@ -24,9 +24,16 @@ type Props = {
   handleDelete: () => void;
   children: ReactNode;
   id?: string;
+  discount?: number;
 };
 
-const Ingredient: FC<Props> = ({ ingredient, handleDelete, children, id }) => {
+const Ingredient: FC<Props> = ({
+  discount,
+  ingredient,
+  handleDelete,
+  children,
+  id,
+}) => {
   const {
     selectedProducts,
     selectedIngredients,
@@ -43,6 +50,7 @@ const Ingredient: FC<Props> = ({ ingredient, handleDelete, children, id }) => {
     editSortBy,
     addToSelectedProducts,
     step,
+    resetModal,
   } = useMyStore();
 
   if (ingredient == undefined) {
@@ -70,7 +78,7 @@ const Ingredient: FC<Props> = ({ ingredient, handleDelete, children, id }) => {
   );
 
   if (isError) {
-    return <div>Error.</div>;
+    return <div>Došlo k chybě. Tento produkt zřejmě již není v nabídce.</div>;
   }
 
   const isNewRecipeIngredientType = (
@@ -80,13 +88,23 @@ const Ingredient: FC<Props> = ({ ingredient, handleDelete, children, id }) => {
   };
 
   const handleOpenIngredient = () => {
+    resetModal();
+
     if (data) {
       console.log("kill", data);
       const productsArray = data.productIds.map(
         (productId: string) => data.productsByIds[productId],
       );
-      productsArray.map((product) => {
-        addToSelectedProducts(product);
+
+      productsArray.forEach((product) => {
+        ingredient.selectedProducts.forEach((selected) => {
+          if (selected.id === product.id) {
+            addToSelectedProducts({
+              ...product,
+              preferred: selected.preferred,
+            });
+          }
+        });
       });
       console.log("mee", ingredient.name);
 
@@ -221,25 +239,27 @@ const Ingredient: FC<Props> = ({ ingredient, handleDelete, children, id }) => {
             handleOpenIngredient();
           }}
         />
-        <Flex
-          minW={"171px"}
-          justifyContent={"end"}
-          position={"absolute"}
-          top={10}
-        >
-          <Text
-            alignSelf={"center"}
-            py={"5px"}
-            bg={"rgba(209, 17, 0, 0.9)"}
-            color={"white"}
-            fontSize={"16px"}
-            fontWeight={"bold"}
-            px={"5px"}
-            mr={"5px"}
+        {discount && discount > 0 ? (
+          <Flex
+            minW={"171px"}
+            justifyContent={"end"}
+            position={"absolute"}
+            top={10}
           >
-            {`-77 %`}
-          </Text>
-        </Flex>
+            <Text
+              alignSelf={"center"}
+              py={"5px"}
+              bg={"rgba(209, 17, 0, 0.9)"}
+              color={"white"}
+              fontSize={"16px"}
+              fontWeight={"bold"}
+              px={"5px"}
+              mr={"5px"}
+            >
+              {`-${Math.ceil(discount)} %`}
+            </Text>
+          </Flex>
+        ) : null}
         <SimpleGrid
           height={"100%"}
           alignItems={"center"}
@@ -290,7 +310,6 @@ const Ingredient: FC<Props> = ({ ingredient, handleDelete, children, id }) => {
         focusRef={focusRef}
         isOpen={isEditInRecipeOpen}
         onClose={onEditInRecipeClose}
-        id={ingredient.id}
       >
         {step === 1 ? (
           <IngredientModalOne heading={"Upravit ingredienci"} />
@@ -307,7 +326,6 @@ const Ingredient: FC<Props> = ({ ingredient, handleDelete, children, id }) => {
         focusRef={focusRef}
         isOpen={isEditOpen}
         onClose={onEditClose}
-        id={ingredient.id}
       >
         {step === 1 ? (
           <IngredientModalOne heading={"Upravit ingredienci"} />
