@@ -24,7 +24,11 @@ export const BoughtOftenSuggestion: FC<Props> = ({ ingredient }) => {
       }
     | undefined = useFindProductInDelivered(productIds);
 
-  const showInSuggestions = () => {
+  const showInSuggestions = (ingredient: {
+    id: NewIngredient["id"];
+    amount: number;
+    frequency: number;
+  }) => {
     const dailyNeed = ingredient.amount / ingredient.frequency;
     return (
       !foundPurchase ||
@@ -37,7 +41,8 @@ export const BoughtOftenSuggestion: FC<Props> = ({ ingredient }) => {
     );
   };
 
-  const showSuggestion = showInSuggestions();
+  const showSuggestion = showInSuggestions(ingredient);
+
   return showSuggestion ? (
     <Product
       ingredient={matchingIngredient}
