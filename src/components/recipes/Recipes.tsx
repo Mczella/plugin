@@ -2,11 +2,16 @@ import {
   Badge,
   Box,
   Button,
+  Checkbox,
   Flex,
   Grid,
   GridItem,
   Heading,
+  HStack,
   Image,
+  Radio,
+  RadioGroup,
+  Stack,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -19,7 +24,8 @@ import BreadcrumbNav from "../BreadcrumbNav.tsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import AddRecipeModal from "./AddRecipeModal.tsx";
 import { useRef, useState } from "react";
-import { NewRecipe } from "../types.ts";
+import { NewIngredient, NewRecipe, RohlikProduct } from "../types.ts";
+import { usePurgeStorage } from "../store/hooks.ts";
 
 const Recipes = () => {
   // inlined selector
@@ -28,23 +34,24 @@ const Recipes = () => {
     ingredientsInCart: state.ingredientsInCart,
     ingredients: state.ingredients,
   }));
+  const { editSelectedIngredients } = useMyStore();
   const {
     isOpen: isPopupOpen,
     onOpen: onPopupOpen,
     onClose: onPopupClose,
   } = useDisclosure();
   const focusRef = useRef<HTMLInputElement>(null);
-  // const [value, setValue] = useState("1");
+  const [value, setValue] = useState("1");
   const navigate = useNavigate();
   console.log(ingredientsInCart);
   const { state } = useLocation();
   console.log("hz", recipes);
   const [filteredRecipes, setFilteredRecipes] = useState<NewRecipe[]>(recipes);
-  // const purge = usePurgeStorage();
+  const purge = usePurgeStorage();
   const handleFilter = (
     ingredient: {
       name: string;
-      id: any;
+      id: string;
       amount: number;
       unit: string;
       packageAmount: number;
@@ -85,6 +92,84 @@ const Recipes = () => {
     return remainingAmount;
   };
 
+  const renderFilteredIngredients = () => {
+    const filteredIngredients: {
+      ingredient: {
+        name: string;
+        id: RohlikProduct["id"];
+        amount: number;
+        unit: string;
+        packageAmount: number;
+        optimize: boolean;
+        storeId: string;
+        amountInCart: number;
+      };
+      remainingAmount: number;
+      myIngredient: NewIngredient;
+    }[] = [];
+
+    ingredientsInCart.forEach((ingredient) => {
+      const remainingAmount = Number(
+        getRemainingAmount(ingredient.packageAmount, ingredient.amount).toFixed(
+          1,
+        ),
+      );
+
+      const myIngredient = ingredients.find(
+        (ing) => ing.id === ingredient.storeId,
+      );
+
+      if (remainingAmount !== 0 && myIngredient && myIngredient.optimize) {
+        filteredIngredients.push({ ingredient, remainingAmount, myIngredient });
+      }
+    });
+
+    console.log("filtered", filteredIngredients);
+
+    if (filteredIngredients.length > 0) {
+      return (
+        <Badge
+          px={"21px"}
+          py={"8px"}
+          borderRadius={"16px"}
+          bg={"rgb(242, 244, 244)"}
+        >
+          <HStack>
+            <Text
+              textTransform={"initial"}
+              fontSize={"12px"}
+              fontWeight={400}
+              lineHeight={1.85}
+            >
+              Filtrovat recepty obsahující max.
+            </Text>
+            {filteredIngredients.map(
+              ({ ingredient, remainingAmount, myIngredient }) => (
+                <Checkbox
+                  key={ingredient.id}
+                  colorScheme={"green"}
+                  border={"rgb(132, 140, 145)"}
+                  size="lg"
+                  pl={"8px"}
+                  fontWeight={400}
+                  fontSize={"13px"}
+                  textTransform={"uppercase"}
+                  onChange={() => handleFilter(ingredient, remainingAmount)}
+                  // isChecked={true}
+                >
+                  {remainingAmount} {ingredient.unit} produktu{" "}
+                  {myIngredient.name}
+                </Checkbox>
+              ),
+            )}
+          </HStack>
+        </Badge>
+      );
+    } else {
+      return null;
+    }
+  };
+
   return (
     <Box
       pt={"16px"}
@@ -95,18 +180,7 @@ const Recipes = () => {
       mb={"30px"}
     >
       <BreadcrumbNav>Recepty</BreadcrumbNav>
-      {/*<Button onClick={purge}>purge</Button>*/}
-      <Button
-        onClick={async () => {
-          const openModal = new CustomEvent("redux-me", {
-            bubbles: true,
-            detail: { action: "open-modal", id: "1" },
-          });
-          document.body.dispatchEvent(openModal);
-        }}
-      >
-        Open Modal
-      </Button>
+      <Button onClick={purge}>purge</Button>
       <Flex flexDir={"column"}>
         <Heading
           pt={"12px"}
@@ -146,7 +220,13 @@ const Recipes = () => {
         </Text>
         <Grid templateColumns="repeat(7, 1fr)" gap="10px">
           <GridItem display="flex" flexDir="column" alignItems="center">
-            <Add text={"Přidat recept"} action={onPopupOpen}>
+            <Add
+              text={"Přidat recept"}
+              action={() => {
+                editSelectedIngredients([]);
+                onPopupOpen();
+              }}
+            >
               <Image
                 as={"svg"}
                 height="24px"
@@ -195,45 +275,70 @@ const Recipes = () => {
         >
           Vaše recepty
         </Heading>
-        <Flex flexDir={"row"}>
-          {ingredientsInCart.map((ingredient) => {
-            const remainingAmount: number = Number(
-              getRemainingAmount(
-                ingredient.packageAmount,
-                ingredient.amount,
-              ).toFixed(1),
-            );
+        <Flex flexDir={"row"}>{renderFilteredIngredients()}</Flex>
 
-            if (remainingAmount !== 0 && ingredient.optimize) {
-              return (
-                <Button
-                  key={ingredient.id}
-                  onClick={() => handleFilter(ingredient, remainingAmount)}
-                >
-                  Filtrovat recepty obsahující {remainingAmount}{" "}
-                  {ingredient.unit} produktu {ingredient.name}
-                </Button>
-              );
-            }
-          })}
-        </Flex>
-
-        {/*<RadioGroup onChange={setValue} value={value}>*/}
-        {/*  <Stack direction="row" gap={"16px"}>*/}
-        {/*    <Radio value="1" fontSize={"12px"}>*/}
-        {/*      OD NEJNOVĚJŠÍHO*/}
-        {/*    </Radio>*/}
-        {/*    <Radio value="2" fontSize={"12px"}>*/}
-        {/*      OD NEJLEVNĚJŠÍHO*/}
-        {/*    </Radio>*/}
-        {/*    <Radio value="3" fontSize={"12px"}>*/}
-        {/*      OD NEJDRAŽŠÍHO*/}
-        {/*    </Radio>*/}
-        {/*    <Radio value="4" fontSize={"12px"}>*/}
-        {/*      OD NEJLEVNĚJŠÍHO ZA JEDNOTKU*/}
-        {/*    </Radio>*/}
-        {/*  </Stack>*/}
-        {/*</RadioGroup>*/}
+        <RadioGroup
+          onChange={setValue}
+          value={value}
+          fontSize={"lg"}
+          size={"lg"}
+          px={"4px"}
+          mt={"13px"}
+          mb={"32px"}
+        >
+          <Stack direction="row" gap={"16px"}>
+            <Radio
+              colorScheme={"green"}
+              p={"8px"}
+              value="1"
+              sx={{
+                width: "16px",
+                height: "16px",
+                'input[type="radio"]:checked': {
+                  borderColor: "rgb(109, 163, 5)",
+                  backgroundColor: "rgb(109, 163, 5)",
+                  color: "white",
+                },
+              }}
+              fontSize={"12px"}
+              color={"rgb(109, 163, 5)"}
+              //colorScheme="green"
+              boxShadow={"rgba(0, 0, 0, 0.5) 0px 1px 3px 0px inset"}
+            >
+              OD NEJNOVĚJŠÍHO
+            </Radio>
+            <Radio
+              p={"8px"}
+              value="2"
+              sx={{ width: "16px", height: "16px" }}
+              fontSize={"12px"}
+              colorScheme="green"
+              boxShadow={"rgba(0, 0, 0, 0.5) 0px 1px 3px 0px inset"}
+            >
+              OD NEJLEVNĚJŠÍHO
+            </Radio>
+            <Radio
+              p={"8px"}
+              value="3"
+              fontSize={"12px"}
+              sx={{ width: "16px", height: "16px" }}
+              colorScheme="green"
+              boxShadow={"rgba(0, 0, 0, 0.5) 0px 1px 3px 0px inset"}
+            >
+              OD NEJDRAŽŠÍHO
+            </Radio>
+            <Radio
+              p={"8px"}
+              value="4"
+              fontSize={"12px"}
+              sx={{ width: "16px", height: "16px" }}
+              colorScheme="green"
+              boxShadow={"rgba(0, 0, 0, 0.5) 0px 1px 3px 0px inset"}
+            >
+              OD NEJLEVNĚJŠÍHO ZA JEDNOTKU
+            </Radio>
+          </Stack>
+        </RadioGroup>
         <Grid templateColumns="repeat(5, 1fr)" gap="10px">
           {filteredRecipes.map((recipe) => (
             <RecipeComponent key={recipe.id} recipe={recipe} />
