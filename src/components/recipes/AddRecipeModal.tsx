@@ -15,6 +15,7 @@ import {
 import { FC, RefObject, useRef } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { useOutsideClick } from "../hooks/useOutsideClick.ts";
 
 type Props = {
   isOpen: boolean;
@@ -30,6 +31,9 @@ const AddRecipeModal: FC<Props> = ({ isOpen, onClose, focusRef }) => {
     register,
     formState: { errors, isSubmitting },
   } = useForm();
+  const modalRef = useOutsideClick(() => {
+    onClose();
+  });
 
   const onNameSubmit = (data: FieldValues) => {
     const id = Date.now().toString(36);
@@ -50,7 +54,7 @@ const AddRecipeModal: FC<Props> = ({ isOpen, onClose, focusRef }) => {
         isCentered
       >
         <ModalOverlay />
-        <ModalContent minW={"850px"} rounded={"xl"}>
+        <ModalContent minW={"850px"} rounded={"xl"} ref={modalRef}>
           <ModalCloseButton onClick={() => navigate("/recepty")} />
           <ModalBody pb={6} m={"40px"}>
             <Flex
