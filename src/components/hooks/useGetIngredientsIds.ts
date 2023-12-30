@@ -16,9 +16,12 @@ export const useGetIngredientIds = (product: NewRecipe | NewIngredient) => {
     ? getRecipeIngredientIds(product, ingredients)
     : getIngredientIds(product);
 
+  console.log(ingredientIds, "hellojello");
   const { data } = useQuery(["data", product.id], () =>
     fetchPriceAndStock(ingredientIds),
   );
+
+  console.log("hello", data);
   if (!data) {
     return null;
   }
