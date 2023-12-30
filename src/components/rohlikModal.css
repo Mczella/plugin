@@ -15,12 +15,13 @@
 
 .modal-content {
   overscroll-behavior: contain;
-  top: 420px;
+  top: 55%;
   display: block;
   overflow-y: auto;
   overflow-x: hidden;
   position: absolute;
   left: 50%;
+  max-height: 90%;
   transform: translate(-50%, -50%);
   border-radius: 8px;
   z-index: 9999;
