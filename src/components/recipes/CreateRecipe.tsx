@@ -59,6 +59,7 @@ const CreateRecipe = () => {
     editSelectedProducts,
     selectIngredient,
     step,
+    resetModal,
   } = useMyStore();
   const { state } = useLocation();
 
@@ -191,6 +192,11 @@ const CreateRecipe = () => {
                   _hover={{ bg: "rgb(87, 130, 4)" }}
                   type="submit"
                   isLoading={isSubmitting}
+                  onKeyDown={(e) => {
+                    if (e.code === "Enter") {
+                      e.preventDefault();
+                    }
+                  }}
                 >
                   Uložit recept
                 </Button>
@@ -293,7 +299,13 @@ const CreateRecipe = () => {
 
           <Heading>Ingredience</Heading>
           <Grid templateColumns="repeat(6, 1fr)" gap={"19px"}>
-            <Add text={"Přidat ingredienci"} action={onOpen}>
+            <Add
+              text={"Přidat ingredienci"}
+              action={() => {
+                resetModal();
+                onOpen();
+              }}
+            >
               <Image
                 as={"svg"}
                 height="24px"
