@@ -1,6 +1,5 @@
 import { Box, Flex, Image, Text } from "@chakra-ui/react";
 import { AddIcon, MinusIcon, SmallCloseIcon } from "@chakra-ui/icons";
-import { useGetRecipePrice } from "../hooks/useGetRecipePrice.tsx";
 import { FC } from "react";
 import { useMyStore } from "../store/store.tsx";
 import { useFindRecipeById } from "../hooks/useFindRecipeById.ts";
@@ -18,10 +17,16 @@ const RecipeInCart: FC<Props> = ({ recipe }) => {
     throw new Error("Error");
   }
 
-  const { totalPrice, saved } = useGetRecipePrice(specificRecipe);
-  const priceBeforeSale = totalPrice + saved;
   const handleDelete = (id: string) => {
     deleteRecipeFromCart(id);
+  };
+
+  const getInflection = () => {
+    if (specificRecipe.portion < 5) {
+      return "porce";
+    } else {
+      return "porcí";
+    }
   };
 
   return (
@@ -70,7 +75,7 @@ const RecipeInCart: FC<Props> = ({ recipe }) => {
                 fontStyle={"italic"}
                 fontSize={"12px"}
               >
-                {specificRecipe.portion}
+                {specificRecipe.portion} {getInflection()}
               </Text>
             </Flex>
             <Flex
@@ -123,22 +128,6 @@ const RecipeInCart: FC<Props> = ({ recipe }) => {
           _hover={{ color: "rgb(87, 130, 4)" }}
           onClick={() => handleDelete(specificRecipe.id)}
         />
-        <Flex flexDir={"column"} mb={"10px"} w={"70px"}>
-          {/*if sale*/}
-          <Text
-            textAlign={"right"}
-            fontSize={"12px"}
-            fontWeight={"normal"}
-            color={"rgb(28, 37, 41)"}
-            as={"s"}
-          >
-            {Number(priceBeforeSale.toFixed(1)) * recipe.amount} Kč
-          </Text>
-          <Text textAlign={"right"} fontSize={"12px"} fontWeight={"700"}>
-            {/*if sale color={"rgb(209, 17, 0)"}*/}
-            {Number(totalPrice.toFixed(1)) * recipe.amount} Kč
-          </Text>
-        </Flex>
       </Flex>
     </Flex>
   );
