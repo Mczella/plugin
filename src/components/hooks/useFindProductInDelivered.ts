@@ -40,10 +40,10 @@ export const useFindProductInDelivered = (
     return;
   }
 
-  function parseDateString(dateString: string) {
+  const parseDateString = (dateString: string) => {
     const isoString = dateString.replace(/(\d{2})$/, ":$1");
     return new Date(isoString);
-  }
+  };
 
   if (foundPurchase && foundPurchase.state === "DELIVERED") {
     const orderDate = foundPurchase.orderTime;
