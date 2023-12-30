@@ -3,9 +3,18 @@ import { useEffect } from "react";
 import { useMyStore } from "../store/store.tsx";
 import CheckRecipe from "./CheckRecipe.tsx";
 import { useMutation } from "@tanstack/react-query";
+import { useLocation } from "react-router-dom";
+import CheckIngredient from "./CheckIngredient.tsx";
 
 const CheckRecipes = () => {
   const { recipesInCart, ingredientsInCart } = useMyStore();
+  const location = useLocation();
+  useEffect(() => {
+    const footer = document.querySelector("footer");
+    if (footer && location.pathname === "/prehled-receptu") {
+      footer.remove();
+    }
+  }, [location.pathname]);
 
   const mutation = useMutation(
     async (data: { quantity: number; productId: string }) => {
@@ -91,11 +100,19 @@ const CheckRecipes = () => {
           lineHeight={"43px"}
           color={"rgb(28, 37, 41)"}
         >
-          Přehled objednávky receptů
+          Přehled objednávky z chytrého nákupu
         </Text>
         {recipesInCart.map((recipeInCart) => {
           return (
             <CheckRecipe key={recipeInCart.id} recipeInCart={recipeInCart} />
+          );
+        })}
+        {ingredientsInCart.map((ingredientInCart) => {
+          return (
+            <CheckIngredient
+              key={ingredientInCart.id}
+              ingredientInCart={ingredientInCart}
+            />
           );
         })}
       </Flex>
