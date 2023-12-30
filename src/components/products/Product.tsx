@@ -1,6 +1,13 @@
-import { Button, Flex, Stack, Text, useDisclosure } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  HStack,
+  Stack,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
 import Ingredient from "../recipes/Ingredient.tsx";
-import { useGetIngredientPrice } from "../hooks/useGetIngredientPrice.tsx";
+import { useGetIngredientPrice } from "../hooks/useGetIngredientPrice.ts";
 import PlusMinus from "../PlusMinus.tsx";
 import { FC, useRef } from "react";
 import { NewIngredient, RohlikProduct } from "../types.ts";
@@ -54,7 +61,8 @@ const getProductFromCart = (
 
 const Product: FC<Props> = ({ ingredient, boughtOften }) => {
   const { ingredients, ingredientsInCart, addIngredientToCart } = useMyStore();
-  const { productInfo, totalPrice } = useGetIngredientPrice(ingredient);
+  const { productInfo, totalPrice, saved, discount } =
+    useGetIngredientPrice(ingredient);
   const productDetails = productInfo[0];
   const neededAmount = useGetAmountOfIngredientUsedInRecipes(ingredient);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -64,6 +72,17 @@ const Product: FC<Props> = ({ ingredient, boughtOften }) => {
   if (productInfo.length === 0) {
     return;
   }
+
+  const priceBeforeSale = totalPrice + saved;
+  const editedPrice = getEditedPrice(totalPrice);
+
+  const getPriceBeforeSale = () => {
+    if (totalPrice > 0) {
+      return `${Math.ceil(priceBeforeSale)} Kč`;
+    } else {
+      return null;
+    }
+  };
 
   console.log(totalPrice, "total");
   const productInCart = getProductFromCart(
@@ -96,6 +115,7 @@ const Product: FC<Props> = ({ ingredient, boughtOften }) => {
         w={"165px"}
       >
         <Ingredient
+          discount={discount}
           ingredient={ingredient}
           handleDelete={onOpen}
           id={productDetails.id}
@@ -117,16 +137,31 @@ const Product: FC<Props> = ({ ingredient, boughtOften }) => {
             >
               {ingredient.name}
             </Text>
-            <Text
-              my={"10px"}
-              textAlign={"center"}
-              fontSize="24px"
-              lineHeight="1.4"
-              fontWeight={"bold"}
-              color={"rgb(28, 37, 41)"}
-            >
-              {getEditedPrice(totalPrice)} Kč
-            </Text>
+            <HStack>
+              {discount > 0 ? (
+                <Text
+                  as={"s"}
+                  fontSize={"14px"}
+                  lineHeight={1.4}
+                  fontWeight={"normal"}
+                  color={"rgb(28, 37, 41)"}
+                >
+                  {getPriceBeforeSale()}
+                </Text>
+              ) : null}
+              <Text
+                my={"10px"}
+                textAlign={"center"}
+                fontSize="20px"
+                lineHeight="1.4"
+                fontWeight={"bold"}
+                color={discount > 0 ? "rgb(209, 17, 0)" : "rgb(28, 37, 41)"}
+              >
+                {(editedPrice as number) > 0
+                  ? `${editedPrice} Kč`
+                  : "Vyprodáno"}
+              </Text>
+            </HStack>
           </>
         </Ingredient>
         {productInCart && productInCart.cartItem.amountInCart > 0 ? (
