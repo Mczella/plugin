@@ -167,7 +167,9 @@ const IngredientModalOne: FC<Props> = ({ create, heading }) => {
           mt={"20px"}
           border={"rgb(132, 140, 145)"}
           onChange={() => editOptimize(!optimize)}
-          isChecked={optimize}
+          isChecked={
+            selectedIngredient ? selectedIngredient.optimize : optimize
+          }
         >
           <Text fontSize={"14px"} fontWeight={400}>
             Přejete si optimalizovat recepty za účelem spotřebovat celý produkt?
@@ -180,9 +182,21 @@ const IngredientModalOne: FC<Props> = ({ create, heading }) => {
             mt="20px"
             border="rgb(132, 140, 145)"
             onChange={() =>
-              editSortBy(sortBy === "price" ? "pricePerUnit" : "price")
+              editSortBy(
+                selectedIngredient
+                  ? selectedIngredient.sortBy === "price"
+                    ? "pricePerUnit"
+                    : "price"
+                  : sortBy === "price"
+                  ? "pricePerUnit"
+                  : "price",
+              )
             }
-            isChecked={sortBy === "price"}
+            isChecked={
+              selectedIngredient
+                ? selectedIngredient.sortBy === "price"
+                : sortBy === "price"
+            }
           >
             <Text fontSize="14px" fontWeight={400}>
               Řadit dle celkové ceny
@@ -195,9 +209,21 @@ const IngredientModalOne: FC<Props> = ({ create, heading }) => {
             value="pricePerUnit"
             border="rgb(132, 140, 145)"
             onChange={() =>
-              editSortBy(sortBy === "price" ? "pricePerUnit" : "price")
+              editSortBy(
+                selectedIngredient
+                  ? selectedIngredient.sortBy === "price"
+                    ? "pricePerUnit"
+                    : "price"
+                  : sortBy === "price"
+                  ? "pricePerUnit"
+                  : "price",
+              )
             }
-            isChecked={sortBy === "pricePerUnit"}
+            isChecked={
+              selectedIngredient
+                ? selectedIngredient.sortBy === "pricePerUnit"
+                : sortBy === "pricePerUnit"
+            }
           >
             <Text fontSize="14px" fontWeight={400}>
               Řadit dle ceny za jednotku
