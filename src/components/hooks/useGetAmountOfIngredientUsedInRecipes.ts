@@ -1,6 +1,6 @@
 import { useMyStore } from "../store/store.tsx";
 import { NewIngredient } from "../types.ts";
-import { useGetIngredientPrice } from "./useGetIngredientPrice.tsx";
+import { useGetIngredientPrice } from "./useGetIngredientPrice.ts";
 
 export const useGetAmountOfIngredientUsedInRecipes = (
   ingredient: NewIngredient,
