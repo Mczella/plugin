@@ -57,6 +57,7 @@ export type Sales = {
     };
     title: string;
   }[];
+  type: string;
 }[];
 
 export type IngredientData = null | {
