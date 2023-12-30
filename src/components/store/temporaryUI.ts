@@ -28,6 +28,7 @@ interface MyTemporaryUIActions {
     }[],
   ) => void;
   deleteSelectedIngredient: (ingredient: NewRecipeIngredient) => void;
+  resetModal: () => void;
 }
 interface MyTemporaryUIState {
   step: 1 | 2;
@@ -147,5 +148,16 @@ export const createTemporaryUISlice: StateCreator<
         (stateProduct) => stateProduct !== product,
       ),
     }));
+  },
+  resetModal: () => {
+    set({
+      step: 1,
+      sortBy: "price",
+      optimize: false,
+      name: null,
+      amount: 0,
+      selectedIngredient: null,
+      selectedProducts: [],
+    });
   },
 });
