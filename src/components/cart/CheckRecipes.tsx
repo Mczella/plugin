@@ -5,10 +5,16 @@ import CheckRecipe from "./CheckRecipe.tsx";
 import { useMutation } from "@tanstack/react-query";
 import { useLocation } from "react-router-dom";
 import CheckIngredient from "./CheckIngredient.tsx";
+import { useGetCartPrice } from "../hooks/useGetCartPrice.ts";
+import { usePurgeStorage } from "../store/hooks.ts";
 
 const CheckRecipes = () => {
   const { recipesInCart, ingredientsInCart } = useMyStore();
   const location = useLocation();
+  const purge = usePurgeStorage();
+
+  const cartPrice = useGetCartPrice(ingredientsInCart);
+
   useEffect(() => {
     const footer = document.querySelector("footer");
     if (footer && location.pathname === "/prehled-receptu") {
@@ -83,7 +89,7 @@ const CheckRecipes = () => {
   const productsDetails = getProductsInCartDetails();
   console.log(productsDetails);
 
-  return (
+  return cartPrice && cartPrice.totalPrice && cartPrice.totalPrice > 0 ? (
     <>
       <Flex
         flexDir={"column"}
@@ -130,7 +136,8 @@ const CheckRecipes = () => {
             fontWeight={"600"}
             pr={"32px"}
           >
-            Kč za ingredience k receptům
+            {cartPrice?.totalPrice.toFixed(1)} Kč za ingredience z chytrého
+            nákupu
           </Text>
           <Button
             h={"40px"}
@@ -145,6 +152,7 @@ const CheckRecipes = () => {
             _hover={{ bg: "rgb(87, 130, 4)" }}
             onClick={async () => {
               await handlePostToCart(productsDetails);
+              purge();
               window.location.href =
                 "https://www.rohlik.cz/objednavka/prehled-kosiku";
             }}
@@ -155,7 +163,7 @@ const CheckRecipes = () => {
         </Flex>
       </Box>
     </>
-  );
+  ) : null;
 };
 
 export default CheckRecipes;
