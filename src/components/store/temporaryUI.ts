@@ -10,7 +10,7 @@ interface MyTemporaryUIActions {
   selectIngredient: (ingredient: NewIngredient | null) => void;
   addToSelectedIngredients: (ingredient: NewRecipeIngredient) => void;
   editSelectedIngredients: (
-    ingredients: NewRecipeIngredient[] | undefined,
+    ingredients: NewRecipeIngredient[] | undefined
   ) => void;
   addToSelectedProducts: (product: RohlikProduct) => void;
   editSelectedProducts: (products: RohlikProduct[] | undefined) => void;
@@ -25,7 +25,7 @@ interface MyTemporaryUIActions {
       id: NewIngredient["id"];
       amount: number;
       frequency: number;
-    }[],
+    }[]
   ) => void;
   deleteSelectedIngredient: (ingredient: NewRecipeIngredient) => void;
   resetModal: () => void;
@@ -129,7 +129,7 @@ export const createTemporaryUISlice: StateCreator<
   editSelectedBoughtOften: (
     ingredients:
       | { id: NewIngredient["id"]; amount: number; frequency: number }[]
-      | undefined,
+      | undefined
   ) => {
     set({
       selectedBoughtOften: ingredients,
@@ -138,14 +138,14 @@ export const createTemporaryUISlice: StateCreator<
   deleteSelectedIngredient: (ingredient: NewRecipeIngredient) => {
     set((state) => ({
       selectedIngredients: state.selectedIngredients.filter(
-        (stateIngredient) => stateIngredient !== ingredient,
+        (stateIngredient) => stateIngredient !== ingredient
       ),
     }));
   },
   deleteSelectedProduct: (product: RohlikProduct) => {
     set((state) => ({
       selectedProducts: state.selectedProducts.filter(
-        (stateProduct) => stateProduct !== product,
+        (stateProduct) => stateProduct !== product
       ),
     }));
   },

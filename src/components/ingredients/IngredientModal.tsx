@@ -22,6 +22,7 @@ const IngredientModal: FC<Props> = ({
   children,
 }) => {
   const modalContainer = useRef(null);
+
   // const modalRef = useOutsideClick(() => {
   //   onClose();
   // });

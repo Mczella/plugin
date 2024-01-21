@@ -70,11 +70,11 @@ const Ingredient: FC<Props> = ({
   const focusRef = useRef<HTMLInputElement>(null);
   const restOfProducts = ingredient.selectedProducts.length - 3;
   const arrayOfAllProductIds = ingredient.selectedProducts.map(
-    (product) => product.id,
+    (product) => product.id
   );
   const [isModalOpen, setIsModalOpen] = useState<string | null>(null);
   const { data, isError } = useQuery(["data", arrayOfAllProductIds], () =>
-    fetchProductsDetails(arrayOfAllProductIds),
+    fetchProductsDetails(arrayOfAllProductIds)
   );
 
   if (isError) {
@@ -82,7 +82,7 @@ const Ingredient: FC<Props> = ({
   }
 
   const isNewRecipeIngredientType = (
-    ingredient: NewIngredient | NewRecipeIngredient,
+    ingredient: NewIngredient | NewRecipeIngredient
   ): ingredient is NewRecipeIngredient => {
     return (ingredient as NewRecipeIngredient).amount !== undefined;
   };
@@ -93,7 +93,7 @@ const Ingredient: FC<Props> = ({
     if (data) {
       console.log("kill", data);
       const productsArray = data.productIds.map(
-        (productId: string) => data.productsByIds[productId],
+        (productId: string) => data.productsByIds[productId]
       );
 
       productsArray.forEach((product) => {
@@ -125,7 +125,7 @@ const Ingredient: FC<Props> = ({
   const handleSave = () => {
     if (name != null && selectedProducts.length > 0) {
       const updatedSelectedProducts = selectedProducts.map(
-        ({ id, preferred }) => ({ id, preferred }),
+        ({ id, preferred }) => ({ id, preferred })
       );
       const editedIngredientsEdit = ingredients.map((ing) =>
         ing.id === ingredient.id
@@ -136,7 +136,7 @@ const Ingredient: FC<Props> = ({
               optimize,
               sortBy,
             }
-          : ing,
+          : ing
       );
 
       editIngredients(editedIngredientsEdit);
@@ -147,7 +147,7 @@ const Ingredient: FC<Props> = ({
   const handleRecipeSave = () => {
     if (name != null && selectedProducts.length > 0) {
       const updatedSelectedProducts = selectedProducts.map(
-        ({ id, preferred }) => ({ id, preferred }),
+        ({ id, preferred }) => ({ id, preferred })
       );
       const editedIngredientsEditInRecipe = ingredients.map((ing) =>
         ing.id === ingredient.id
@@ -158,7 +158,7 @@ const Ingredient: FC<Props> = ({
               optimize,
               sortBy,
             }
-          : ing,
+          : ing
       );
 
       editIngredients(editedIngredientsEditInRecipe);
@@ -173,7 +173,7 @@ const Ingredient: FC<Props> = ({
               optimize,
               sortBy,
             }
-          : ing,
+          : ing
       );
 
       editSelectedIngredients(editedRecipeIngredientsEdit);
