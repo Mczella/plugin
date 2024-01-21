@@ -20,6 +20,7 @@ type Props = {
   cancelRef: React.MutableRefObject<null>;
   onClose: () => void;
   ingredient: NewIngredient;
+  recipesWithIngredient: { name: string; id: string }[];
 };
 
 export const DeleteIngredientAlertDialog: FC<Props> = ({
@@ -27,11 +28,11 @@ export const DeleteIngredientAlertDialog: FC<Props> = ({
   cancelRef,
   onClose,
   ingredient,
+  recipesWithIngredient,
 }) => {
   const {
     editIngredients,
     ingredients,
-    recipes,
     selectedBoughtOften,
     editSelectedBoughtOften,
     editIngredientsBoughtOften,
@@ -40,20 +41,6 @@ export const DeleteIngredientAlertDialog: FC<Props> = ({
   const modalRef = useOutsideClick(() => {
     onClose();
   });
-
-  const crossCheckWithRecipes = () => {
-    const recipesWithIngredient: { name: string; id: string }[] = [];
-    recipes.forEach((recipe) => {
-      recipe.ingredients.forEach((recipeIngredient) => {
-        if (recipeIngredient.id === ingredient.id) {
-          recipesWithIngredient.push({ name: recipe.name, id: recipe.id });
-        }
-      });
-    });
-    return recipesWithIngredient;
-  };
-
-  const recipesWithIngredient = crossCheckWithRecipes();
 
   return (
     <>
