@@ -118,7 +118,10 @@ export const useGetCartPrice = (
           const sortBy = ingredient.sortBy;
           const ingredientProducts =
             ingredientData.productsByStoreId[ingredient.id];
-
+          console.log({ ingredientProducts });
+          if (!ingredientProducts) {
+            return;
+          }
           const inStockProducts = ingredientProducts.filter(
             (product) => product.inStock,
           );
