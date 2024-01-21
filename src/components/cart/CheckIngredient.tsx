@@ -1,4 +1,4 @@
-import { Flex, Image, Text } from "@chakra-ui/react";
+import { Flex, HStack, Image, Text } from "@chakra-ui/react";
 import { SmallCloseIcon } from "@chakra-ui/icons";
 import { FC } from "react";
 import PlusMinus from "../PlusMinus.tsx";
@@ -30,8 +30,15 @@ const CheckIngredient: FC<Props> = ({ ingredientInCart }) => {
     throw new Error("error");
   }
 
-  const { totalPrice, productInfo } = useGetIngredientPrice(specificIngredient);
-  console.log(productInfo, totalPrice);
+  const { totalPrice, productInfo, saved, discount } =
+    useGetIngredientPrice(specificIngredient);
+  console.log(productInfo, totalPrice, "test2");
+  if (productInfo.length === 0) {
+    return null;
+  }
+
+  const priceBeforeSale = totalPrice + saved;
+
   return (
     <>
       <Text
@@ -79,15 +86,33 @@ const CheckIngredient: FC<Props> = ({ ingredientInCart }) => {
           >
             <Text fontWeight={"bold"}>{ingredientInCart.amountInCart}</Text>
           </PlusMinus>
-          <Text
-            textAlign={"right"}
-            color={"rgb(28, 37, 41)"}
-            fontSize={"15px"}
-            fontWeight={"bold"}
+          <HStack
             minW={"210px"}
+            alignItems={"baseline"}
+            justifyContent={"flex-end"}
           >
-            {totalPrice}
-          </Text>
+            {discount > 0 ? (
+              <Text
+                textAlign={"right"}
+                fontSize={"12px"}
+                fontWeight={"normal"}
+                color={"rgb(28, 37, 41)"}
+                as={"s"}
+              >
+                {(priceBeforeSale * ingredientInCart.amountInCart).toFixed(1)}{" "}
+                Kč
+              </Text>
+            ) : null}
+            <Text
+              textAlign={"right"}
+              color={discount > 0 ? "rgb(209, 17, 0)" : "black"}
+              fontSize={"15px"}
+              fontWeight={"bold"}
+            >
+              {(Number(totalPrice) * ingredientInCart.amountInCart).toFixed(1)}{" "}
+              Kč
+            </Text>
+          </HStack>
           <SmallCloseIcon
             ml={"40px"}
             color={"rgb(218, 222, 224)"}
