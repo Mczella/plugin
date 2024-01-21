@@ -15,10 +15,15 @@ const IngredientButtons: FC<Props> = ({ onClose, handleSave, id }) => {
 
   return (
     <>
-      {error ? (
+      {error === "wrong" ? (
         <Text pt={"20px"} color={"red"} fontWeight={500}>
           Produkty jsou zadané v odlišných jednotkách. Prosím smažte nesprávný
           produkt.
+        </Text>
+      ) : error === "check" ? (
+        <Text pt={"20px"} color={"red"} fontWeight={500}>
+          Produkty jsou zadané v odlišných jednotkách. Zkontrolujte prosím, že
+          všechny produkty a jednotky, ve kterých jsou zadané, jsou zaměnitelné.
         </Text>
       ) : null}
       <ButtonGroup
@@ -52,7 +57,7 @@ const IngredientButtons: FC<Props> = ({ onClose, handleSave, id }) => {
           rounded={"xl"}
           boxShadow={"md"}
           color={"white"}
-          isDisabled={selectedProducts.length === 0 || error}
+          isDisabled={selectedProducts.length === 0 || error === "wrong"}
           _hover={{ bg: "rgb(87, 130, 4)" }}
           onClick={() => handleSave()}
         >
