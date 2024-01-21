@@ -15,7 +15,9 @@ type HookResponse =
 export const useFindProductInDelivered = (
   productIds: string[],
 ): HookResponse => {
-  const { data, isError } = useQuery(["data"], () => fetchDelivered());
+  const { data, isError } = useQuery(["useFindProductInDelivered"], () =>
+    fetchDelivered(),
+  );
 
   if (isError) {
     throw new Error("Error fetching data.");
