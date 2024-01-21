@@ -65,7 +65,7 @@ const IngredientModalOne: FC<Props> = ({ create, heading }) => {
       </Heading>
       <FormControl isRequired>
         <AutoComplete
-          // openOnFocus
+          openOnFocus
           closeOnSelect
           creatable
           autoComplete={"off"}
