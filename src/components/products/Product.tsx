@@ -9,7 +9,7 @@ import {
 import Ingredient from "../recipes/Ingredient.tsx";
 import { useGetIngredientPrice } from "../hooks/useGetIngredientPrice.ts";
 import PlusMinus from "../PlusMinus.tsx";
-import { FC, useRef } from "react";
+import { FC, useEffect, useRef } from "react";
 import { NewIngredient, RohlikProduct } from "../types.ts";
 import { useMyStore } from "../store/store.tsx";
 import { useGetAmountOfIngredientUsedInRecipes } from "../hooks/useGetAmountOfIngredientUsedInRecipes.ts";
@@ -60,7 +60,14 @@ const getProductFromCart = (
 };
 
 const Product: FC<Props> = ({ ingredient, boughtOften }) => {
-  const { ingredients, ingredientsInCart, addIngredientToCart } = useMyStore();
+  const {
+    ingredients,
+    ingredientsInCart,
+    deleteIngredientFromCart,
+    addIngredientToCart,
+    recipes,
+    deleteRecipeFromCart,
+  } = useMyStore();
   const { productInfo, totalPrice, saved, discount } =
     useGetIngredientPrice(ingredient);
   const productDetails = productInfo[0];
@@ -68,13 +75,84 @@ const Product: FC<Props> = ({ ingredient, boughtOften }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const focusRef = useRef(null);
   console.log("info", productInfo);
+  const priceBeforeSale = totalPrice + saved;
+  const editedPrice = getEditedPrice(totalPrice);
+
+  const crossCheckWithRecipes = () => {
+    const recipesWithIngredient: { name: string; id: string }[] = [];
+    recipes.forEach((recipe) => {
+      recipe.ingredients.forEach((recipeIngredient) => {
+        if (recipeIngredient.id === ingredient.id) {
+          recipesWithIngredient.push({ name: recipe.name, id: recipe.id });
+        }
+      });
+    });
+    return recipesWithIngredient;
+  };
+
+  const recipesWithIngredient = crossCheckWithRecipes();
+
+  useEffect(() => {
+    if (productInfo.length > 0) {
+      console.log({ productDetails });
+      const checkCurrencyOfIngredientsInCart = () => {
+        const chosenProductIsNowDifferent = ingredientsInCart.find(
+          (ing) =>
+            ing.storeId === productDetails.storeId &&
+            ing.id !== productDetails.id,
+        );
+
+        if (chosenProductIsNowDifferent) {
+          updateIngredientsInCart();
+        }
+      };
+
+      const updateIngredientsInCart = () => {
+        const oldProduct = ingredientsInCart.find(
+          (ing) => ing.storeId === productDetails.storeId,
+        );
+
+        if (oldProduct) {
+          addIngredientToCart(
+            productDetails.name,
+            productDetails.id,
+            oldProduct.amount,
+            productDetails.packageInfo.unit,
+            productDetails.packageInfo.amount,
+            ingredient.optimize,
+            ingredient.id,
+          );
+
+          deleteIngredientFromCart(oldProduct.id);
+        }
+      };
+
+      if ((editedPrice as number) === 0) {
+        deleteIngredientFromCart(productDetails.id);
+        if (recipesWithIngredient.length > 0) {
+          recipesWithIngredient.map((recipeWithIngredient) => {
+            deleteRecipeFromCart(recipeWithIngredient.id);
+          });
+        }
+      }
+
+      checkCurrencyOfIngredientsInCart();
+    }
+  }, [
+    addIngredientToCart,
+    deleteIngredientFromCart,
+    deleteRecipeFromCart,
+    editedPrice,
+    ingredient,
+    ingredientsInCart,
+    productDetails,
+    productInfo.length,
+    recipesWithIngredient,
+  ]);
 
   if (productInfo.length === 0) {
     return;
   }
-
-  const priceBeforeSale = totalPrice + saved;
-  const editedPrice = getEditedPrice(totalPrice);
 
   const getPriceBeforeSale = () => {
     if (totalPrice > 0) {
@@ -246,6 +324,7 @@ const Product: FC<Props> = ({ ingredient, boughtOften }) => {
         cancelRef={focusRef}
         onClose={onClose}
         ingredient={ingredient}
+        recipesWithIngredient={recipesWithIngredient}
       />
     </Flex>
   );
