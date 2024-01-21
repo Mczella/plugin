@@ -82,9 +82,9 @@ const Products = () => {
         <Flex flexDir={"column"}>
           <Heading
             pt={"12px"}
-            fontSize={"36px"}
-            fontWeight={900}
-            lineHeight={"48px"}
+            fontSize={"32px"}
+            fontWeight={"normal"}
+            lineHeight={"42px"}
           >
             Produkty
           </Heading>
