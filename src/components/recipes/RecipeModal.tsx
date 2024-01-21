@@ -84,7 +84,7 @@ export const RecipeModal: FC<Props> = ({
   }
   const calculateSum = (type: string) => {
     const emptyValues: NewIngredient[] = [];
-    const array: number[] = composition.map((x) => {
+    const array: (number | undefined)[] = composition.map((x) => {
       const product = productIds.find((id) => id.id === x.data.productId);
       const ingredient = recipe.ingredients.find(
         (ingredient) => ingredient.id === product?.storeId,
@@ -96,6 +96,7 @@ export const RecipeModal: FC<Props> = ({
       if (
         ingredient &&
         myIngredient &&
+        x.data.nutritionalValues &&
         x.data.nutritionalValues.length > 0 &&
         myIngredient.unit !== "ks"
       ) {
@@ -112,8 +113,13 @@ export const RecipeModal: FC<Props> = ({
 
     console.log(array, "array");
 
-    const reducedValue = array
-      .reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+    const filteredArray = array.filter((number) => number !== undefined);
+
+    const reducedValue = filteredArray
+      .reduce(
+        (accumulator: any, currentValue: any) => accumulator + currentValue,
+        0,
+      )
       .toFixed(1);
 
     return { emptyValues, reducedValue };
