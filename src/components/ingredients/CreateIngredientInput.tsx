@@ -14,7 +14,7 @@ const CreateIngredientInput = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearch = useDebounce(searchQuery, 300);
-  const { data, isError } = useQuery(["data", debouncedSearch], () =>
+  const { data, isError } = useQuery(["autocomplete", debouncedSearch], () =>
     fetchAll(searchQuery),
   );
   const [isModalOpen, setIsModalOpen] = useState<string | null>(null);
