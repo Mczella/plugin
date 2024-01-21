@@ -1,7 +1,7 @@
 import { ShadowDom } from "../ShadowDom.tsx";
 import { Flex } from "@chakra-ui/react";
-import { LineChart } from "./LineChart.tsx";
 import { useParentElement } from "../hooks/useParentElement.ts";
+import { LineChart } from "./LineChart.tsx";
 
 export const UserArea = () => {
   const parentElement = useParentElement(
