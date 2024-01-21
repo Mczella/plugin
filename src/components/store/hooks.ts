@@ -24,7 +24,10 @@ export function usePurgeStorage() {
   const store = useContext(StoreContext);
   return useCallback(() => {
     // @ts-ignore
-    store.persist.clearStorage();
+    store.setState({
+      ingredientsInCart: [],
+      recipesInCart: [],
+    });
     window.location.reload();
-  }, []);
+  }, [store]);
 }
