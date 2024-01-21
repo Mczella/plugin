@@ -1,7 +1,6 @@
 import {
   Badge,
   Box,
-  Button,
   Checkbox,
   Flex,
   Grid,
@@ -17,18 +16,17 @@ import {
 } from "@chakra-ui/react";
 import Add from "../Add.tsx";
 import { useMyStore } from "../store/store.tsx";
-// import { usePurgeStorage } from "../store/hooks.ts";
 import RecipeComponent from "./RecipeComponent.tsx";
 import { Icon } from "@chakra-ui/icons";
 import BreadcrumbNav from "../BreadcrumbNav.tsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import AddRecipeModal from "./AddRecipeModal.tsx";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NewIngredient, NewRecipe, RohlikProduct } from "../types.ts";
-import { usePurgeStorage } from "../store/hooks.ts";
 
 const Recipes = () => {
   // inlined selector
+  console.log("loc", document.location);
   const { recipes, ingredientsInCart, ingredients } = useMyStore((state) => ({
     recipes: state.recipes,
     ingredientsInCart: state.ingredientsInCart,
@@ -47,7 +45,12 @@ const Recipes = () => {
   const { state } = useLocation();
   console.log("hz", recipes);
   const [filteredRecipes, setFilteredRecipes] = useState<NewRecipe[]>(recipes);
-  const purge = usePurgeStorage();
+  useEffect(() => {
+    if (filteredRecipes.length === 0 && recipes.length > 0) {
+      setFilteredRecipes(recipes);
+    }
+  }, [filteredRecipes.length, recipes]);
+
   const handleFilter = (
     ingredient: {
       name: string;
@@ -180,13 +183,12 @@ const Recipes = () => {
       mb={"30px"}
     >
       <BreadcrumbNav>Recepty</BreadcrumbNav>
-      <Button onClick={purge}>purge</Button>
       <Flex flexDir={"column"}>
         <Heading
           pt={"12px"}
-          fontSize={"36px"}
-          fontWeight={900}
-          lineHeight={"48px"}
+          fontSize={"32px"}
+          fontWeight={"normal"}
+          lineHeight={"42px"}
         >
           Recepty
         </Heading>
