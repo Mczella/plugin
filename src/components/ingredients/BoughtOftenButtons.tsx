@@ -48,7 +48,8 @@ export const BoughtOftenButtons: FC<Props> = ({ onClose, disable }) => {
         rounded={"xl"}
         boxShadow={"md"}
         color={"white"}
-        isDisabled={selectedBoughtOften.length === 0 || disable}
+        // disable if selectedBoughtOften.length === 0 ||
+        isDisabled={disable}
         _hover={{ bg: "rgb(87, 130, 4)" }}
         onClick={() => {
           editIngredientsBoughtOften(selectedBoughtOften);
