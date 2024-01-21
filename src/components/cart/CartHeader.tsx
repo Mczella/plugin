@@ -9,7 +9,7 @@ export const CartHeader = () => {
   const cartHeaderPrice = document.querySelector('[data-test="headerPrice"]');
 
   useEffect(() => {
-    if (cartHeaderPrice && cartPrice) {
+    if (cartHeaderPrice && cartPrice && cartPrice?.totalPrice > 0) {
       const textContent = cartHeaderPrice.textContent;
       const editedContent = textContent?.split("Kč")[0].trim() + " Kč";
       cartHeaderPrice.textContent = `${editedContent} + ${cartPrice.totalPrice.toFixed(
