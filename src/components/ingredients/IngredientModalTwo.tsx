@@ -11,8 +11,10 @@ import {
 import { useMyStore } from "../store/store.tsx";
 
 const IngredientModalTwo = () => {
-  const { editAmount, amount, selectedProducts } = useMyStore();
+  const { editAmount, amount, selectedProducts, selectedIngredient } =
+    useMyStore();
   const unit = selectedProducts.length > 0 ? selectedProducts[0].unit : "";
+  const unitIng = selectedIngredient?.unit;
   console.log("mnozstvi", amount);
   return (
     <>
@@ -51,7 +53,7 @@ const IngredientModalTwo = () => {
             <NumberDecrementStepper />
           </NumberInputStepper>
         </NumberInput>
-        <Text>{unit}</Text>
+        <Text>{unit !== "" ? unit : unitIng ? unitIng : ""}</Text>
       </HStack>
     </>
   );

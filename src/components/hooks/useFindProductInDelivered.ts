@@ -15,7 +15,9 @@ type HookResponse =
 export const useFindProductInDelivered = (
   productIds: string[],
 ): HookResponse => {
-  const { data, isError } = useQuery(["data"], () => fetchDelivered());
+  const { data, isError } = useQuery(["useFindProductInDelivered"], () =>
+    fetchDelivered(),
+  );
 
   if (isError) {
     throw new Error("Error fetching data.");
@@ -40,10 +42,10 @@ export const useFindProductInDelivered = (
     return;
   }
 
-  function parseDateString(dateString: string) {
+  const parseDateString = (dateString: string) => {
     const isoString = dateString.replace(/(\d{2})$/, ":$1");
     return new Date(isoString);
-  }
+  };
 
   if (foundPurchase && foundPurchase.state === "DELIVERED") {
     const orderDate = foundPurchase.orderTime;

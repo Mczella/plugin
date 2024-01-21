@@ -29,6 +29,7 @@ const PlusMinus: FC<Props> = ({
         alignItems={"center"}
         _hover={{ border: "1px solid rgb(156, 164, 169)" }}
         onClick={handleSubtract}
+        boxShadow={"rgba(0, 0, 0, 0.15) 0px 6px 10px -6px;"}
       >
         <MinusIcon />
       </Box>
@@ -49,6 +50,7 @@ const PlusMinus: FC<Props> = ({
             : { border: "1px solid rgb(156, 164, 169)" }
         }
         onClick={handleAdd}
+        boxShadow={"rgba(0, 0, 0, 0.15) 0px 6px 10px -6px;"}
       >
         <AddIcon />
       </Box>

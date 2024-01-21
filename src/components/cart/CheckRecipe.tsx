@@ -2,8 +2,7 @@ import { Flex, Image, Text } from "@chakra-ui/react";
 import { SmallCloseIcon } from "@chakra-ui/icons";
 import { FC } from "react";
 import { useMyStore } from "../store/store.tsx";
-import { useGetRecipePrice } from "../hooks/useGetRecipePrice.tsx";
-import PlusMinus from "../PlusMinus.tsx";
+import { useGetRecipePrice } from "../hooks/useGetRecipePrice.ts";
 import { getFilteredIngredientData } from "../utils/utils.ts";
 import { useFindRecipeById } from "../hooks/useFindRecipeById.ts";
 
@@ -22,6 +21,16 @@ const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
 
   const { productIds, ingredientData } = useGetRecipePrice(specificRecipe);
   const ingredients = getFilteredIngredientData(productIds, ingredientData);
+
+  const getInflection = (amount: number) => {
+    if (amount === 1) {
+      return "kus";
+    } else if (amount < 5) {
+      return "kusy";
+    } else {
+      return "kusů";
+    }
+  };
 
   console.log({ ingredients });
   return (
@@ -43,10 +52,6 @@ const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
             ingredientsInCart.find(
               (ingredientInCart) => ingredientInCart.id === product.id,
             )?.amount || 0;
-          const amountInCart =
-            ingredientsInCart.find(
-              (ingredientInCart) => ingredientInCart.id === product.id,
-            )?.amountInCart || 0;
           return (
             <Flex
               p={"4px 32px 4px 48px"}
@@ -75,28 +80,11 @@ const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
                 <Text pl={"4"}>{product.textualAmount}</Text>
               </Flex>
               <Flex flexDir={"row"} alignItems={"center"}>
-                <PlusMinus
-                  size={"32px"}
-                  amount={amount}
-                  handleAdd={() => console.log(product.id)}
-                  handleSubtract={() => console.log("h")}
-                >
-                  <Text fontWeight={"bold"}>{amountInCart}</Text>
-                </PlusMinus>
-                <Text
-                  textAlign={"right"}
-                  color={"rgb(28, 37, 41)"}
-                  fontSize={"15px"}
-                  fontWeight={"bold"}
-                  minW={"210px"}
-                >
-                  {product.sales.length > 0
-                    ? `${product.sales[0].price.amount * amountInCart} ${
-                        product.price.currency
-                      }`
-                    : `${product.price.amount * amountInCart} ${
-                        product.price.currency
-                      }`}
+                <Text fontWeight={"bold"}>
+                  {(amount / product.packageInfo.amount).toFixed(1)}{" "}
+                  {getInflection(
+                    Number((amount / product.packageInfo.amount).toFixed(1)),
+                  )}
                 </Text>
                 <SmallCloseIcon
                   ml={"40px"}

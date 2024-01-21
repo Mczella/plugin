@@ -1,8 +1,15 @@
-import { Button, Flex, Stack, Text, useDisclosure } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  HStack,
+  Stack,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
 import Ingredient from "../recipes/Ingredient.tsx";
-import { useGetIngredientPrice } from "../hooks/useGetIngredientPrice.tsx";
+import { useGetIngredientPrice } from "../hooks/useGetIngredientPrice.ts";
 import PlusMinus from "../PlusMinus.tsx";
-import { FC, useRef } from "react";
+import { FC, useEffect, useRef } from "react";
 import { NewIngredient, RohlikProduct } from "../types.ts";
 import { useMyStore } from "../store/store.tsx";
 import { useGetAmountOfIngredientUsedInRecipes } from "../hooks/useGetAmountOfIngredientUsedInRecipes.ts";
@@ -53,17 +60,107 @@ const getProductFromCart = (
 };
 
 const Product: FC<Props> = ({ ingredient, boughtOften }) => {
-  const { ingredients, ingredientsInCart, addIngredientToCart } = useMyStore();
-  const { productInfo, totalPrice } = useGetIngredientPrice(ingredient);
+  const {
+    ingredients,
+    ingredientsInCart,
+    deleteIngredientFromCart,
+    addIngredientToCart,
+    recipes,
+    deleteRecipeFromCart,
+  } = useMyStore();
+  const { productInfo, totalPrice, saved, discount } =
+    useGetIngredientPrice(ingredient);
   const productDetails = productInfo[0];
   const neededAmount = useGetAmountOfIngredientUsedInRecipes(ingredient);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const focusRef = useRef(null);
   console.log("info", productInfo);
+  const priceBeforeSale = totalPrice + saved;
+  const editedPrice = getEditedPrice(totalPrice);
+
+  const crossCheckWithRecipes = () => {
+    const recipesWithIngredient: { name: string; id: string }[] = [];
+    recipes.forEach((recipe) => {
+      recipe.ingredients.forEach((recipeIngredient) => {
+        if (recipeIngredient.id === ingredient.id) {
+          recipesWithIngredient.push({ name: recipe.name, id: recipe.id });
+        }
+      });
+    });
+    return recipesWithIngredient;
+  };
+
+  const recipesWithIngredient = crossCheckWithRecipes();
+
+  useEffect(() => {
+    if (productInfo.length > 0) {
+      console.log({ productDetails });
+      const checkCurrencyOfIngredientsInCart = () => {
+        const chosenProductIsNowDifferent = ingredientsInCart.find(
+          (ing) =>
+            ing.storeId === productDetails.storeId &&
+            ing.id !== productDetails.id,
+        );
+
+        if (chosenProductIsNowDifferent) {
+          updateIngredientsInCart();
+        }
+      };
+
+      const updateIngredientsInCart = () => {
+        const oldProduct = ingredientsInCart.find(
+          (ing) => ing.storeId === productDetails.storeId,
+        );
+
+        if (oldProduct) {
+          addIngredientToCart(
+            productDetails.name,
+            productDetails.id,
+            oldProduct.amount,
+            productDetails.packageInfo.unit,
+            productDetails.packageInfo.amount,
+            ingredient.optimize,
+            ingredient.id,
+          );
+
+          deleteIngredientFromCart(oldProduct.id);
+        }
+      };
+
+      if ((editedPrice as number) === 0) {
+        deleteIngredientFromCart(productDetails.id);
+        if (recipesWithIngredient.length > 0) {
+          recipesWithIngredient.map((recipeWithIngredient) => {
+            deleteRecipeFromCart(recipeWithIngredient.id);
+          });
+        }
+      }
+
+      checkCurrencyOfIngredientsInCart();
+    }
+  }, [
+    addIngredientToCart,
+    deleteIngredientFromCart,
+    deleteRecipeFromCart,
+    editedPrice,
+    ingredient,
+    ingredientsInCart,
+    productDetails,
+    productInfo.length,
+    recipesWithIngredient,
+  ]);
 
   if (productInfo.length === 0) {
     return;
   }
+
+  const getPriceBeforeSale = () => {
+    if (totalPrice > 0) {
+      return `${Math.ceil(priceBeforeSale)} Kč`;
+    } else {
+      return null;
+    }
+  };
 
   console.log(totalPrice, "total");
   const productInCart = getProductFromCart(
@@ -95,7 +192,12 @@ const Product: FC<Props> = ({ ingredient, boughtOften }) => {
         flexBasis={"20%"}
         w={"165px"}
       >
-        <Ingredient ingredient={ingredient} handleDelete={onOpen}>
+        <Ingredient
+          discount={discount}
+          ingredient={ingredient}
+          handleDelete={onOpen}
+          id={productDetails.id}
+        >
           <>
             <Text
               cursor={"pointer"}
@@ -113,19 +215,34 @@ const Product: FC<Props> = ({ ingredient, boughtOften }) => {
             >
               {ingredient.name}
             </Text>
-            <Text
-              my={"10px"}
-              textAlign={"center"}
-              fontSize="24px"
-              lineHeight="1.4"
-              fontWeight={"bold"}
-              color={"rgb(28, 37, 41)"}
-            >
-              {getEditedPrice(totalPrice)} Kč
-            </Text>
+            <HStack>
+              {discount > 0 ? (
+                <Text
+                  as={"s"}
+                  fontSize={"14px"}
+                  lineHeight={1.4}
+                  fontWeight={"normal"}
+                  color={"rgb(28, 37, 41)"}
+                >
+                  {getPriceBeforeSale()}
+                </Text>
+              ) : null}
+              <Text
+                my={"10px"}
+                textAlign={"center"}
+                fontSize="20px"
+                lineHeight="1.4"
+                fontWeight={"bold"}
+                color={discount > 0 ? "rgb(209, 17, 0)" : "rgb(28, 37, 41)"}
+              >
+                {(editedPrice as number) > 0
+                  ? `${editedPrice} Kč`
+                  : "Vyprodáno"}
+              </Text>
+            </HStack>
           </>
         </Ingredient>
-        {productInCart ? (
+        {productInCart && productInCart.cartItem.amountInCart > 0 ? (
           <PlusMinus
             key={productInCart.cartItem.id}
             amount={productInCart.cartItem.amountInCart}
@@ -195,6 +312,7 @@ const Product: FC<Props> = ({ ingredient, boughtOften }) => {
                 );
               }}
               _hover={{ bg: "rgb(87, 130, 4)", color: "white" }}
+              boxShadow={"rgba(0, 0, 0, 0.15) 0px 6px 10px -6px;"}
             >
               Do košíku
             </Button>
@@ -206,6 +324,7 @@ const Product: FC<Props> = ({ ingredient, boughtOften }) => {
         cancelRef={focusRef}
         onClose={onClose}
         ingredient={ingredient}
+        recipesWithIngredient={recipesWithIngredient}
       />
     </Flex>
   );

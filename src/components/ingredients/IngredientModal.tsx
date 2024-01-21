@@ -13,7 +13,6 @@ type Props = {
   focusRef: RefObject<HTMLInputElement>;
   children: ReactNode;
   create?: boolean;
-  id?: string;
 };
 
 const IngredientModal: FC<Props> = ({
@@ -23,6 +22,10 @@ const IngredientModal: FC<Props> = ({
   children,
 }) => {
   const modalContainer = useRef(null);
+
+  // const modalRef = useOutsideClick(() => {
+  //   onClose();
+  // });
 
   return (
     <>

@@ -4,7 +4,6 @@ import {
   Flex,
   Grid,
   Heading,
-  IconButton,
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInput,
@@ -17,7 +16,6 @@ import {
   Image,
   FormControl,
 } from "@chakra-ui/react";
-import { HamburgerIcon } from "@chakra-ui/icons";
 import EditableName from "./EditableName.tsx";
 import BreadcrumbNav from "../BreadcrumbNav.tsx";
 import Add from "../Add.tsx";
@@ -61,6 +59,7 @@ const CreateRecipe = () => {
     editSelectedProducts,
     selectIngredient,
     step,
+    resetModal,
   } = useMyStore();
   const { state } = useLocation();
 
@@ -193,18 +192,23 @@ const CreateRecipe = () => {
                   _hover={{ bg: "rgb(87, 130, 4)" }}
                   type="submit"
                   isLoading={isSubmitting}
+                  onKeyDown={(e) => {
+                    if (e.code === "Enter") {
+                      e.preventDefault();
+                    }
+                  }}
                 >
                   Uložit recept
                 </Button>
-                <IconButton
-                  aria-label="Select"
-                  boxSize={"40px"}
-                  _hover={{ border: "1px solid rgb(156, 164, 169)" }}
-                  border={"1px solid rgb(218, 222, 224)"}
-                  bg={"white"}
-                  rounded={"2xl"}
-                  icon={<HamburgerIcon boxSize={"18px"} />}
-                />
+                {/*<IconButton*/}
+                {/*  aria-label="Select"*/}
+                {/*  boxSize={"40px"}*/}
+                {/*  _hover={{ border: "1px solid rgb(156, 164, 169)" }}*/}
+                {/*  border={"1px solid rgb(218, 222, 224)"}*/}
+                {/*  bg={"white"}*/}
+                {/*  rounded={"2xl"}*/}
+                {/*  icon={<HamburgerIcon boxSize={"18px"} />}*/}
+                {/*/>*/}
               </Flex>
               {error && (
                 <Text fontSize="12px" color="red">
@@ -295,7 +299,13 @@ const CreateRecipe = () => {
 
           <Heading>Ingredience</Heading>
           <Grid templateColumns="repeat(6, 1fr)" gap={"19px"}>
-            <Add text={"Přidat ingredienci"} action={onOpen}>
+            <Add
+              text={"Přidat ingredienci"}
+              action={() => {
+                resetModal();
+                onOpen();
+              }}
+            >
               <Image
                 as={"svg"}
                 height="24px"

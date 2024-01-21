@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-// import { store } from "./store";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { StoreContext } from "./store.tsx";
 
 export function useBytesInUse() {
   const [bytesInUse, setBytesInUse] = useState<number>(0);
@@ -20,9 +20,14 @@ export function useBytesInUse() {
 
   return bytesInUse;
 }
-// export function usePurgeStorage() {
-//   return useCallback(() => {
-//     store.persist.clearStorage();
-//     window.location.reload();
-//   }, []);
-// }
+export function usePurgeStorage() {
+  const store = useContext(StoreContext);
+  return useCallback(() => {
+    // @ts-ignore
+    store.setState({
+      ingredientsInCart: [],
+      recipesInCart: [],
+    });
+    window.location.reload();
+  }, [store]);
+}

@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { State, useMyStore } from "../store/store.tsx";
 import { NewRecipe } from "../types.ts";
-import { useGetRecipePrice } from "../hooks/useGetRecipePrice.tsx";
+import { useGetRecipePrice } from "../hooks/useGetRecipePrice.ts";
 import { FC, useRef } from "react";
 import PlusMinus from "../PlusMinus.tsx";
 import { getEditedPrice } from "../utils/utils.ts";
@@ -41,8 +41,9 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
     addIngredientToCart,
     ingredients,
   } = useMyStore(selector);
-  const { totalPrice, needed, productIds, saved, discount } =
+  const { totalPrice, needed, productIds, saved, discount, fetchedProducts } =
     useGetRecipePrice(recipe);
+  console.log("products", fetchedProducts, productIds);
   const pricePerPortion = totalPrice / recipe.portion;
   const priceBeforeSale = totalPrice + saved;
   const show = recipesInCart.some(
@@ -63,6 +64,8 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
       return null;
     }
   };
+
+  const editedPriceBeforeSale = getPriceBeforeSale();
 
   const getAmount = () => {
     const currentRecipe = recipesInCart.find(
@@ -158,10 +161,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
             label={
               <Text>
                 V košíku máte <br />
-                <Text as={"b"}>{getAmount()} ks</Text> za{" "}
-                <Text as={"b"}>
-                  {parseFloat(editedPrice as string) * getAmount()} Kč
-                </Text>
+                <Text as={"b"}>{getAmount()} ks</Text>
               </Text>
             }
           >
@@ -251,7 +251,7 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
                 fontWeight={"normal"}
                 color={"rgb(28, 37, 41)"}
               >
-                {getPriceBeforeSale()}
+                {editedPriceBeforeSale}
               </Text>
             ) : null}
             <Text
@@ -296,18 +296,28 @@ const RecipeComponent: FC<Props> = ({ recipe }) => {
               isDisabled={totalPrice === 0}
               _hover={{ bg: "rgb(87, 130, 4)", color: "white" }}
               onClick={handleBuy}
+              boxShadow={"rgba(0, 0, 0, 0.15) 0px 6px 10px -6px;"}
             >
               Do košíku
             </Button>
           )}
         </Box>
+        <RecipeModal
+          productIds={productIds}
+          focusRef={cancelRef}
+          onClose={onClose}
+          isOpen={isOpen}
+          recipe={recipe}
+          fetchedProducts={fetchedProducts}
+          pricePerPortion={pricePerPortion}
+          priceBeforeSale={editedPriceBeforeSale}
+          editedPrice={editedPrice}
+          discount={discount}
+          amount={getAmount()}
+          handleAdd={handleAdd}
+          handleSubtract={handleSubtract}
+        />
       </GridItem>
-      <RecipeModal
-        focusRef={cancelRef}
-        onClose={onClose}
-        isOpen={isOpen}
-        recipe={recipe}
-      />
     </>
   );
 };

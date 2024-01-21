@@ -2,32 +2,57 @@ import { Box, Flex, Image, Text } from "@chakra-ui/react";
 import { AddIcon, MinusIcon, SmallCloseIcon } from "@chakra-ui/icons";
 import { FC } from "react";
 import { useMyStore } from "../store/store.tsx";
-import { useFindRecipeById } from "../hooks/useFindRecipeById.ts";
+import { RohlikProduct } from "../types.ts";
+import { useGetIngredientPrice } from "../hooks/useGetIngredientPrice.ts";
+import { useQuery } from "@tanstack/react-query";
+import { fetchProductsDetails } from "../api/api.ts";
 
 type Props = {
-  recipe: { id: string; amount: number };
+  ingredient: {
+    name: string;
+    id: RohlikProduct["id"];
+    amount: number;
+    unit: string;
+    packageAmount: number;
+    optimize: boolean;
+    storeId: string;
+    amountInCart: number;
+  };
 };
 
-const RecipeInCart: FC<Props> = ({ recipe }) => {
-  const { deleteRecipeFromCart } = useMyStore();
+const IngredientInCart: FC<Props> = ({ ingredient }) => {
+  const { deleteIngredientFromCart, ingredients } = useMyStore();
 
-  const specificRecipe = useFindRecipeById(recipe);
+  const ingredientById = ingredients.find(
+    (ing) => ing.id === ingredient.storeId,
+  );
 
-  if (!specificRecipe) {
-    throw new Error("Error");
+  if (!ingredientById) {
+    throw new Error("No matching ingredient.");
   }
 
+  const { totalPrice, saved, discount } = useGetIngredientPrice(ingredientById);
+
+  const { data, isError } = useQuery(["data", ingredient.id], () =>
+    fetchProductsDetails([ingredient.id]),
+  );
+
+  if (isError) {
+    return (
+      <Text p={"10px"}>
+        Došlo k chybě. Tento produkt zřejmě již není v nabídce.
+      </Text>
+    );
+  }
+
+  const priceBeforeSale = totalPrice + saved;
+
+  console.log(data);
   const handleDelete = (id: string) => {
-    deleteRecipeFromCart(id);
+    deleteIngredientFromCart(id);
   };
 
-  const getInflection = () => {
-    if (specificRecipe.portion < 5) {
-      return "porce";
-    } else {
-      return "porcí";
-    }
-  };
+  const productDetail = data?.productsByIds[ingredient.id];
 
   return (
     <Flex
@@ -49,7 +74,7 @@ const RecipeInCart: FC<Props> = ({ recipe }) => {
             <Image
               justifySelf={"center"}
               maxH={"45px"}
-              src={specificRecipe.image}
+              src={productDetail?.image}
               fallbackSrc={
                 "https://icon-library.com/images/placeholder-image-icon/placeholder-image-icon-7.jpg"
               }
@@ -68,14 +93,14 @@ const RecipeInCart: FC<Props> = ({ recipe }) => {
                 lineHeight={1.5}
                 color={"rgb(28, 37, 41)"}
               >
-                {specificRecipe.name}
+                {ingredientById.name}
               </Text>
               <Text
                 color={"rgb(28, 37, 41)"}
                 fontStyle={"italic"}
                 fontSize={"12px"}
               >
-                {specificRecipe.portion} {getInflection()}
+                {ingredient.packageAmount} {ingredient.unit}
               </Text>
             </Flex>
             <Flex
@@ -99,7 +124,7 @@ const RecipeInCart: FC<Props> = ({ recipe }) => {
                 <MinusIcon boxSize={"4"} />
               </Box>
               <Text fontWeight={"bold"} fontSize={"12px"}>
-                {recipe.amount}
+                {ingredient.amountInCart}
               </Text>
               <Box
                 h={"20px"}
@@ -126,11 +151,32 @@ const RecipeInCart: FC<Props> = ({ recipe }) => {
         <SmallCloseIcon
           color={"rgb(218, 222, 224)"}
           _hover={{ color: "rgb(87, 130, 4)" }}
-          onClick={() => handleDelete(specificRecipe.id)}
+          onClick={() => handleDelete(ingredient.id)}
         />
+        <Flex flexDir={"column"} mb={"10px"} w={"60px"}>
+          {discount > 0 ? (
+            <Text
+              textAlign={"right"}
+              fontSize={"12px"}
+              fontWeight={"normal"}
+              color={"rgb(28, 37, 41)"}
+              as={"s"}
+            >
+              {(priceBeforeSale * ingredient.amountInCart).toFixed(1)} Kč
+            </Text>
+          ) : null}
+          <Text
+            textAlign={"right"}
+            fontSize={"12px"}
+            fontWeight={"700"}
+            color={discount > 0 ? "rgb(209, 17, 0)" : "black"}
+          >
+            {(Number(totalPrice) * ingredient.amountInCart).toFixed(1)} Kč
+          </Text>
+        </Flex>
       </Flex>
     </Flex>
   );
 };
 
-export default RecipeInCart;
+export default IngredientInCart;

@@ -27,6 +27,8 @@ export function NormalDom({
 
   const queryClient = new QueryClient();
 
+  window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+
   return ReactDOM.createPortal(
     <QueryClientProvider client={queryClient}>
       <ChakraProvider>{children}</ChakraProvider>

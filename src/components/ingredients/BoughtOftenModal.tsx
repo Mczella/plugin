@@ -40,12 +40,7 @@ const BoughtOftenModal: FC<Props> = ({ heading }) => {
         {heading}
       </Heading>
       <FormControl isRequired>
-        <AutoComplete
-          // openOnFocus
-          closeOnSelect
-          creatable
-          autoComplete={"off"}
-        >
+        <AutoComplete openOnFocus closeOnSelect creatable autoComplete={"off"}>
           <AutoCompleteInput
             width={"740px"}
             height={"40px"}

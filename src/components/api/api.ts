@@ -182,9 +182,6 @@ export const fetchPriceAndStock = async (ingredientIds: {
   return { productsByStoreId: mergedProducts, ingredientIds };
 };
 
-// Nutricni hodnoty
-// https://www.rohlik.cz/api/v1/products/1317317/composition
-
 export const fetchDeliveredIds = async (limit: number) => {
   const url = `https://www.rohlik.cz/api/v3/orders/delivered?offset=0&limit=${limit}`;
 
@@ -231,4 +228,20 @@ export const fetchDelivered = async () => {
   } catch (error) {
     console.log("An error has occured: ", error);
   }
+};
+
+export const fetchComposition = async (id: string) => {
+  const url = `https://www.rohlik.cz/api/v1/products/${id}/composition`;
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error fetching composition for id: ${id}`);
+  }
+
+  return await response.json();
 };

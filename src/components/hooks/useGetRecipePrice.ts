@@ -1,5 +1,5 @@
 import { IngredientData, NewRecipe, RohlikProduct } from "../types.ts";
-import { useGetIngredientIds } from "./useGetIngredientsIds.tsx";
+import { useGetIngredientIds } from "./useGetIngredientsIds.ts";
 import { useMyStore } from "../store/store.tsx";
 import {
   calculateDiscountPercentage,
@@ -27,6 +27,7 @@ type Result = {
   needed: NeededProduct[];
   discount: number;
   saved: number;
+  fetchedProducts: RohlikProduct[];
 };
 
 export const useGetRecipePrice = (recipe: NewRecipe): Result => {
@@ -35,6 +36,7 @@ export const useGetRecipePrice = (recipe: NewRecipe): Result => {
   const { ingredients } = useMyStore();
   let totalPrice = 0;
   let saved = 0;
+  const fetchedProducts: RohlikProduct[] = [];
   const productIds: { id: string; storeId: string }[] = [];
   let overallCheapestProduct: RohlikProduct | undefined;
   let selectedProduct: RohlikProduct | undefined;
@@ -104,7 +106,10 @@ export const useGetRecipePrice = (recipe: NewRecipe): Result => {
             });
 
             const amountOfProductsToBuy = Math.ceil(neededAmountOfProduct);
-            if (selectedProduct.sales.length > 0) {
+            if (
+              selectedProduct.sales.length > 0 &&
+              selectedProduct.sales[0].type !== "expiration"
+            ) {
               totalPrice +=
                 selectedProduct.sales[0].price.amount * amountOfProductsToBuy;
               saved +=
@@ -115,7 +120,11 @@ export const useGetRecipePrice = (recipe: NewRecipe): Result => {
               totalPrice +=
                 selectedProduct.price.amount * amountOfProductsToBuy;
             }
-            productIds.push({ id: selectedProduct.id, storeId: ingredientId });
+            productIds.push({
+              id: selectedProduct.id,
+              storeId: ingredientId,
+            });
+            fetchedProducts.push(selectedProduct);
           } else if (overallCheapestProduct !== undefined) {
             const neededAmountOfProduct =
               ingredientAmount / overallCheapestProduct.packageInfo.amount;
@@ -130,7 +139,10 @@ export const useGetRecipePrice = (recipe: NewRecipe): Result => {
 
             const amountOfProductsToBuy = Math.ceil(neededAmountOfProduct);
 
-            if (overallCheapestProduct.sales.length > 0) {
+            if (
+              overallCheapestProduct.sales.length > 0 &&
+              overallCheapestProduct.sales[0].type !== "expiration"
+            ) {
               totalPrice +=
                 overallCheapestProduct.sales[0].price.amount *
                 amountOfProductsToBuy;
@@ -144,6 +156,8 @@ export const useGetRecipePrice = (recipe: NewRecipe): Result => {
                 id: overallCheapestProduct.id,
                 storeId: ingredientId,
               });
+
+              fetchedProducts.push(overallCheapestProduct);
             } else {
               totalPrice +=
                 overallCheapestProduct.price.amount * amountOfProductsToBuy;
@@ -152,16 +166,25 @@ export const useGetRecipePrice = (recipe: NewRecipe): Result => {
                 id: overallCheapestProduct.id,
                 storeId: ingredientId,
               });
+
+              fetchedProducts.push(overallCheapestProduct);
             }
           }
-          // selectedProduct = undefined;
         },
       );
     }
 
     const discount = calculateDiscountPercentage(saved, totalPrice);
 
-    return { totalPrice, productIds, ingredientData, needed, discount, saved };
+    return {
+      totalPrice,
+      productIds,
+      ingredientData,
+      needed,
+      discount,
+      saved,
+      fetchedProducts,
+    };
   } catch (error) {
     console.error(error);
     return {
@@ -171,6 +194,7 @@ export const useGetRecipePrice = (recipe: NewRecipe): Result => {
       needed: [],
       discount: 0,
       saved: 0,
+      fetchedProducts: [],
     };
   }
 };
