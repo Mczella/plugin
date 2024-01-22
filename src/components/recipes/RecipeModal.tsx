@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  ButtonGroup,
   Circle,
   Flex,
   Heading,
@@ -31,6 +32,7 @@ import { fetchComposition } from "../api/api.ts";
 import PlusMinus from "../PlusMinus.tsx";
 import { useMyStore } from "../store/store.tsx";
 import { useOutsideClick } from "../hooks/useOutsideClick.ts";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   isOpen: boolean;
@@ -63,10 +65,17 @@ export const RecipeModal: FC<Props> = ({
   handleSubtract,
 }) => {
   const modalContainer = useRef(null);
-  const { recipesInCart, ingredients } = useMyStore();
+  const {
+    recipesInCart,
+    ingredients,
+    addToSelectedIngredients,
+    editRecipes,
+    recipes,
+  } = useMyStore();
   const modalRef = useOutsideClick(() => {
     onClose();
   });
+  const navigate = useNavigate();
 
   const arrayOfIds = productIds.map((item) => item.id);
 
@@ -249,6 +258,8 @@ export const RecipeModal: FC<Props> = ({
                   pb={"15px"}
                   borderBottom={"1px solid rgb(218, 222, 224)"}
                   justifyContent={"flex-start"}
+                  flexDir={"row"}
+                  alignItems={"center"}
                 >
                   {recipesInCart.some(
                     (item: { id: string }) => recipe.id === item.id,
@@ -283,6 +294,63 @@ export const RecipeModal: FC<Props> = ({
                       Do košíku
                     </Button>
                   )}
+                  <ButtonGroup gap={"7px"}>
+                    <Button
+                      bg="white"
+                      color="black"
+                      fontSize={"14px"}
+                      fontWeight={"600"}
+                      border="1px solid rgba(0, 0, 0, 0.15)"
+                      height="40px"
+                      display="flex"
+                      alignItems="center"
+                      rounded={"xl"}
+                      onClick={() => {
+                        recipe.ingredients.forEach((ing) => {
+                          const foundIng = ingredients.find(
+                            (found) => found.id === ing.id,
+                          );
+
+                          if (foundIng) {
+                            addToSelectedIngredients({
+                              ...foundIng,
+                              amount: ing.amount,
+                            });
+                          }
+                        });
+                        navigate(`/pridat-recept/${recipe.id}`, {
+                          state: {
+                            name: recipe.name,
+                            id: recipe.id,
+                            description: recipe.description,
+                            image: recipe.image,
+                            portion: recipe.portion,
+                          },
+                        });
+                      }}
+                    >
+                      Upravit recept
+                    </Button>
+                    <Button
+                      bg="white"
+                      color="black"
+                      fontSize={"14px"}
+                      fontWeight={"600"}
+                      border="1px solid rgba(0, 0, 0, 0.15)"
+                      height="40px"
+                      display="flex"
+                      alignItems="center"
+                      rounded={"xl"}
+                      onClick={() => {
+                        const updatedRecipes = recipes.filter(
+                          (updatedRecipe) => updatedRecipe.id !== recipe.id,
+                        );
+                        editRecipes(updatedRecipes);
+                      }}
+                    >
+                      Smazat
+                    </Button>
+                  </ButtonGroup>
                 </Flex>
                 <Text
                   color={"rgb(93, 103, 108)"}
