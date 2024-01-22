@@ -22,16 +22,6 @@ const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
   const { productIds, ingredientData } = useGetRecipePrice(specificRecipe);
   const ingredients = getFilteredIngredientData(productIds, ingredientData);
 
-  const getInflection = (amount: number) => {
-    if (amount === 1) {
-      return "kus";
-    } else if (amount < 5) {
-      return "kusy";
-    } else {
-      return "kusů";
-    }
-  };
-
   console.log({ ingredients });
   return (
     <>
@@ -81,10 +71,7 @@ const CheckRecipe: FC<Props> = ({ recipeInCart }) => {
               </Flex>
               <Flex flexDir={"row"} alignItems={"center"}>
                 <Text fontWeight={"bold"}>
-                  {(amount / product.packageInfo.amount).toFixed(1)}{" "}
-                  {getInflection(
-                    Number((amount / product.packageInfo.amount).toFixed(1)),
-                  )}
+                  {(amount / product.packageInfo.amount).toFixed(1)} ks
                 </Text>
                 <SmallCloseIcon
                   ml={"40px"}
