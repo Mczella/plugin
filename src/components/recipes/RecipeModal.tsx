@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  ButtonGroup,
   Circle,
   Flex,
   Heading,
@@ -23,6 +24,7 @@ import {
   Td,
   Text,
   Tr,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { FC, RefObject, useRef } from "react";
 import { NewIngredient, NewRecipe, RohlikProduct } from "../types.ts";
@@ -31,6 +33,8 @@ import { fetchComposition } from "../api/api.ts";
 import PlusMinus from "../PlusMinus.tsx";
 import { useMyStore } from "../store/store.tsx";
 import { useOutsideClick } from "../hooks/useOutsideClick.ts";
+import { useNavigate } from "react-router-dom";
+import { DeleteRecipeAlertDialog } from "./DeleteRecipeAlertDialog.tsx";
 
 type Props = {
   isOpen: boolean;
@@ -48,6 +52,7 @@ type Props = {
   handleSubtract: () => void;
 };
 
+//todo divide into several components
 export const RecipeModal: FC<Props> = ({
   isOpen,
   onClose,
@@ -63,10 +68,17 @@ export const RecipeModal: FC<Props> = ({
   handleSubtract,
 }) => {
   const modalContainer = useRef(null);
-  const { recipesInCart, ingredients } = useMyStore();
+  const { recipesInCart, ingredients, addToSelectedIngredients } = useMyStore();
   const modalRef = useOutsideClick(() => {
     onClose();
   });
+  const {
+    isOpen: isAlertOpen,
+    onOpen: onAlertOpen,
+    onClose: onAlertClose,
+  } = useDisclosure();
+  const alertFocusRef = useRef(null);
+  const navigate = useNavigate();
 
   const arrayOfIds = productIds.map((item) => item.id);
 
@@ -249,6 +261,8 @@ export const RecipeModal: FC<Props> = ({
                   pb={"15px"}
                   borderBottom={"1px solid rgb(218, 222, 224)"}
                   justifyContent={"flex-start"}
+                  flexDir={"row"}
+                  alignItems={"center"}
                 >
                   {recipesInCart.some(
                     (item: { id: string }) => recipe.id === item.id,
@@ -272,7 +286,6 @@ export const RecipeModal: FC<Props> = ({
                       fontSize={"14px"}
                       fontWeight={"bold"}
                       lineHeight={"1"}
-                      mr={"16px"}
                       my={"12px"}
                       rounded={"xl"}
                       px={"16px"}
@@ -283,7 +296,66 @@ export const RecipeModal: FC<Props> = ({
                       Do košíku
                     </Button>
                   )}
+                  <ButtonGroup gap={"9px"}>
+                    <Button
+                      ml={"16px"}
+                      bg="white"
+                      color="black"
+                      fontSize={"14px"}
+                      fontWeight={"600"}
+                      border="1px solid rgba(0, 0, 0, 0.15)"
+                      height="40px"
+                      display="flex"
+                      alignItems="center"
+                      rounded={"xl"}
+                      onClick={() => {
+                        recipe.ingredients.forEach((ing) => {
+                          const foundIng = ingredients.find(
+                            (found) => found.id === ing.id,
+                          );
+
+                          if (foundIng) {
+                            addToSelectedIngredients({
+                              ...foundIng,
+                              amount: ing.amount,
+                            });
+                          }
+                        });
+                        navigate(`/pridat-recept/${recipe.id}`, {
+                          state: {
+                            name: recipe.name,
+                            id: recipe.id,
+                            description: recipe.description,
+                            image: recipe.image,
+                            portion: recipe.portion,
+                          },
+                        });
+                      }}
+                    >
+                      Upravit recept
+                    </Button>
+                    <Button
+                      bg="white"
+                      color="black"
+                      fontSize={"14px"}
+                      fontWeight={"600"}
+                      border="1px solid rgba(0, 0, 0, 0.15)"
+                      height="40px"
+                      display="flex"
+                      alignItems="center"
+                      rounded={"xl"}
+                      onClick={onAlertOpen}
+                    >
+                      Smazat
+                    </Button>
+                  </ButtonGroup>
                 </Flex>
+                <DeleteRecipeAlertDialog
+                  isOpen={isAlertOpen}
+                  cancelRef={alertFocusRef}
+                  onClose={onAlertClose}
+                  recipe={recipe}
+                />
                 <Text
                   color={"rgb(93, 103, 108)"}
                   fontSize={"15px"}

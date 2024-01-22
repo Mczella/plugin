@@ -60,6 +60,8 @@ const CreateRecipe = () => {
     selectIngredient,
     step,
     resetModal,
+    editRecipes,
+    recipes,
   } = useMyStore();
   const { state } = useLocation();
 
@@ -82,15 +84,37 @@ const CreateRecipe = () => {
     } else {
       reset({
         name: state.name,
-        description: "",
-        image: null,
-        portion: null,
+        description: state.description ?? "",
+        image: state.image ?? null,
+        portion: Number(state.portion) ?? null,
       });
+      setImage(state.image);
     }
-  }, []);
+  }, [navigate, reset, state]);
 
   const onSubmit = (data: any) => {
-    if (selectedIngredients.length > 0) {
+    if (state.portion && selectedIngredients.length > 0) {
+      const updatedSelectedIngredients: RecipeIngredient =
+        selectedIngredients.map((ingredient) => ({
+          id: ingredient.id,
+          amount: ingredient.amount,
+        }));
+
+      const updatedData = {
+        ...data,
+        ingredients: updatedSelectedIngredients,
+        id: state.id,
+      };
+
+      const updatedRecipes = recipes.map((recipe) => {
+        return recipe.id === state.id ? updatedData : recipe;
+      });
+
+      editRecipes(updatedRecipes);
+
+      recipeReset();
+      navigate("/recepty");
+    } else if (selectedIngredients.length > 0) {
       const updatedSelectedIngredients: RecipeIngredient =
         selectedIngredients.map((ingredient) => ({
           id: ingredient.id,

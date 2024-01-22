@@ -100,13 +100,6 @@ const CreateIngredientInput = () => {
                     }
                     p={"10px"}
                     _hover={{ bg: "gray.100" }}
-                    // onClick={async () => {
-                    //   const openModal = new CustomEvent("redux-event", {
-                    //     bubbles: true,
-                    //     detail: { action: "open-modal", id: "1" },
-                    //   });
-                    //   document.body.dispatchEvent(openModal);
-                    // }}
                     onClick={() => setIsModalOpen(productId)}
                   >
                     <RohlikModal

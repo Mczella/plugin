@@ -136,8 +136,7 @@ const CheckRecipes = () => {
             fontWeight={"600"}
             pr={"32px"}
           >
-            {cartPrice?.totalPrice.toFixed(1)} Kč za ingredience z chytrého
-            nákupu
+            {cartPrice?.totalPrice.toFixed(1)} Kč za produkty z chytrého nákupu
           </Text>
           <Button
             h={"40px"}
