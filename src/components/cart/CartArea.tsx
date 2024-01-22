@@ -47,15 +47,15 @@ const CartArea = () => {
   //   }
   // }, [cartElement, cartHeaderElement, cartMain, location]);
 
-  // const cartProductsElement: HTMLElement | null = document.querySelector(
-  //   '[class*="cartProducts"]',
-  // );
+  const cartProductsElement: HTMLElement | null = document.querySelector(
+    '[class*="cartProducts"]',
+  );
 
-  // useEffect(() => {
-  //   if (cartProductsElement) {
-  //     cartProductsElement.style.overflow = "scroll";
-  //   }
-  // }, [cartProductsElement]);
+  useEffect(() => {
+    if (cartProductsElement) {
+      cartProductsElement.style.overflow = "scroll";
+    }
+  }, [cartProductsElement]);
 
   return (parentElement && recipesInCart.length > 0) ||
     ingredientsInCart.length > 0 ? (
