@@ -24,6 +24,7 @@ import {
   Td,
   Text,
   Tr,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { FC, RefObject, useRef } from "react";
 import { NewIngredient, NewRecipe, RohlikProduct } from "../types.ts";
@@ -33,6 +34,7 @@ import PlusMinus from "../PlusMinus.tsx";
 import { useMyStore } from "../store/store.tsx";
 import { useOutsideClick } from "../hooks/useOutsideClick.ts";
 import { useNavigate } from "react-router-dom";
+import { DeleteRecipeAlertDialog } from "./DeleteRecipeAlertDialog.tsx";
 
 type Props = {
   isOpen: boolean;
@@ -50,6 +52,7 @@ type Props = {
   handleSubtract: () => void;
 };
 
+//todo divide into several components
 export const RecipeModal: FC<Props> = ({
   isOpen,
   onClose,
@@ -65,16 +68,16 @@ export const RecipeModal: FC<Props> = ({
   handleSubtract,
 }) => {
   const modalContainer = useRef(null);
-  const {
-    recipesInCart,
-    ingredients,
-    addToSelectedIngredients,
-    editRecipes,
-    recipes,
-  } = useMyStore();
+  const { recipesInCart, ingredients, addToSelectedIngredients } = useMyStore();
   const modalRef = useOutsideClick(() => {
     onClose();
   });
+  const {
+    isOpen: isAlertOpen,
+    onOpen: onAlertOpen,
+    onClose: onAlertClose,
+  } = useDisclosure();
+  const alertFocusRef = useRef(null);
   const navigate = useNavigate();
 
   const arrayOfIds = productIds.map((item) => item.id);
@@ -283,7 +286,6 @@ export const RecipeModal: FC<Props> = ({
                       fontSize={"14px"}
                       fontWeight={"bold"}
                       lineHeight={"1"}
-                      mr={"16px"}
                       my={"12px"}
                       rounded={"xl"}
                       px={"16px"}
@@ -294,8 +296,9 @@ export const RecipeModal: FC<Props> = ({
                       Do košíku
                     </Button>
                   )}
-                  <ButtonGroup gap={"7px"}>
+                  <ButtonGroup gap={"9px"}>
                     <Button
+                      ml={"16px"}
                       bg="white"
                       color="black"
                       fontSize={"14px"}
@@ -341,17 +344,18 @@ export const RecipeModal: FC<Props> = ({
                       display="flex"
                       alignItems="center"
                       rounded={"xl"}
-                      onClick={() => {
-                        const updatedRecipes = recipes.filter(
-                          (updatedRecipe) => updatedRecipe.id !== recipe.id,
-                        );
-                        editRecipes(updatedRecipes);
-                      }}
+                      onClick={onAlertOpen}
                     >
                       Smazat
                     </Button>
                   </ButtonGroup>
                 </Flex>
+                <DeleteRecipeAlertDialog
+                  isOpen={isAlertOpen}
+                  cancelRef={alertFocusRef}
+                  onClose={onAlertClose}
+                  recipe={recipe}
+                />
                 <Text
                   color={"rgb(93, 103, 108)"}
                   fontSize={"15px"}
