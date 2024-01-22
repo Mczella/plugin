@@ -3,6 +3,7 @@ import { NewRecipe } from "../types.ts";
 
 interface MyRecipesActions {
   addRecipe: (newRecipe: NewRecipe) => void;
+  editRecipes: (recipes: NewRecipe[]) => void;
 }
 
 export interface MyRecipesState {
@@ -24,5 +25,10 @@ export const createRecipesSlice: StateCreator<
     set((state) => ({
       recipes: [...state.recipes, newRecipe],
     }));
+  },
+  editRecipes: (recipes: NewRecipe[]) => {
+    set({
+      recipes: recipes,
+    });
   },
 });
